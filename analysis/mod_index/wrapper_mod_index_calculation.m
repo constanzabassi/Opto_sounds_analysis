@@ -74,7 +74,7 @@ for current_dataset = 1:length(info.mouse_date)
                 current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
                 current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition];
             end
-        elseif context == 2 && strcmpi(mod_type,'prepost_sound')
+        elseif context == 2
             if strcmpi(mod_type,'prepost_sound') || strcmpi(mode,'selectivity')%for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
                 current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
                 current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition,passive_all_trial_info_sounds(current_dataset).sound_only.condition];
