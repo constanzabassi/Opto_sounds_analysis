@@ -48,6 +48,7 @@ mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mo
     wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles, mod_params.simple_or_not, mod_params.savepath);
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
+mod_params.chosen_mice = [1:25];
 
 %plot % modulated cells per context
 sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
@@ -61,28 +62,34 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
-    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
+    organize_sig_mod_index_contexts_celltypes([1:25], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
 
 %% Make plots of modulation index across contexts/cell types
 % Set y-axis limits for the plots.
-plot_info.y_lims_context_plots = [-1, 1];
+plot_info.y_lims = [-.4, .4];
 % Set labels for plots.
-plot_info.plot_labels = {'Stim','Ctrl'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.plot_labels = {'Left Sounds','Right Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 params.plot_info = plot_info;
+params.info.chosen_mice = [1:25];
 
 %save directory
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot, sorted_cells, params,save_dir);
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot, all_celltypes, params, save_dir);
 
 
 %% Save Results- save your modulation index data.
 save(fullfile(save_dir, 'mod_index_data.mat'), 'context_mod_all', 'chosen_pyr', 'chosen_mcherry', 'chosen_tdtom', 'celltypes_ids');
 
+%% Now compute selectivity Indices?
+selectivity_params = params.selectivity_sounds; 
+selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity');
 
+[selectivity_index_results, selectivity_sig_mod_boot, selectivity_indexm] = ...
+    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
 
 
 

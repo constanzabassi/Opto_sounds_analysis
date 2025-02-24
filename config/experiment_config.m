@@ -5,6 +5,7 @@ function params  = experiment_config()
     params.frames = get_frame_params();
     params.mod = get_modulation_params();
     params.mod_sounds = get_modulation_params_sounds()
+    params.selectivity_sounds = get_selectivity_params_sounds()
 end
 
 function info = get_info_params()
@@ -36,13 +37,23 @@ function mod = get_modulation_params()
     mod.response_range = {63:92; 51:60};
     mod.data_type_dff = 1; %dff or deconv
     mod.nShuffles = 10000; %total shuffles for bootstrapping
-    mod.simple_or_not = 1; %if simple takes given trials and uses those to compute (no balancing or separating into left and right)
+    mod.simple_or_not = 0; %if simple takes given trials and uses those to compute (no balancing or separating into left and right)
 end
 
 function mod = get_modulation_params_sounds()
     % Modulation analysis parameters
     mod.mod_type = 'prepost_sound'; % 'prepost', 'ctrl', 'influence', 'prepost_sound'
     mod.mode = 'separate'; %'pooled', 'separate', 'simple'
+    mod.response_range = {63:92; 51:60};
+    mod.data_type_dff = 1; %dff or deconv
+    mod.nShuffles = 10000; %total shuffles for bootstrapping
+    mod.simple_or_not = 0; %if simple takes given trials and uses those to compute (no balancing or separating into left and right)
+end
+
+function mod = get_selectivity_params_sounds()
+    % Modulation analysis parameters
+    mod.mod_type = 'ctrl'; % 'prepost', 'ctrl', 'influence', 'prepost_sound'
+    mod.mode = 'selectivity'; %'pooled', 'separate', 'simple'
     mod.response_range = {63:92; 51:60};
     mod.data_type_dff = 1; %dff or deconv
     mod.nShuffles = 10000; %total shuffles for bootstrapping
