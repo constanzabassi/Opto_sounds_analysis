@@ -123,7 +123,7 @@ set(gcf,'units','points','position',[10,100,(500/length(celltypes_ids)*length(pl
 % for ce = 1:length(celltypes_ids)
 %     [KW.p_val(ce),KW.tbl{ce}, KW.stats_cell{ce}] = kruskalwallis([stim_mod(celltypes_ids{1,ce},:)],[1:length(plot_info.behavioral_contexts)],'off');
 % end
-[KW.p_val_acrosscontexts,KW.tbl, KW.stats_cell] = kruskalwallis(stim_mod,[1:3],'off');
+[KW.p_val_acrosscontexts,KW.tbl, KW.stats_cell] = kruskalwallis(stim_mod,[1:size(stim_mod,2)],'off');
 end
 mod_stats.tests = possible_tests;
 mod_stats.p_test = 'paired permutation - PermutationTest_updatedcb';

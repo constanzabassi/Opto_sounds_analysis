@@ -74,7 +74,7 @@ for current_dataset = chosen_mice
     % Here we assume there are 3 contexts (e.g., active, passive, spontaneous).
     % We'll store them as columns in a matrix.
     current_dataset_mod_index = [];
-    for context = 1:3
+    for context = 1:size(mod_index,2)
         % Each mod_index{m,context} is assumed to be a column vector.
         % We concatenate them as separate columns.
         current_dataset_mod_index(:, context) = mod_index{current_dataset, context}(mod_cells);
