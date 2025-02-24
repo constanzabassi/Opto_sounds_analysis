@@ -4,7 +4,7 @@ function [cv_mod_index, cv_mod_index_separate, bootstrapResults] = calc_mod_inde
 
 % Constants
 VALID_MOD_TYPES = {'ctrl', 'influence', 'prepost', 'prepost_sound'};
-VALID_MODES = {'pooled', 'separate', 'simple'};
+VALID_MODES = {'pooled', 'separate', 'simple', 'selectivity'};
 DEFAULT_REPEATS = 10;
 DEFAULT_SHUFFLES = 0;
 
