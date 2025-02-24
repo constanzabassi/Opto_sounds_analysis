@@ -12,7 +12,7 @@ function info = get_info_params()
     % Dataset and path information
     info.mouse_date = {'HA11-1R/2023-05-05'	'HA11-1R/2023-04-13'	'HA2-1L/2023-04-12'	'HA2-1L/2023-05-05'	'HA1-00/2023-06-29'	'HA1-00/2023-08-28'	'HE4-1L1R/2023-08-21'	'HE4-1L1R/2023-08-24'	'HA10-1L\2023-04-10'	'HA10-1L\2023-04-17'	'HA10-1L\2023-04-12'	'HA11-1R\2023-04-07'	'HA11-1R\2023-05-01'	'HA11-1R\2023-05-02'	'HA2-1L\2023-04-28'	'HA2-1L\2023-05-01'	'HA1-00\2023-06-27'	'HA1-00\2023-07-07'	'HA1-00\2023-08-25'	'HE4-1L1R\2023-08-14'	'HE4-1L1R\2023-08-28'	'HE4-1L1R\2023-09-04'	'HE4-1L1R\2023-09-11'	'HA10-1L\2023-03-31' 'HE1-00\2023-05-30'};
     info.serverid = {'V:'	'V:'	'V:'	'V:'	'V:'	'W:'	'W:'	'W:'	'V:'	'V:'	'V:'	'V:'	'V:'	'V:'	'V:'	'V:'	'V:'	'W:'	'W:'	'W:'	'W:'	'W:'	'W:'	'V:'    'V:'};
-    info.path_string = 'context_stim/60';
+    info.path_string = 'context_stim/updated'; %used get_vaid_stim_onsets_trials to get trials with imaging structure info (from context_stim/60)
     info.savepath = 'V:/Connie/results/opto_sound_2025/context';
     info.savepath_sounds = 'V:/Connie/results/opto_sound_2025/context/sounds';
     mkdir(info.savepath);
