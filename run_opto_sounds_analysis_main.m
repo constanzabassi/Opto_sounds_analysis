@@ -73,9 +73,14 @@ save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepat
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot, all_celltypes, params,save_dir);
 
+% %scatter plot of modulated cells
+% [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
+% modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{mod_indexm{:,1}}',{mod_indexm{:,2}}'], plot_info, [], 'Active Mod', 'Passive Mod')
 
 %% Save Results- save your modulation index data.
 save(fullfile(save_dir, 'mod_index_data.mat'), 'context_mod_all', 'chosen_pyr', 'chosen_mcherry', 'chosen_tdtom', 'celltypes_ids');
+save(fullfile(save_dir, 'mod_index_stats.mat'), 'mod_index_stats');
+
 
 
 
