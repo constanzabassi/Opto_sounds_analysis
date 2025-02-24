@@ -1,0 +1,35 @@
+% Setup analysis parameters
+%includes all datasets being analyzed, frame parameters, mod index
+%parameters
+params = experiment_config();
+
+%% Pool activity across mice
+[all_celltypes, dff_st, deconv_st, stim_info, ...
+ mouse_context_tr, deconv_st_interp, alignment_frames] = ...
+    pool_activity(params.info.mouse_date, params.info.serverid, params.info.path_string, true, [60,60]);
+
+% Save basic information
+% Save variables with consistent paths
+filename = fullfile(params.info.savepath, 'data_info');
+save(fullfile(filename, 'info.mat'), 'params');
+save(fullfile(filename, 'alignment_frames.mat'), 'alignment_frames');
+save(fullfile(filename, 'mouse_context_tr.mat'), 'mouse_context_tr');
+save(fullfile(filename, 'stim_info.mat'), 'stim_info');
+
+% Process cell types
+[num_cells, sorted_cells] = organize_pooled_celltypes(dff_st, all_celltypes); %gives index relative to all datasets
+save(fullfile(filename, 'sorted_cells.mat'), 'sorted_cells');
+
+% Separate contexts
+%organized context.dff{context,mouse};
+[context.dff,stim_trials_context,ctrl_trials_context] = separate_structure_2context(dff_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
+[context.deconv] = separate_structure_2context(deconv_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
+[context.deconv_interp] = separate_structure_2context(deconv_st_interp,mouse_context_tr,stim_info);%  context.dff{context,mouse}
+
+%% Generate heatmaps
+generate_heatmaps(context, sorted_cells, info);
+
+%% Calculate modulation indices
+mod_params = get_modulation_parameters();
+[mod_index_results, sig_mod_boot, mod_indexm] = ...
+    wrapper_mod_index_calculation(info, deconv_st_interp, mod_params);
