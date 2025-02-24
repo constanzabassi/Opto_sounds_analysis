@@ -41,6 +41,7 @@ mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type,
     wrapper_mod_index_calculation(params.info, dff_st, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles, mod_params.simple_or_not, mod_params.savepath);
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
+mod_params.chosen_mice = [1:24];
 
 %plot % modulated cells per context
 sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
@@ -58,7 +59,8 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 
 %% Make plots of modulation index across contexts/cell types
 % Set y-axis limits for the plots.
-plot_info.y_lims_context_plots = [-1, 1];
+plot_info.y_lims = [-.4, .4];
+params.info.chosen_mice = mod_params.chosen_mice;
 % Set labels for plots.
 plot_info.plot_labels = {'Stim','Ctrl'}; % Alternative could be {'Left Sounds','Right Sounds'}
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
@@ -69,7 +71,7 @@ params.plot_info = plot_info;
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot, sorted_cells, params,save_dir);
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot, all_celltypes, params,save_dir);
 
 
 %% Save Results- save your modulation index data.
