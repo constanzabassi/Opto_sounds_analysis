@@ -55,7 +55,8 @@ cv_mod_index_separate = [];
 
 % Bootstrap if requested
 if nShuffles > 0
-    bootstrapResults = bootstrap_mod_index_cv(pooled_stim_data, pooled_ctrl_data, response_range, nShuffles, mod_type);
+    pVals = bootstrap_mod_index_cv(pooled_stim_data, pooled_ctrl_data, response_range, nShuffles, mod_type);
+    bootstrapResults.pVals = pVals;
 else
     bootstrapResults = [];
 end
