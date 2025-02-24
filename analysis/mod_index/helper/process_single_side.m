@@ -11,7 +11,7 @@ rng(123);
     
     % Cross-validation repeats
     for reps = 1:nRepeats
-        reps
+%         reps
         % Get trial indices
         [stim_trials_side, ctrl_trials_side] = get_side_trials(specified_lr, ...
             stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, side);

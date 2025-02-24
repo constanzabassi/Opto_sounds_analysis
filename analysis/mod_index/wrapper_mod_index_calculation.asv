@@ -40,7 +40,7 @@ function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(inf
 
 % Load trial information (adjust paths as needed) -virmen trial info left turns/sound condition/is stim
 load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
-passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat').all_trial_info_sounds;
+load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat');
 % load('V:\Connie\results\opto_2024\context\data_info\all_trial_info_passive.mat');
 % load('V:\Connie\results\opto_2024\context\data_info\all_trial_info.mat');
 
@@ -49,35 +49,22 @@ nRepeats = 10;
 
 % Preallocate the results structure.
 results = struct();
-
-% Total contexts - 3 for photostim (active (1),passive(2),spont(3)// 2 for
-% sounds(active (1),passive(2))
-nContexts = 3;
-if strcmpi(mod_type,'prepost_sound')
-    nContexts = 2;
-end
 % Loop through datasets.
 for current_dataset = 1:length(info.mouse_date)
     fprintf('Processing dataset %d/%d...\n', current_dataset, length(info.mouse_date));
-    for context = 1:nContexts  % Assuming context 1: active, context 2: passive, context 3: spontaneous.
-        fprintf('Current context %d...\n', context);
+    for context = 1:3  % Assuming context 1: active, context 2: passive, context 3: spontaneous.
         % Get condition labels from trial info 
         if context == 1
             if strcmpi(mod_type,'prepost_sound') %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
-                current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
-                current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition,all_trial_info_sounds(current_dataset).sound_only.condition];
+                current_conditions = [all_trial_info_sound(current_dataset).opto.condition];
+                current_conditions_ctrl = [all_trial_info_sound(current_dataset).ctrl.condition;all_trial_info_sound(current_dataset).sound_only.condition];
             else
-                current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
-                current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition];
+                current_conditions = [all_trial_info_sound(current_dataset).opto.condition];
+                current_conditions_ctrl = [all_trial_info_sound(current_dataset).ctrl.condition];
             end
         elseif context == 2 && strcmpi(mod_type,'prepost_sound')
-            if strcmpi(mod_type,'prepost_sound') %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
-                current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
-                current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition,passive_all_trial_info_sounds(current_dataset).sound_only.condition];
-            else
-                current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
-                current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition];
-            end
+            current_conditions = [all_trial_info_sound_passive(current_dataset).opto.condition];
+            current_conditions_ctrl = [all_trial_info_sound_passive(current_dataset).ctrl.condition];
         else %spont has no conditions
             current_conditions = [];
             current_conditions_ctrl = [];
