@@ -32,6 +32,16 @@ function [sound_trials_stim, sound_trials_ctrl, ...
 %          find_sound_trials_single(stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl);
     %% Find left/right trials for stimulation.
     if ~isempty(current_conditions)
+        %validate lengths to make sure we can use this trial info
+        %structure!
+        if length(stim_trials) ~= length(current_conditions) 
+            error('Length mismatch: stim_trials and current_conditions must have the same length.');
+        end
+        if length(ctrl_trials) ~= length(current_conditions_ctrl)
+            error('Length mismatch: ctrl_trials and current_conditions_ctrl must have the same length.');
+        end
+
+        % Find left/right trials for opto.
         sound_left_trials = stim_trials(current_conditions == 1);
         sound_right_trials = stim_trials(current_conditions == 2);
         % Find left/right trials for control.
