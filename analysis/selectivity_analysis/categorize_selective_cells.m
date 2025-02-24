@@ -12,6 +12,7 @@ function pools = categorize_selective_cells(selectivity_active, selectivity_pass
     %   pools - Structure with fields:
     %           .active.{left, right, nonsel}  - Cell indices for active context
     %           .passive.{left, right, nonsel} - Cell indices for passive context
+    %           .both.{left, right, nonsel}    - Cell indices selective in both contexts
     
     % Initialize output structure
     pools = struct();
@@ -23,4 +24,36 @@ function pools = categorize_selective_cells(selectivity_active, selectivity_pass
     % Categorize cells in passive context
     [pools.passive.left, pools.passive.right, pools.passive.nonsel] = ...
         categorize_selectivity_context(selectivity_passive, threshold, sig_cells);
+    
+    % Find cells selective in both contexts
+    pools.both.left = union(pools.active.left, pools.passive.left);
+    pools.both.right = union(pools.active.right, pools.passive.right);
+    
+    % Find consistently non-selective cells
+    pools.both.nonsel = union(pools.active.nonsel, pools.passive.nonsel);
+    
+%     % Add metadata about selectivity consistency
+%     pools.stats.consistency = compute_selectivity_consistency(pools);
 end
+% 
+% function consistency = compute_selectivity_consistency(pools)
+%     % Compute statistics about selectivity consistency across contexts
+%     consistency = struct();
+%     
+%     % Calculate total cells in each category
+%     consistency.total_cells = length([pools.active.left; pools.active.right; pools.active.nonsel]);
+%     
+%     % Calculate numbers of consistent cells
+%     consistency.consistent_left = length(pools.both.left);
+%     consistency.consistent_right = length(pools.both.right);
+%     consistency.consistent_nonsel = length(pools.both.nonsel);
+%     
+%     % Calculate percentages
+%     consistency.percent_consistent_left = 100 * length(pools.both.left) / length(pools.active.left);
+%     consistency.percent_consistent_right = 100 * length(pools.both.right) / length(pools.active.right);
+%     consistency.percent_consistent_nonsel = 100 * length(pools.both.nonsel) / length(pools.active.nonsel);
+%     
+%     % Calculate overall consistency
+%     total_consistent = length(pools.both.left) + length(pools.both.right) + length(pools.both.nonsel);
+%     consistency.overall_consistency = 100 * total_consistent / consistency.total_cells;
+% end
