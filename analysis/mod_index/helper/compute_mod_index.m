@@ -3,6 +3,8 @@ function mod_index = compute_mod_index(avg1, avg2, mod_type)
     switch mod_type
         case 'ctrl'
             mod_index = compute_mod_index_ctrl(avg1, avg2);
+         case 'prepost_ctrl'
+            mod_index = compute_mod_index_ctrl(avg1, avg2);
         case 'influence'
             mod_index = compute_mod_index_influence(avg1, avg2);
         case 'prepost'

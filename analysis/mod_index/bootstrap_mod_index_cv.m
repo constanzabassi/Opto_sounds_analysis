@@ -44,13 +44,17 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             group1 = mean(data_subset2(:, :, response_range{1}), 3);
             group2 = mean(data_subset2(:, :, response_range{2}), 3);
         end
+    elseif strcmp(mod_type, 'prepost_ctrl')
+            group1 = mean(data_subset1(:, :, response_range{1}), 3) - mean(data_subset1(:, :, response_range{2}), 3);
+            group2 = mean(data_subset2(:, :, response_range{2}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
+
     else
         % For 'ctrl' and 'influence', use the first response_range:
         group1 = mean(data_subset1(:, :, response_range{1}), 3);  % from stim_data_subset
         group2 = mean(data_subset2(:, :, response_range{1}), 3);  % from ctrl_data_subset
     end
     %%% Step 2: Compute the Observed Modulation Index %%%
-    if strcmp(mod_type, 'ctrl')
+    if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl')
         observed_mod = compute_mod_index_ctrl(group1, group2);
     elseif strcmp(mod_type, 'influence')
         observed_mod = compute_mod_index_influence(group1, group2);
@@ -71,7 +75,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         permIdx = randperm(nTotal);
         simGroup1 = combined(permIdx(1:nTrials_group1), :);
         simGroup2 = combined(permIdx(nTrials_group1+1:end), :);
-        if strcmp(mod_type, 'ctrl')
+        if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl')
             bootMod(shuff, :) = compute_mod_index_ctrl(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'influence')
             bootMod(shuff, :) = compute_mod_index_influence(simGroup1, simGroup2);
