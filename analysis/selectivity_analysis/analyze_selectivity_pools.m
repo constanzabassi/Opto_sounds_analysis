@@ -21,9 +21,18 @@ function [selectivity_results_by_dataset,selectivity_results_all] = analyze_sele
             selectivity_passive, selectivity_threshold, ...
             combined_sig_cells{1,dataset_index});
         
-        % Analyze modulation indices for each pool
-        selectivity_results_by_dataset{dataset_index} = analyze_mod_by_selectivity_pool(...
-            mod_index_results(dataset_index), pools{dataset_index});
+%         % Analyze modulation indices for each pool
+%         selectivity_results_by_dataset{dataset_index} = analyze_mod_by_selectivity_pool(...
+%             mod_index_results(dataset_index), pools{dataset_index});
+
+    % Get modulation data for both contexts
+            active_mod = mod_index_results(dataset_index).context(1).cv_mod_index_separate;
+            passive_mod = mod_index_results(dataset_index).context(2).cv_mod_index_separate;
+        
+        % Store results for each pool including both contexts' modulation
+        selectivity_results_by_dataset{dataset_index} = store_pool_results(...
+            pools{dataset_index}, active_mod, passive_mod);
+
     end
     
     %get total cells per context (for global indexing)
