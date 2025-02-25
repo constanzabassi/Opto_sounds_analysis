@@ -92,6 +92,16 @@ selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity
     wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
 
 
+[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
+modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, [], 'Active Selectivity', 'Passive Selectivity')
+[p_val_mod] = histogram_diff_index_sig_cells(combined_sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, [], 'Abs(active) - Abs(passive')
 
+%% Analyze modulation indices by selectivity pools
+[selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexm, ...
+    mod_indexm,mod_index_results, sig_mod_boot_thr, all_celltypes, params);
 
+% Save selectivity results
+save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
 
+% Plot modulation indices for each pool
+plot_selectivity_comparison(selectivity_results, selectivity_params.savepath)
