@@ -37,8 +37,16 @@ params.plot_info = plot_info;
 [context_data.deconv,~,~] = organize_2context(sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
 [~,deconv_st_combined] = combine_stim_info_dff_st(sound_context_data.active, sound_context_data.passive, sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
 
-%% Generate heatmaps
-generate_heatmaps(context_data, sorted_cells, info);
+%% Get average responses
+% Setup parameters
+avg_params = struct(...
+    'response_window', 1:122, ...
+    'trial_type', 'sounds', ...
+    'mode', 'separate');
+
+% Get averages
+[avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined, avg_params, []);
+% generate_heatmaps(context_data, sorted_cells, info);
 
 %% Calculate modulation indices
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?
@@ -93,8 +101,8 @@ selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity
 
 
 [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
-modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, [], 'Active Selectivity', 'Passive Selectivity')
-[p_val_mod] = histogram_diff_index_sig_cells(combined_sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, [], 'Abs(active) - Abs(passive')
+modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, selectivity_params.savepath, 'Active Selectivity', 'Passive Selectivity')
+[p_val_mod] = histogram_diff_index_sig_cells(combined_sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, selectivity_params.savepath, 'Abs(active) - Abs(passive')
 
 %% Analyze modulation indices by selectivity pools
 [selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexm, ...
@@ -104,4 +112,6 @@ modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivi
 save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
 
 % Plot modulation indices for each pool
-plot_selectivity_comparison(selectivity_results, selectivity_params.savepath)
+plot_selectivity_comparison(selectivity_results, selectivity_params.savepath); %heatmap
+plot_selectivity_consistency(selectivity_results, selectivity_params.savepath); %scatter of mod separated by selectivity
+plot_side_preference(selectivity_results, params); %plots counts of preferred side
