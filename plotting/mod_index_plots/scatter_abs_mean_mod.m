@@ -59,7 +59,7 @@ xticks(x_lines(1)+1:x_lines(end)-1)
 xticklabels([plot_info.behavioral_contexts])
 ylabel({'Absolute Modulation'}, {'Index'})
 set(gcf,'units','points','position',[10,100,600,250])
-set_current_fig;
+utils.set_current_fig;
 
 for ce = 1:length(celltypes_ids)
     [KW.p_val(ce),KW.tbl{ce}, KW.stats_cell{ce}] = kruskalwallis([stim_mod(celltypes_ids{1,ce},:)],[1:3],'off');

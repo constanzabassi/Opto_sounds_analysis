@@ -29,7 +29,7 @@ axis square
 box off
 set(gcf,'position',[100,100,300,300])
 movegui(gcf, 'center')
-set_current_fig;
+utils.set_current_fig;
 
 if ~isempty(save_dir)
     mkdir(save_dir)
