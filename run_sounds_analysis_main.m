@@ -45,7 +45,7 @@ avg_params = struct(...
     'mode', 'separate');
 
 % Get averages
-[avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined, avg_params, []);
+[avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined,stim_trials_context,ctrl_trials_context, avg_params, []);
 % generate_heatmaps(context_data, sorted_cells, info);
 
 %% Calculate modulation indices
@@ -105,6 +105,9 @@ modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivi
 [p_val_mod] = histogram_diff_index_sig_cells(combined_sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, selectivity_params.savepath, 'Abs(active) - Abs(passive')
 
 %% Analyze modulation indices by selectivity pools
+mod_params.mod_threshold = .1;% 0 is no threshold applied
+sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
+
 [selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexm, ...
     mod_indexm,mod_index_results, sig_mod_boot_thr, all_celltypes, params);
 
@@ -115,3 +118,4 @@ save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectiv
 plot_selectivity_comparison(selectivity_results, selectivity_params.savepath); %heatmap
 plot_selectivity_consistency(selectivity_results, selectivity_params.savepath); %scatter of mod separated by selectivity
 plot_side_preference(selectivity_results, params); %plots counts of preferred side
+scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results); %scatter plot of modulation index separated by sides and selectivity
