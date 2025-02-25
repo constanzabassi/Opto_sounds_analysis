@@ -17,7 +17,7 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
     %   modl_fit      - Cell array containing fitted linear models for each cell type.
 
     % Define plot limits
-    minmax = [-0.5, 0.5];
+    minmax = [-1, 1];
 
     % Create figure and plot identity line
     figure(2324); clf;
@@ -44,7 +44,7 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
                     'MarkerEdgeAlpha', 1, 'LineWidth', 1.5);
 
                 % Store data points for regression
-                all_indices = [all_indices; index{dataset_index,1}(selected_cells), index{dataset_index,2}(selected_cells)];
+                all_indices = [all_indices; index{dataset_index,1}(selected_cells)', index{dataset_index,2}(selected_cells)'];
             end
 
             % Fit a linear model and store results

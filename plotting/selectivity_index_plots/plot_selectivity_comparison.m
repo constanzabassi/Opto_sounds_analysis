@@ -48,6 +48,7 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
                 text(0.5, -0.1, sprintf('p = %.3f', p), ...
                     'Units', 'normalized', 'HorizontalAlignment', 'center');
             end
+
         end
         
         % Add overall title
@@ -57,6 +58,7 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
         
         % Save figure if path provided
         if ~isempty(savepath)
+            mkdir(savepath)
             saveas(fig, fullfile(savepath, ...
                 sprintf('modulation_comparison_%s_selective.png', pool)));
             saveas(fig, fullfile(savepath, ...
