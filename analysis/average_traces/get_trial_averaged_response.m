@@ -1,4 +1,4 @@
-function [avg_response_stim,avg_response_ctrl] = get_trial_averaged_response(neural_data_stim, neural_data_ctrl, trial_info,trial_info_ctrl, params)
+function [avg_response_stim,avg_response_ctrl] = get_trial_averaged_response(neural_data_stim, neural_data_ctrl,stim_trials,ctrl_trials, trial_info,trial_info_ctrl, params)
     % Get trial-averaged neural responses for specific conditions
     % 
     % Inputs:
@@ -15,25 +15,26 @@ function [avg_response_stim,avg_response_ctrl] = get_trial_averaged_response(neu
     avg_response_stim = struct();
     avg_response_ctrl = struct();
 
+    %get current context trials
+    valid_trials_stim = stim_trials;
+    valid_trials_ctrl = ctrl_trials;
     
     % Get relevant data and trials based on trial type
     
     if strcmpi(params.mode, 'pooled')
         % Pool all trials together
         %STIM
-        valid_trials = size(neural_data_stim,1);
-        avg_response_stim = compute_neuron_averages(neural_data_stim, 1:valid_trials, ...
+        avg_response_stim = compute_neuron_averages(neural_data_stim, valid_trials_stim, ...
              params.response_window);
 
         %CTRL
-        valid_trials = size(neural_data_ctrl,1);
-        avg_response_ctrl = compute_neuron_averages(neural_data_ctrl, 1:valid_trials, ...
+        avg_response_ctrl = compute_neuron_averages(neural_data_ctrl, valid_trials_ctrl, ...
              params.response_window);
     else
         %START WITH STIM
         % Separate left and right trials
-        left_trials = find(trial_info == 1);
-        right_trials = find(trial_info == 2);
+        left_trials = valid_trials_stim(find(trial_info == 1));
+        right_trials = valid_trials_stim(find(trial_info == 2));
         
         % Compute averages for each condition
         avg_response_stim.left = compute_neuron_averages(neural_data_stim, left_trials, ...
@@ -48,8 +49,8 @@ function [avg_response_stim,avg_response_ctrl] = get_trial_averaged_response(neu
 
         %DO THE SAME FOR CONTROL!
         % Separate left and right trials
-        left_trials = find(trial_info_ctrl == 1);
-        right_trials = find(trial_info_ctrl == 2);
+        left_trials = valid_trials_ctrl(find(trial_info_ctrl == 1));
+        right_trials = valid_trials_ctrl(find(trial_info_ctrl == 2));
 
         avg_response_ctrl.left = compute_neuron_averages(neural_data_ctrl, left_trials, ...
              params.response_window);

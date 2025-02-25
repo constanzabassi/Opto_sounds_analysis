@@ -1,4 +1,4 @@
-function [avg_results, avg_results_by_dataset , avg_results_ctrl,  avg_results_by_dataset_ctrl] = wrapper_trial_averaging(info, neural_structure, params, savepath)
+function [avg_results, avg_results_by_dataset , avg_results_ctrl,  avg_results_by_dataset_ctrl] = wrapper_trial_averaging(info, neural_structure,stim_trials_context,ctrl_trials_context, params, savepath)
 % Wrapper function to compute trial-averaged responses across datasets and contexts
 %
 % Inputs:
@@ -65,12 +65,12 @@ for current_dataset = 1:nDatasets
         ctrl_data = neural_structure{1,current_dataset}.ctrl;  % [trials x neurons x frames]
 
 %         % Get trial indices for the current context.
-%         stim_trials = stim_trials_context{1, current_dataset}{1, context};
-%         ctrl_trials = ctrl_trials_context{1, current_dataset}{1, context};
+        stim_trials = stim_trials_context{1, current_dataset}{1, context};
+        ctrl_trials = ctrl_trials_context{1, current_dataset}{1, context};
         
         % Compute trial averages
         [avg_results_by_dataset{current_dataset, context},avg_results_by_dataset_ctrl{current_dataset, context}] = get_trial_averaged_response(...
-            stim_data,ctrl_data, current_conditions, current_conditions_ctrl, params);
+            stim_data,ctrl_data,stim_trials,ctrl_trials, current_conditions, current_conditions_ctrl, params);
         
     end
 end
