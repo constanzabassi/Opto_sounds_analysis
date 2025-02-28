@@ -14,6 +14,8 @@ function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results
     right_color = [.39,.56,1];%light blue %colors for right sound trials
     left_color = [.86,.15,.49]
     
+    threshold = 0.1;
+
     % Loop through contexts
     for ctx = 1:2
         subplot(1, 2, ctx);
@@ -30,9 +32,9 @@ function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results
             right_mod = mod_data.right;
             
             % Categorize by selectivity
-            left_selective = sel_idx > 0.1;
-            right_selective = sel_idx < -0.1;
-            nonsel = abs(sel_idx) <= 0.1;
+            left_selective = sel_idx >threshold;
+            right_selective = sel_idx < threshold*-1;
+            nonsel = abs(sel_idx) <= threshold;
             
             % Plot each selectivity group (without DisplayName to avoid multiple legend entries)
             %non selective

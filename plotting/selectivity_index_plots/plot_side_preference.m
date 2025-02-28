@@ -25,7 +25,7 @@ function plot_side_preference(selectivity_results_all, params)
         ylabel('Active Preferred');
         set(gca, 'XTick', 1:2, 'XTickLabel', sides);
         set(gca, 'YTick', 1:2, 'YTickLabel', sides);
-        caxis([50,300])
+        caxis([1,150])
         utils.set_current_fig;
         colorList= (colormaps.slanCM('plasma',100));
         colormap(colorList) % redblue

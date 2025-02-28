@@ -27,7 +27,13 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
             heatmap_data = [active_data, passive_data];
             
             % Sort based on average response
-            if d_idx == 1
+            if p_idx == 1
+                sorting_ids = sort_avg_context_index(heatmap_data);
+            elseif p_idx == 2
+                active_data = selectivity_results_all.both.right.(['active_right_mod']);
+                passive_data = selectivity_results_all.both.right.(['passive_right_mod']);
+                sorting_ids = sort_avg_context_index([active_data, passive_data]);
+            else
                 sorting_ids = sort_avg_context_index(heatmap_data);
             end
             
