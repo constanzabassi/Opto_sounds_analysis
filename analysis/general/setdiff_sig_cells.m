@@ -1,8 +1,9 @@
 function [output,output_relative] = setdiff_sig_cells(sig_mod_boot_thr,sig_mod_boot_thr2, mod_indexm,varargin)
 output = {};
 output_relative = [];
-numcells = cumsum(cellfun(@(x) length(x), mod_indexm));
-numcells = [0,numcells];
+length_datasets = length(sig_mod_boot_thr);
+numcells = cumsum(cellfun(@(x) length(x), mod_indexm(1:length_datasets)));
+numcells = [0, numcells];
 if nargin < 4
     for m = 1:length(sig_mod_boot_thr)
         output{m} = setdiff(sig_mod_boot_thr{1,m},sig_mod_boot_thr2{1,m});
