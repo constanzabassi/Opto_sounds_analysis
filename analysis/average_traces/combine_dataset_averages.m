@@ -9,7 +9,14 @@ function combined_results = combine_dataset_averages(results_by_dataset,params)
         combined_results{1,context} = struct();
         
         if strcmpi(params.mode, 'separate')
-            conditions = {'left', 'right'};
+            if context == 3
+            % Spontaneous context uses stim/ctrl conditions
+                conditions = {'stim', 'ctrl'};
+            else
+                % Active/Passive contexts use left/right conditions
+                conditions = {'left', 'right'};
+            end
+            
             for cond = 1:length(conditions)
                 cond_label = conditions{cond};
                 % Initialize arrays

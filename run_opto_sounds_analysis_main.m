@@ -30,8 +30,16 @@ save(fullfile(filename, 'sorted_cells.mat'), 'sorted_cells');
 [context_data.deconv] = separate_structure_2context(deconv_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv_interp] = separate_structure_2context(deconv_st_interp,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 
-%% Generate heatmaps
-generate_heatmaps(context_data, sorted_cells, info);
+%% Get average responses
+% Setup parameters
+avg_params = struct(...
+    'response_window', 1:122, ...
+    'trial_type', 'stim', ...
+    'mode', 'separate');
+
+% Get averages
+[avg_results_stim ,avg_results_by_dataset_stim,avg_results_ctrl, avg_results_by_dataset_ctrl] = wrapper_trial_averaging(params.info, dff_st,stim_trials_context,ctrl_trials_context, avg_params, []);
+% generate_heatmaps(context_data, sorted_cells, info);
 
 %% Calculate modulation indices
 mod_params = params.mod;
