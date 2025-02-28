@@ -1,4 +1,4 @@
-function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(info, neural_structure, response_range, mod_type, mode, stim_trials_context, ctrl_trials_context,nShuffles, simple_or_not, savepath)
+function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(info, neural_structure, response_range, mod_type, mode, stim_trials_context, ctrl_trials_context,nShuffles,  savepath)
 % wrapper_mod_index_calculation serves as a wrapper to loop across datasets/contexts,
 % compute modulation indices and bootstrapped significance (with balancing done inside each CV repeat),
 % and save the results.
@@ -102,11 +102,31 @@ for current_dataset = 1:length(info.mouse_date)
                 stim_data, ctrl_data, stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
         else
-            stim_data = stim_data(stim_trials,:,:);% trials x neurons x frames using trials for current context
-             ctrl_data = ctrl_data(ctrl_trials,:,:);% trials x neurons x frames using trials for current context
-            [cv_mod_index, cv_mod_index_separate, bootstrapResults] = calc_mod_index_cv(...
-                stim_data, ctrl_data, stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, ...
+            [~, ~, ~, ~, ~, ~, left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = ...
+                find_sound_trials_single(stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl);
+            stim_data_left = stim_data(left_stim_all,:,:);% trials x neurons x frames using trials for current context
+            ctrl_data_left = ctrl_data(left_ctrl_all,:,:);% trials x neurons x frames using trials for current context
+    
+            stim_data_right = stim_data(right_stim_all,:,:);% trials x neurons x frames using trials for current context
+            ctrl_data_right = ctrl_data(right_ctrl_all,:,:);% trials x neurons x frames using trials for current context
+
+
+%         %use below if wanting to use all trials
+%             stim_data = stim_data(stim_trials,:,:);% trials x neurons x frames using trials for current context
+%              ctrl_data = ctrl_data(ctrl_trials,:,:);% trials x neurons x frames using trials for current context
+            [cv_mod_left, ~, bootstrapResults_left] = calc_mod_index_cv(...
+                stim_data_left, ctrl_data_left, stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
+
+            [cv_mod_right, ~, bootstrapResults_right] = calc_mod_index_cv(...
+                stim_data_right, ctrl_data_right, stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, ...
+                response_range, mod_type, mode, nRepeats, nShuffles);
+
+            nNeurons = size(stim_data,2);
+            % Select max side and prepare output;
+                [cv_mod_index, cv_mod_index_separate,side] = select_max_side(...
+                    cv_mod_left, cv_mod_right, nNeurons);
+            bootstrapResults = handle_separate_BootstrapResults(bootstrapResults_left.pVals,bootstrapResults_right.pVals,side,nNeurons);
         end
 
         % Save outputs for this dataset and context.
