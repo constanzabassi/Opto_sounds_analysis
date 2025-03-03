@@ -81,8 +81,8 @@ avg_results_ctrl = combine_dataset_averages(avg_results_by_dataset_ctrl,params);
 
 
 % Save results
-if isfield(params, 'savepath') && ~isempty(params.savepath)
-    outdir = params.savepath;
+if ~isempty(savepath)
+    outdir =savepath;
     if ~exist(outdir, 'dir')
         mkdir(outdir);
     end

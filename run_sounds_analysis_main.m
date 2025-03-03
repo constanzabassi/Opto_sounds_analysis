@@ -7,10 +7,10 @@ plot_info = plotting_config(); %plotting params
 params.plot_info = plot_info;
 
 %% Compile sound and opto trials onsets and find virmen information from imaging structure for those trials
-%get sound info (a bit slow so I saved inside:
-%'V:/Connie/results/opto_sound_2025/context' loaded in pooled_activity_sounds
+% %get sound info (a bit slow so I saved inside:
+% %'V:/Connie/results/opto_sound_2025/context' loaded in pooled_activity_sounds
 
-[sound_onsets_all, alignment_frames_all, control_output_all, opto_output_all,sound_only_all, loc_trial, all_trial_info_sounds] = compile_trial_data_stim_sound(params.info,{'active','passive'},params.info.savepath);
+% [sound_onsets_all, alignment_frames_all, control_output_all, opto_output_all,sound_only_all, loc_trial, all_trial_info_sounds] = compile_trial_data_stim_sound(params.info,{'active','passive'},params.info.savepath);
 %% Pool activity across mice
 % neural data will be sound + ctrl or sound only trials!!!
 [all_celltypes, sound_data, sound_context_data]  = ...
@@ -45,7 +45,7 @@ avg_params = struct(...
     'mode', 'separate');
 
 % Get averages
-[avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined,stim_trials_context,ctrl_trials_context, avg_params, []);
+[avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined,stim_trials_context,ctrl_trials_context, avg_params, [params.info.savepath_sounds '/avg/']);
 % generate_heatmaps(context_data, sorted_cells, info);
 
 %% Calculate modulation indices
@@ -53,7 +53,7 @@ mod_params = params.mod_sounds; %use 'prespose'/'separate'?
 mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode);
 
 [mod_index_results, sig_mod_boot, mod_indexm] = ...
-    wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles, mod_params.simple_or_not, mod_params.savepath);
+    wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles,  mod_params.savepath);
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
@@ -94,7 +94,7 @@ save(fullfile(save_dir, 'mod_index_data.mat'), 'context_mod_all', 'chosen_pyr', 
 
 %% Now compute selectivity Indices?
 selectivity_params = params.selectivity_sounds; 
-selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity');
+selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
 
 [selectivity_index_results, selectivity_sig_mod_boot, selectivity_indexm] = ...
     wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
@@ -106,16 +106,53 @@ modl_fit = scatter_index_sigcells(combined_sig_cells, all_celltypes, [{selectivi
 
 %% Analyze modulation indices by selectivity pools
 mod_params.mod_threshold = .1;% 0 is no threshold applied
-sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
+mod_params.threshold_single_side = 1;% 0 is no threshold applied
+mod_params.chosen_mice = 1:25;
+selectivity_params.savepath = 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
+mkdir(selectivity_params.savepath)
+
+sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, selectivity_params.savepath,0);
 
 [selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexm, ...
     mod_indexm,mod_index_results, sig_mod_boot_thr, all_celltypes, params);
 
 % Save selectivity results
-save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
+% save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
 
 % Plot modulation indices for each pool
 plot_selectivity_comparison(selectivity_results, selectivity_params.savepath); %heatmap
 plot_selectivity_consistency(selectivity_results, selectivity_params.savepath); %scatter of mod separated by selectivity
 plot_side_preference(selectivity_results, params); %plots counts of preferred side
 scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results); %scatter plot of modulation index separated by sides and selectivity
+
+plot_avg_traces_direction_comparison(avg_results_sounds, selectivity_results, selectivity_params);
+
+%%
+selectivity_params = params.selectivity_sounds; 
+selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
+
+[selectivity_index_resultsv2, selectivity_sig_mod_bootv2, selectivity_indexmv2] = ...
+    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
+
+%%
+mod_params.mod_threshold = .1;% 0 is no threshold applied
+mod_params.threshold_single_side = 1;% 0 is no threshold applied
+mod_params.chosen_mice = 1:25;
+selectivity_params.savepath = 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\prepost_ctrl\sound_opto_cells';
+mkdir(selectivity_params.savepath)
+
+sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, selectivity_params.savepath,0);
+
+[selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexmv2, ...
+    mod_indexm,mod_index_results, sig_mod_boot_thr, all_celltypes, params);
+
+% Save selectivity results
+% save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
+
+% Plot modulation indices for each pool
+plot_selectivity_comparison(selectivity_results, selectivity_params.savepath); %heatmap
+plot_selectivity_consistency(selectivity_results, selectivity_params.savepath); %scatter of mod separated by selectivity
+plot_side_preference(selectivity_results, params); %plots counts of preferred side
+scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results); %scatter plot of modulation index separated by sides and selectivity
+
+plot_avg_traces_direction_comparison(avg_results_sounds, selectivity_results, selectivity_params);
