@@ -51,8 +51,8 @@ for dataset_index = 1:length(info.mouse_date)
     base_path = fullfile(num2str(ss), 'Connie', 'ProcessedData', info.mouse_date{dataset_index});
     
     %%% 1) Load Data %%%
-    load(fullfile(base_path, 'context_stim', '60', 'context_tr.mat')); %trials separated by context
-    load(fullfile(base_path, 'context_stim', '60', 'bad_frames.mat'));
+    load(fullfile(base_path, 'context_stim', 'updated', 'context_tr.mat')); %trials separated by context
+    load(fullfile(base_path, 'context_stim', 'updated', 'bad_frames.mat'));
     
     %%% 2) Select Appropriate Frames Variable %%%
     % Depending on context_type, the loaded variable name may differ.
@@ -178,6 +178,13 @@ for dataset_index = 1:length(info.mouse_date)
         alignment_frames(control_output,:) = alignment_based_on_control_opto(1:end-1,:);
     else
         alignment_frames(control_output,:) = alignment_based_on_control_opto;
+    end
+
+    alignment_based_on_opto = [bad_frames(context_tr{context_num,1},1), bad_frames(context_tr{context_num,1},2)];%last number is ctrl (2) and stim (1)
+    if alignment_based_on_opto(end,1) > alignment_frames(end,2) %if the very last sound is smaller than the end of alignment_frames (from bad_frames) do not include- probably not a full trial
+        alignment_frames(opto_output,:) = alignment_based_on_opto(1:end-1,:);
+    else
+        alignment_frames(opto_output,:) = alignment_based_on_opto;
     end
 
     %%% GET ONLY GOOD TRIALS FROM IMAGING SPK (relative to opto (EXP) or
