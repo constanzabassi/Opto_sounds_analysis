@@ -43,19 +43,19 @@ end
 function mod = get_modulation_params_sounds()
     % Modulation analysis parameters
     mod.mod_type = 'prepost_sound'; % 'prepost', 'ctrl', 'influence', 'prepost_sound'
-    mod.mode = 'separate'; %'pooled', 'separate', 'simple'
+    mod.mode = 'separate';%'separate'; %'pooled', 'separate', 'simple'
     mod.response_range = {63:92; 51:60};
     mod.data_type_dff = 1; %dff or deconv
     mod.nShuffles = 10000; %total shuffles for bootstrapping
-    mod.simple_or_not = 0; %if simple takes given trials and uses those to compute (no balancing or separating into left and right)
+    mod.chosen_mice = 1:25;
 end
 
 function mod = get_selectivity_params_sounds()
     % Modulation analysis parameters
-    mod.mod_type = 'ctrl'; % 'prepost', 'ctrl', 'influence', 'prepost_sound'
+    mod.mod_type = 'prepost_ctrl'; % 'prepost', 'ctrl', 'influence', 'prepost_sound' 'prepost_sound'
     mod.mode = 'selectivity'; %'pooled', 'separate', 'simple'
     mod.response_range = {63:92; 51:60};
     mod.data_type_dff = 1; %dff or deconv
     mod.nShuffles = 10000; %total shuffles for bootstrapping
-    mod.simple_or_not = 0; %if simple takes given trials and uses those to compute (no balancing or separating into left and right)
+    mod.chosen_mice = 1:25;
 end
