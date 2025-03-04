@@ -46,7 +46,8 @@ avg_params = struct(...
 
 % Get averages
 [avg_results_sounds_stim ,avg_results_by_dataset_sounds_stim,avg_results_sounds, avg_results_by_dataset_sounds] = wrapper_trial_averaging(params.info, dff_st_combined,stim_trials_context,ctrl_trials_context, avg_params, [params.info.savepath_sounds '/avg/']);
-%generate_neural_heatmaps(dff_st_combined, stim_trials_context, ctrl_trials_context,[1:25], params, 'sound')
+%
+generate_neural_heatmaps(dff_st_combined, stim_trials_context, ctrl_trials_context,[1:25], params, 'sound')
 
 %% Calculate modulation indices
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?

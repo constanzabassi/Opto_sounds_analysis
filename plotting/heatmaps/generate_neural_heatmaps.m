@@ -74,7 +74,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
 
     % Plot each context with specified sorting
     for context = 1:nContexts
-        figure('Position', [100 100 1200 800]);
+        figure('Position', [100 100 800 500]);
         
         % Get data for current context
         curr_data = data_by_context{context};
@@ -108,7 +108,11 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             subplot(2,2,current_condition)
             % Parse condition name into parts
             parts = strsplit(condition_fields{current_condition}, '_');
-            title_str = sprintf('%s Sound - %s', upper(parts{2}), upper(parts{1}));
+            if strcmpi(parts{1},'stim')
+                title_str = sprintf('%s Sound with %s', upper(parts{2}), upper(parts{1}));
+            else
+                title_str = sprintf('%s Sound', (parts{2}));
+            end
 
             plot_single_direction_heatmap(curr_data.(condition_fields{current_condition}), sorted_idx, title_str, params);
             utils.set_current_fig;
@@ -118,12 +122,52 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
         cb = colorbar;
         cb.Position = [0.92 0.1 0.02 0.8];
         cb.Label.String = 'Z-score';
+
+
+    end
+
+            %MAKE PLOTS SEPARATING STIM AND CONTROL
+    % Create separate figures for stim and ctrl
+    condition_types = {'stim', 'ctrl'};
+    for cond = 1:length(condition_types)
+        figure('Position', [100 100 600 500]);%figure('Position', [100 100 800 500]);
+        current_cond = condition_types{cond};
+        
+        % Plot all contexts for left and right
+        for direction = 1:2
+            dir_name = {'Left', 'Right'};
+            for context = 1:nContexts
+                subplot(2, 2, (direction-1)*2 + context)
+                field_name = sprintf('%s_%s', current_cond, lower(dir_name{direction}));
+
+                [sorted_idx, ~] = sort_neurons(data_by_context{context}.(field_name), params)
+                plot_single_direction_heatmap(data_by_context{context}.(field_name), ...
+                    sorted_idx, sprintf('%s - %s Sound', ...
+                    params.context_labels{context}, (dir_name{direction})), params);
+                utils.set_current_fig;
+                set(gca,'FontSize',12);
+
+            end
+        end
+        
+        % Add super title and colorbar
+        sgtitle(sprintf('%s Responses', upper(current_cond)), 'FontWeight', 'normal');
+        cb = colorbar;
+        cb.Position = [0.9 0.3 0.02 0.3];%[0.92 0.1 0.02 0.8]; %left,bottom,idth,height
+        cb.Label.String = 'Z-score';
+        
+        if isfield(params, 'savepath')
+            saveas(gcf, fullfile(params.savepath, ...
+                sprintf('%s_responses_heatmap.png', current_cond)));
+            exportgraphics(gcf,fullfile(params.savepath, ...
+                sprintf('%s_responses_heatmap.pdf', current_cond)), 'ContentType', 'vector');
+        end
+    end
         
         if isfield(params, 'savepath')
             saveas(gcf, fullfile(params.savepath, sprintf('context_%d_heatmap.png', context)));
         end
     end
-end
 % function generate_neural_heatmaps(neural_structure, stim_trials_context, ctrl_trials_context,chosen_mice, params, type)
 %     % Generate heatmaps from neural_structure using z-scored data
 %     %

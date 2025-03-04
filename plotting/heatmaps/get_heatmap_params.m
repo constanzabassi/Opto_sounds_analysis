@@ -7,4 +7,5 @@ function params = get_heatmap_params()
     params.colormap = 'viridis';
     params.sort_method = 'peak'; %'latency'/'peak'
     params.context_labels = {'Active','Passive','Spont'};
+    params.savepath = 'V:\Connie\results\opto_sound_2025\context\heatmaps';
 end

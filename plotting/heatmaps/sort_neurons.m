@@ -10,4 +10,6 @@ function [sorted_idx, sort_vals] = sort_neurons(data, params)
             sort_vals = mean(abs(data(:,params.response_window)), 2);
             [sort_vals, sorted_idx] = sort(sort_vals);
     end
+
+    sorted_idx = sorted_idx(end:-1:1);
 end
