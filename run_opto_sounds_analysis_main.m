@@ -47,6 +47,14 @@ mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type,
 
 [mod_index_results, sig_mod_boot, mod_indexm] = ...
     wrapper_mod_index_calculation(params.info, dff_st, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles, mod_params.savepath);
+%% Generate single cell plots
+dataset_to_plot = 1;
+context_to_plot = [1:3];
+sig_neurons_to_plot = [];
+modulation_type = 1; %positive or negative
+ wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
+     dataset_to_plot, context_to_plot,[],modulation_type, 'opto');
+
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:24];
