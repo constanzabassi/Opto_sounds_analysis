@@ -1,17 +1,23 @@
 function [selectivity_results_by_dataset,selectivity_results_all] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, sig_mod_boot_thr,all_celltypes, params)
 
-    % Initialize results structure for all datasets
-    selectivity_results_by_dataset = cell(1, length(selectivity_indexm));
     
     % Get significant cells across active and passive contexts
-    [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', ...
-        sig_mod_boot_thr(:,2)', mod_indexm);
+    if size(sig_mod_boot_thr,2)>1
+        [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', ...
+            sig_mod_boot_thr(:,2)', mod_indexm);
+    else
+        combined_sig_cells = sig_mod_boot_thr';
+    end
+
+    % Initialize results structure for all datasets
+    selectivity_results_by_dataset = cell(1, length(combined_sig_cells));
+
     
     % Set selectivity threshold
     selectivity_threshold = 0.1; %params.selectivity.threshold || 0.1;
     
     % Loop through datasets
-    for dataset_index = 1:length(selectivity_indexm)
+    for dataset_index = 1:length(combined_sig_cells)
         % Get selectivity indices for current dataset
         selectivity_active = selectivity_indexm{dataset_index,1};
         selectivity_passive = selectivity_indexm{dataset_index,2};

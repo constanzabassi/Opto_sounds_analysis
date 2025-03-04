@@ -132,7 +132,7 @@ selectivity_params = params.selectivity_sounds;
 selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
 
 [selectivity_index_resultsv2, selectivity_sig_mod_bootv2, selectivity_indexmv2] = ...
-    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
+    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.savepath);
 
 %%
 mod_params.mod_threshold = .1;% 0 is no threshold applied
@@ -141,10 +141,10 @@ mod_params.chosen_mice = 1:25;
 selectivity_params.savepath = 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\prepost_ctrl\sound_opto_cells';
 mkdir(selectivity_params.savepath)
 
-sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, selectivity_params.savepath,0);
+% sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, selectivity_params.savepath,0);
 
 [selectivity_results_by_dataset,selectivity_results] = analyze_selectivity_pools(selectivity_indexmv2, ...
-    mod_indexm,mod_index_results, sig_mod_boot_thr, all_celltypes, params);
+    mod_indexm,mod_index_results, combined_opto_sound_sig_cells', all_celltypes, params);
 
 % Save selectivity results
 % save(fullfile(selectivity_params.savepath, 'selectivity_results.mat'), 'selectivity_results');
@@ -155,4 +155,4 @@ plot_selectivity_consistency(selectivity_results, selectivity_params.savepath); 
 plot_side_preference(selectivity_results, params); %plots counts of preferred side
 scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results); %scatter plot of modulation index separated by sides and selectivity
 
-plot_avg_traces_direction_comparison(avg_results_sounds, selectivity_results, selectivity_params);
+plot_avg_traces_direction_comparison(avg_results, selectivity_results, selectivity_params);
