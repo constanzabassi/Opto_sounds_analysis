@@ -28,6 +28,7 @@ function [dff_st,deconv_st,deconv_st_interp] = process_context_sounds(neural_dat
     for i = 1:length(default_trial_types)
         trial = default_trial_types{i};
         dff_st.(trial) = dff_st_current.(trial);
+        dff_st.(['z_' trial]) = dff_st_current.(['z_' trial]);
         deconv_st.(trial) = deconv_st_current.(trial);
         deconv_st_interp.(trial) = deconv_st_interp_current.(trial);
     end    
@@ -39,6 +40,7 @@ function [dff_st,deconv_st,deconv_st_interp] = process_context_sounds(neural_dat
     for i = 1:length(alt_trial_types)
         trial = alt_trial_types{i};
         dff_st.(trial) = dff_st_current.(trial);
+        dff_st.(['z_' trial]) = dff_st_current.(['z_' trial]);
         deconv_st.(trial) = deconv_st_current.(trial);
         deconv_st_interp.(trial) = deconv_st_interp_current.(trial);
     end
