@@ -1,7 +1,9 @@
-function [output, output_relative] = union_sig_cells(sig_mod_boot_thr, sig_mod_boot_thr2, mod_indexm, varargin)
+function [output, output_relative,index_context1_all,index_context2_all] = union_sig_cells(sig_mod_boot_thr, sig_mod_boot_thr2, mod_indexm, varargin)
     % Initialize outputs
     output = {};
     output_relative = [];
+    index_context1_all = [];
+    index_context2_all = [];
     % Determine the length of datasets and cumulative number of cells
     length_datasets = length(sig_mod_boot_thr);
     numcells = cumsum(cellfun(@(x) length(x), mod_indexm(1:length_datasets)));
@@ -15,9 +17,11 @@ function [output, output_relative] = union_sig_cells(sig_mod_boot_thr, sig_mod_b
             elseif isempty(sig_mod_boot_thr{1, m}) && ~isempty(sig_mod_boot_thr2{1, m})
                 output{m} = sig_mod_boot_thr2{1, m};
             else
-                output{m} = union(sig_mod_boot_thr{1, m}, sig_mod_boot_thr2{1, m});
+                [output{m},index_context1,index_context2] = union(sig_mod_boot_thr{1, m}, sig_mod_boot_thr2{1, m});
             end
             output_relative = [output_relative, output{m} + numcells(m)];
+            index_context1_all = [index_context1_all;index_context2];
+            index_context2_all = [index_context2_all;index_context2];
         end
     else
         % If additional inputs are provided
