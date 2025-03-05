@@ -33,12 +33,22 @@ for current_dataset = dataset_to_plot
     for context = context_to_plot
         % Get condition labels from trial info.
         if context == 1
-            current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
-            current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition];
+            if contains(save_string,'sound')  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
+                current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
+                current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition,all_trial_info_sounds(current_dataset).sound_only.condition];
+            else
+                current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
+                current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition];
+            end
         elseif context == 2
-            current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
-            current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition];
-        else
+            if contains(save_string,'sound')  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
+                current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
+                current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition,passive_all_trial_info_sounds(current_dataset).sound_only.condition];
+            else
+                current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
+                current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition];
+            end
+        else %spont has no conditions
             current_conditions = [];
             current_conditions_ctrl = [];
         end

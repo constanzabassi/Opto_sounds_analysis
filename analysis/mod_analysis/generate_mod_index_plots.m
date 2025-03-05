@@ -25,5 +25,5 @@ function all_stats = generate_mod_index_plots(context_mod_all, celltypes_ids, pa
     % Scatter Plot of abs(mod index)
     [all_stats.abs_mod_stats_celltypes] = scatter_abs_mean_mod(save_dir, ...
         context_mod_all, params.plot_info, celltypes_ids, ...
-        params.info.chosen_mice, 2, [0,params.plot_info.y_lims(2)/2]);
+        params.info.chosen_mice, 2, [0,params.plot_info.y_lims(2)/1.5]);
 end

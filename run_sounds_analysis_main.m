@@ -157,3 +157,42 @@ plot_side_preference(selectivity_results, params); %plots counts of preferred si
 scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results); %scatter plot of modulation index separated by sides and selectivity
 
 plot_avg_traces_direction_comparison(avg_results, selectivity_results, selectivity_params);
+
+
+%% COMPARE OPTO SOUND NEURONS
+opto_sig = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
+
+%get union of active and passive significant across contexts
+[combined_opto_cells, ~, ctx1_id,ctx2_id] = union_sig_cells(opto_sig(:,1)', opto_sig(:,2)', mod_indexm);
+[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(1:24,1)', sig_mod_boot_thr(1:24,2)', mod_indexm);
+
+opto_sound_cells = intersect_sig_cells(combined_sig_cells,combined_opto_cells,mod_indexm);
+
+
+[context_mod_all, ~, ~, ~, celltypes_ids] = ...
+    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm, opto_sound_cells', all_celltypes,plot_info.celltype_names);
+
+% Make plots of modulation index across contexts/cell types
+% Set y-axis limits for the plots.
+plot_info.y_lims = [-.5, .5];
+% Set labels for plots.
+plot_info.plot_labels = {'Left','Right'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
+params.plot_info = plot_info;
+params.info.chosen_mice = [1:24];
+
+%save directory
+save_dir = [params.info.savepath_sounds '/mod/opto_sound/']; % '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+
+% Generate visualization suite
+[mod_index_stats] = generate_mod_index_plots(context_mod_all, celltypes_ids, params, save_dir);
+
+for d = 1:24
+dataset_to_plot = [d];
+context_to_plot = [1:2];
+sig_neurons_to_plot = opto_sound_cells{dataset_to_plot};
+modulation_type = -1; %positive or negative
+ wrapper_mod_index_single_plots(params.info, dff_st_combined, stim_trials_context, ctrl_trials_context, mod_index_results,...
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto_sound_sound');
+end

@@ -151,10 +151,11 @@ if ~isempty(savepath)
     if ~exist(outdir, 'dir')
         mkdir(outdir);
     end
-    save(fullfile(outdir, 'mod_index_results.mat'), 'results');
+    
     cd(outdir);
     save('sig_mod_boot','sig_mod_boot');
     save('mod_indexm','mod_indexm');
     save('mod_index_separate','mod_index_separate')
+    save(fullfile(outdir, 'mod_index_results.mat'), 'results');
 end
 end
