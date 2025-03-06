@@ -52,8 +52,16 @@ if ~isempty(sig_mod_boot) && size(sig_mod_boot,2) > 1
 %     [combined_sig_cells, ~] = intersect_sig_cells(sig_mod_boot(:,1)', sig_mod_boot(:,2)', mod_index);
 elseif ~isempty(sig_mod_boot)
     combined_sig_cells = sig_mod_boot;
+    
+
 end
-num_sig_cells =cellfun (@length, combined_sig_cells);
+
+if ~isempty(sig_mod_boot)
+    num_sig_cells =cellfun (@length, combined_sig_cells);
+else
+    num_sig_cells =all_cellCounts;
+
+end
 
 % Initialize a variable to accumulate cell count offsets from previous datasets.
 previous_dataset_cellCount = [];  % will store dataset indices (or cell counts) for offsetting indices
