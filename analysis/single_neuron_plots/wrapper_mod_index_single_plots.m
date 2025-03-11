@@ -1,4 +1,4 @@
-function wrapper_mod_index_single_plots(info, neural_structure, stim_trials_context, ctrl_trials_context, mod_index_results, dataset_to_plot, context_to_plot, sig_neurons_to_plot, modulation_type, save_string)
+function wrapper_mod_index_single_plots(info, neural_structure, stim_trials_context, ctrl_trials_context, mod_index_results, dataset_to_plot, context_to_plot, sig_neurons_to_plot, modulation_type, save_string, plot_params)
 % WRAPPER_MOD_INDEX_SINGLE_PLOTS computes modulation indices for each dataset/context,
 % identifies significant neurons based on bootstrap results, and then plots individual neuron activity.
 %
@@ -23,8 +23,11 @@ function wrapper_mod_index_single_plots(info, neural_structure, stim_trials_cont
 rng(123);
 
 % Load trial information (adjust paths as needed) -virmen trial info left turns/sound condition/is stim
-load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
-passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat').all_trial_info_sounds;
+% load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
+% passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat').all_trial_info_sounds;
+all_trial_info_sounds = plot_params.trial_info;
+passive_all_trial_info_sounds = plot_params.pass_trial_info;
+
 
 % Loop through datasets.
 for current_dataset = dataset_to_plot
@@ -91,7 +94,7 @@ for current_dataset = dataset_to_plot
             plot_individual_mod_neurons(stim_data(pooled_stim_indices, :, :), ...
                                         ctrl_data(pooled_ctrl_indices, :, :), ...
                                         mod_index, sig_neurons, time_vector, [current_dataset, context], [length(left_stim_all), length(left_ctrl_all)], ...
-                                        fullfile(info.savepath,'individual_neuron_plots', save_string));
+                                        fullfile(info.savepath,'individual_neuron_plots', save_string),plot_params.plot_mode,plot_params.plot_avg);
         end
     end
 end
