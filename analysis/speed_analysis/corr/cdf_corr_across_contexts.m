@@ -38,7 +38,7 @@ function p_values = cdf_corr_across_contexts(mouse_corr_stats, function_params, 
             % Compute CDF
             [cdf_data.(vel_type)(context_idx, :), ~] = make_cdf(data, binss);
             plot(binss, cdf_data.(vel_type)(context_idx, :), 'LineWidth', 2, 'LineStyle', '-', ...
-                'Color', function_params.contexts_colors(context_idx, :));
+                'Color', function_params.colors_contexts_simple(context_idx, :));
         end
         
         % Adjust axes and labels
@@ -56,12 +56,12 @@ function p_values = cdf_corr_across_contexts(mouse_corr_stats, function_params, 
     end
 
     % Statistical comparisons for each velocity type correlations across contexts
-    comparisons = {'Pitch across context', 'Roll across context', 'Both across contexts'};
+    comparisons = vel_types;
     
     num_comparisons = numel(comparisons); % Number of velocity types
     alpha = 0.05 / num_comparisons; % Bonferroni-corrected significance level
     
-    possible_tests = nchoosek(1:length(function_params.contexts), 2); % All pairwise context comparisons
+    possible_tests = nchoosek(1:2, 2); % All pairwise context comparisons
     num_neurons = size(corr_data_all, 3); % Number of neurons
     
     % Initialize storage for p-values
@@ -71,15 +71,9 @@ function p_values = cdf_corr_across_contexts(mouse_corr_stats, function_params, 
     for c = 1:num_comparisons
         curr_comp = comparisons{c};
 
-        % Identify if it's a Roll or Pitch comparison
-        if contains(curr_comp, 'Pitch')
-            matching_comparisons = find(contains(vel_types, 'pitch')); % Get Pitch comparisons
-        elseif contains(curr_comp, 'Roll')
-            matching_comparisons = find(contains(vel_types, 'roll')); % Get Roll comparisons
-        elseif contains(curr_comp, 'Both')
-            matching_comparisons = find(contains(vel_types, 'both')); % Get both comparisons
-        end
-        matching_comparisons
+        
+        matching_comparisons = c; %
+        
         
         % Loop through each context pair
         for t = 1:size(possible_tests,1)

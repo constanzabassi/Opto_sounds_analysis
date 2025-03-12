@@ -34,5 +34,8 @@ plot_info.colors_contexts = [0.99, 0.42, 0 %dark orange
                             0.13 0.14 0.16  %dark gray
                             0.38, 0.41, 0.44
                             0.55, 0.59, 0.62]; % light gray 
+
+plot_info.colors_contexts_simple = [0,0,0;0.5, 0.5, 0.5]; % light gray 
+
                             
 plot_info.celltype_names = {"Pyr","SOM","PV"};
