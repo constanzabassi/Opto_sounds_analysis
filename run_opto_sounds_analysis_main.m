@@ -40,6 +40,8 @@ avg_params = struct(...
 % Get averages
 [avg_results_stim ,avg_results_by_dataset_stim,avg_results_ctrl, avg_results_by_dataset_ctrl] = wrapper_trial_averaging(params.info, dff_st,stim_trials_context,ctrl_trials_context, avg_params, [params.info.savepath '/avg/']);
 % generate_heatmaps(context_data, sorted_cells, info);
+generate_neural_heatmaps(dff_st, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:24], params, 'opto')
+
 
 %% Calculate modulation indices
 mod_params = params.mod;
