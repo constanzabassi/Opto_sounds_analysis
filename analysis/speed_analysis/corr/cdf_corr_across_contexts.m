@@ -1,9 +1,13 @@
-function p_values = cdf_corr_across_contexts(mouse_corr_stats, function_params, save_data_directory)
+function p_values = cdf_corr_across_contexts(mouse_corr_stats, function_params, save_data_directory,varargin)
     % Extract velocity types
     vel_types = fieldnames(mouse_corr_stats);
     
     % Define bins for CDF
-    binss = -.5:0.05:.5; % Adjust based on expected correlation range
+    if nargin == 3
+        binss = -.5:0.05:.5; % Adjust based on expected correlation range
+    else
+        binss = varargin{1,1};
+    end
     
     % Initialize storage for CDF data
     cdf_data = struct();
