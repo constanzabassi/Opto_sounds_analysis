@@ -81,15 +81,19 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
                 colormap('viridis');  % Change colormap as desired.
                 % Add dividing lines to delineate stim vs. control.
                 xline(61, '-w', 'LineWidth', 2);
-                yline(left_trials_total(1), '-w', 'LineWidth', 1);
+                yline(left_trials_total(1), '-w', 'LineWidth', 2);
                 yline(size(neuron_data, 1), '--w', 'LineWidth', 2);
-                yline(size(neuron_data, 1) + left_trials_total(2), '-w', 'LineWidth', 1);
+                yline(size(neuron_data, 1) + left_trials_total(2), '-w', 'LineWidth', 2);
             case 'stim'
                 imagesc(neuron_data);
                 colormap('viridis');
+                xline(61, '-w', 'LineWidth', 2);
+                yline(left_trials_total(1), '-w', 'LineWidth', 2);
             case 'ctrl'
                 imagesc(neuron_data_ctrl);
                 colormap('viridis');
+                xline(61, '-w', 'LineWidth', 2);
+                yline(left_trials_total(2), '-w', 'LineWidth', 2);
         end
 
         xlabel('Time');
@@ -128,7 +132,7 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
         end
 
         % Adjust figure size (optional).
-        set(gcf, 'Position', [100, 100, 300, 400]);
+        set(gcf, 'Position', [100, 100, 300, 350]);
 
         % Save the figure if a save directory is provided.
         if ~isempty(save_dir)
