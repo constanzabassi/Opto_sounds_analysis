@@ -23,10 +23,10 @@ function wrapper_mod_index_single_plots(info, neural_structure, stim_trials_cont
 rng(123);
 
 % Load trial information (adjust paths as needed) -virmen trial info left turns/sound condition/is stim
-% load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
-% passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat').all_trial_info_sounds;
-all_trial_info_sounds = plot_params.trial_info;
-passive_all_trial_info_sounds = plot_params.pass_trial_info;
+load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
+passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\sound_info\passive_all_trial_info_sounds.mat').all_trial_info_sounds;
+% all_trial_info_sounds = plot_params.trial_info;
+% passive_all_trial_info_sounds = plot_params.pass_trial_info;
 
 
 % Loop through datasets.
