@@ -18,7 +18,9 @@ x_tick_seconds = unique(floor(time_axis)); % Round down to the nearest second an
 % Define the desired x-tick values (integer seconds only)
 x_tick_seconds = x_tick_seconds(mod(x_tick_seconds, interval) == 0); % Select ticks based on the interval
 % Find the indices of these seconds in the time_axis
-[~, x_tick_indices] = ismember(x_tick_seconds, time_axis);
+[valid_id, x_tick_indices] = ismember(x_tick_seconds, time_axis);
+% Verify validity of indices
+x_tick_indices = x_tick_indices(valid_id);
 % Set the x-ticks and labels
 xticks_in = frame_indices(x_tick_indices); % Set ticks at the corresponding frame indices
 xticks_lab = arrayfun(@num2str, x_tick_seconds, 'UniformOutput', false); % Set labels as integers
