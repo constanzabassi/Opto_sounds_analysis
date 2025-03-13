@@ -49,8 +49,8 @@ function [mouse_corr_stats, trial_indices_right_all, trial_indices_left_all] = n
             end
     
             % Get z-scored data and trial indices
-            stim_data = dff_st{1,current_dataset_index}.z_stim;
-            ctrl_data = dff_st{1,current_dataset_index}.z_ctrl;
+%             stim_data = dff_st{1,current_dataset_index}.z_stim;
+%             ctrl_data = dff_st{1,current_dataset_index}.z_ctrl;
             stim_trials = stim_trials_context{1, current_dataset_index}{1, context};
             ctrl_trials = ctrl_trials_context{1, current_dataset_index}{1, context};
     
@@ -75,20 +75,26 @@ function [mouse_corr_stats, trial_indices_right_all, trial_indices_left_all] = n
             function_params.current_celltypes = all_celltypes{1, current_dataset_index};
             celtype_fields  = fields(all_celltypes{1, 1});
 
-            for celltype = 1:3 
-                celltype_field = celtype_fields{celltype};
-                % Process correlations
-                [corr_left, corr_right] = process_trials_neural_corr(...
-                    chosen_mice, current_dataset_index, mouse_date, dff_st, ...
-                    frames_before, frames_after, trials_left, trials_right, combined_thres, celltype_field , function_params, save_data_directory);
-                
-%                 % Store correlation stats
-%                 mouse_corr_stats{vel_types_index,current_context,current_dataset, 1} = corr_left;
-                % Store correlation stats
-                mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 1} = corr_left;
-                mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 2} = corr_right;
-%                 mouse_corr_stats.(celtype_fields){current_dataset_index, context_idx, 3} = p_left;
-%                 mouse_corr_stats.(celtype_fields){current_dataset_index, context_idx, 4} = p_right;
+            if strcmp(function_params.calc_type,'corr')
+                for celltype = 1:3 
+                    celltype_field = celtype_fields{celltype};
+                    % Process correlations
+                    [corr_left, corr_right] = process_trials_neural_corr(...
+                        chosen_mice, current_dataset_index, mouse_date, dff_st, ...
+                        frames_before, frames_after, trials_left, trials_right, combined_thres, celltype_field , function_params, save_data_directory);
+                    
+    
+                    mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 1} = corr_left;
+                    mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 2} = corr_right;
+                end
+            else
+                  [corr_left, corr_right] = process_trials_neural_snr(...
+                        chosen_mice, current_dataset_index, mouse_date, dff_st, ...
+                        frames_before, frames_after, trials_left, trials_right, combined_thres, function_params, save_data_directory);
+
+                    mouse_corr_stats.snr{current_dataset_index, context_idx, 1} = corr_left;
+                    mouse_corr_stats.snr{current_dataset_index, context_idx, 2} = corr_right;
+
             end
 
         end
