@@ -5,7 +5,7 @@ t = tiledlayout(1,size(deconv_response,3),'TileSpacing','Compact','Padding','Com
 for celtype = 1:size(deconv_response,3)
     
     nexttile
-    for context = 1:size(deconv_response,1) 
+    for context = 1:2 %size(deconv_response,1) 
         mean_across_cells_mice = [];
         mean_across_cells_mice_ctrl =[];
         for mouse = 1:size(deconv_response,2)
@@ -25,12 +25,12 @@ for celtype = 1:size(deconv_response,3)
         set(0, 'CurrentFigure', f1)
         title(celltypes_ids{1,celtype},'FontSize',12,'FontName','arial','FontWeight','normal');
         hold on
-        b(context) = plot(mean(mean_across_cells_mice_ctrl));
-        if length(unique(lineStyles_contexts))>1
-            set( b(context), 'LineWidth', 1.5, 'LineStyle', lineStyles_contexts{context}, 'color',[0.5 0.5 0.5]);%linecolors(2,:));
-        else
-            set( b(context), 'LineWidth', 1.5, 'LineStyle', lineStyles_contexts{context}, 'color',[0.2+(context*.2) 0.2+(context*.2) 0.2+(context*.2)]);%linecolors(2,:));
-        end
+%         b(context) = plot(mean(mean_across_cells_mice_ctrl));
+%         if length(unique(lineStyles_contexts))>1
+%             set( b(context), 'LineWidth', 1.5, 'LineStyle', lineStyles_contexts{context}, 'color',[0.5 0.5 0.5]);%linecolors(2,:));
+%         else
+%             set( b(context), 'LineWidth', 1.5, 'LineStyle', lineStyles_contexts{context}, 'color',[0.2+(context*.2) 0.2+(context*.2) 0.2+(context*.2)]);%linecolors(2,:));
+%         end
 
         a(context) = plot(mean(mean_across_cells_mice));
         if length(unique(lineStyles_contexts))>1
