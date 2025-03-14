@@ -14,6 +14,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
 
 % Store data across contexts
     data_by_context = cell(1,2);  % To store {mean_stim/ctrl_left/right} for each context
+    data_by_context_raw = cell(1,2);  % To store {mean_stim/ctrl_left/right} for each context
     
     nContexts = 2; %size(stim_trials_context{1,1},2);
     for context = 1:nContexts
@@ -22,6 +23,11 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
         mean_stim_right = [];
         mean_ctrl_left = [];
         mean_ctrl_right = [];
+
+        mean_stim_left_raw = [];
+        mean_stim_right_raw = [];
+        mean_ctrl_left_raw = [];
+        mean_ctrl_right_raw = [];
 
         for current_dataset = chosen_mice
             % Get condition labels from trial info 
@@ -69,6 +75,14 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             mean_stim_right = [mean_stim_right; squeeze(mean(stim_data(right_stim_all,mod_cells,:), 1))];
             mean_ctrl_left = [mean_ctrl_left; squeeze(mean(ctrl_data(left_ctrl_all,mod_cells,:), 1))];
             mean_ctrl_right = [mean_ctrl_right; squeeze(mean(ctrl_data(right_ctrl_all,mod_cells,:), 1))];
+
+            %Calculate and concatenate means across raw data (not zscored)
+            stim_data_raw = neural_structure{1,current_dataset}.stim;
+            ctrl_data_raw = neural_structure{1,current_dataset}.ctrl;
+            mean_stim_left_raw = [mean_stim_left_raw; squeeze(mean(stim_data_raw(left_stim_all,mod_cells,:), 1))];
+            mean_stim_right_raw = [mean_stim_right_raw; squeeze(mean(stim_data_raw(right_stim_all,mod_cells,:), 1))];
+            mean_ctrl_left_raw = [mean_ctrl_left_raw; squeeze(mean(ctrl_data_raw(left_ctrl_all,mod_cells,:), 1))];
+            mean_ctrl_right_raw = [mean_ctrl_right_raw; squeeze(mean(ctrl_data_raw(right_ctrl_all,mod_cells,:), 1))];
         end
         
         % Store data for this context
@@ -76,6 +90,10 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                                         'stim_right', mean_stim_right, ...
                                         'ctrl_left', mean_ctrl_left, ...
                                         'ctrl_right', mean_ctrl_right);
+        data_by_context_raw{context} = struct('stim_left', mean_stim_left_raw, ...
+                                        'stim_right', mean_stim_right_raw, ...
+                                        'ctrl_left', mean_ctrl_left_raw, ...
+                                        'ctrl_right', mean_ctrl_right_raw);
     end
     
     params = get_heatmap_params();
@@ -154,6 +172,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                     params.context_labels{context}, (dir_name{direction})), params);
                 utils.set_current_fig;
                 set(gca,'FontSize',12);
+                caxis([-.25 .9])
 
             end
         end
@@ -198,12 +217,13 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                     params.context_labels{context}, (dir_name{direction})), params);
                 utils.set_current_fig;
                 set(gca,'FontSize',12);
+                caxis([-.25 .9])
 
             end
                     % Add super title and colorbar
             sgtitle(sprintf('%s Responses', upper(current_cond)), 'FontWeight', 'normal');
             cb = colorbar;
-            caxis([-.25 .9])
+            
             cb.Position = [0.915 0.37 0.02 0.3];%[0.92 0.1 0.02 0.8]; %left,bottom,idth,height
             cb.Label.String = 'Z-score';
             
@@ -229,7 +249,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                 subplot(1, 2, context)
                 field_name_stim = sprintf('%s_%s','stim', lower(dir_name{direction}));
                 field_name_ctrl = sprintf('%s_%s','ctrl', lower(dir_name{direction}));
-                diff_data_by_context = data_by_context{context}.(field_name_stim) - data_by_context{context}.(field_name_ctrl);
+                diff_data_by_context = data_by_context_raw{context}.(field_name_stim) - data_by_context_raw{context}.(field_name_ctrl);
 
                 [sorted_idx, ~] = sort_neurons(diff_data_by_context, params)
                 plot_single_direction_heatmap(diff_data_by_context, ...
@@ -237,14 +257,14 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                     params.context_labels{context}, (dir_name{direction})), params);
                 utils.set_current_fig;
                 set(gca,'FontSize',12);
+                caxis([-.025 .09])
 
             end
                     % Add super title and colorbar
             sgtitle('Responses Difference', 'FontWeight', 'normal');
             cb = colorbar;
-            caxis([-.25 .9])
             cb.Position = [0.915 0.37 0.02 0.3];%[0.92 0.1 0.02 0.8]; %left,bottom,idth,height
-            cb.Label.String = 'Z-score';
+            cb.Label.String = 'Difference';
             
             if isfield(params, 'savepath')
                 saveas(gcf, fullfile(params.savepath, ...
