@@ -1,4 +1,4 @@
-function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(info, neural_structure, response_range, mod_type, mode, stim_trials_context, ctrl_trials_context,nShuffles,  savepath)
+function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(info, neural_structure, response_range, mod_type, mode, stim_trials_context, ctrl_trials_context,nShuffles,  savepath, varargin)
 % wrapper_mod_index_calculation serves as a wrapper to loop across datasets/contexts,
 % compute modulation indices and bootstrapped significance (with balancing done inside each CV repeat),
 % and save the results.
@@ -24,6 +24,7 @@ function [results, sig_mod_boot, mod_indexm] = wrapper_mod_index_calculation(inf
 %                          For dataset i and context j, use: ctrl_trials_context{1,i}{1,j}.
 %     nShuffles          - for bootstrapping - if set to zero no bootrapping
 %     savepath           - (Optional) Directory where results should be saved. If empty, no saving is done.
+%     varargin           - (OPTIONAL) arrays of specific trials to use
 %
 %   Output:
 %     results - Structure array containing the computed modulation indices and bootstrap p-values.
@@ -61,7 +62,7 @@ if strcmpi(mod_type,'prepost_sound') || strcmpi(mode,'selectivity')
     nContexts = 2;
 end
 % Loop through datasets.
-for current_dataset = 1:length(info.mouse_date)
+for current_dataset = 1: 24%length(info.mouse_date)
     fprintf('Processing dataset %d/%d...\n', current_dataset, length(info.mouse_date));
     for context = 1:nContexts  % Assuming context 1: active, context 2: passive, context 3: spontaneous.
         fprintf('Current context %d...\n', context);
@@ -104,6 +105,11 @@ for current_dataset = 1:length(info.mouse_date)
         else
             [~, ~, ~, ~, ~, ~, left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = ...
                 find_sound_trials_single(stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl);
+            if nargin > 9
+                stim_to_match = varargin{1,1}{1, current_dataset}{1, context};
+                ctrl_to_match = varargin{1,2}{1, current_dataset}{1, context};
+                 [left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = find_overlap_trials (left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all, stim_to_match,ctrl_to_match);
+            end
             stim_data_left = stim_data(left_stim_all,:,:);% trials x neurons x frames using trials for current context
             ctrl_data_left = ctrl_data(left_ctrl_all,:,:);% trials x neurons x frames using trials for current context
     
