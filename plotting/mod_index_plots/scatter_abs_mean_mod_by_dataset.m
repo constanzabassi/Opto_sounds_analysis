@@ -168,13 +168,8 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
             
             for t = 1:size(possible_tests,1)
                 % Get data for statistical test
-                data1 = zeros(n_datasets, 1);
-                data2 = zeros(n_datasets, 1);
-                
-                for d = 1:n_datasets
-                    data1(d) = nanmean(abs(mod_index_by_dataset{d,possible_tests(t,1),celltype}));
-                    data2(d) = nanmean(abs(mod_index_by_dataset{d,possible_tests(t,2),celltype}));
-                end
+                data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
+                data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
                 
                 % Perform statistical test
                 [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...

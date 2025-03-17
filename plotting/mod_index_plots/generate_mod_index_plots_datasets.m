@@ -22,7 +22,7 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
 
     y_lim_ratio = 1.25;
     % Scatter Plot of abs(mod index)
-     [all_stats.abs_mod_stats_celltypes_datasets] = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
+    scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
 
      % create plots dividing by dataset and by mouse
