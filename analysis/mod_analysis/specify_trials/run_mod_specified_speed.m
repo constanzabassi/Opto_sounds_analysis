@@ -55,7 +55,7 @@ params.info.chosen_mice = speed_params.chosen_mice;
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-mod_index_stats_specified = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm_specified, sig_mod_boot_thr_specified, all_celltypes, params, save_dir);
+mod_index_stats_specified = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr_specified, all_celltypes, params, save_dir);
 
 %%
 plot_info.y_lims = [-.2, .4];
@@ -68,6 +68,6 @@ params.info.chosen_mice = speed_params.chosen_mice;
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr_specified(:,1)', sig_mod_boot_thr_specified(:,2)', mod_indexm_specified);
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_specified, combined_sig_cells, all_celltypes, params, save_dir);
+[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
 
