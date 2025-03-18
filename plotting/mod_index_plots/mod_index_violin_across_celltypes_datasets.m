@@ -136,13 +136,13 @@ hold off
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(97,strcat('mod_index_violin_across_celltypes_',num2str(length(chosen_mice)),'_datasets.svg'));
-    saveas(97,strcat('mod_index_violin_across_celltypes_',num2str(length(chosen_mice)),'_datasets.fig'));
-    exportgraphics(figure(97),[strcat('mod_index_violin_across_celltypes_',num2str(length(chosen_mice)),'_datasets.pdf')], 'ContentType', 'vector');
+    saveas(97,strcat('mod_index_violin_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.svg'));
+    saveas(97,strcat('mod_index_violin_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.fig'));
+    exportgraphics(figure(97),[strcat('mod_index_violin_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.pdf')], 'ContentType', 'vector');
     
-    saveas(98,strcat('mod_index_boxplot_across_celltypes_',num2str(length(chosen_mice)),'_datasets.svg'));
-    saveas(98,strcat('mod_index_boxplot_across_celltypes_',num2str(length(chosen_mice)),'_datasets.fig'));
-    exportgraphics(figure(98),strcat('mod_index_boxplot_across_celltypes_',num2str(length(chosen_mice)),'_datasets.pdf'), 'ContentType', 'vector');
+    saveas(98,strcat('mod_index_boxplot_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.svg'));
+    saveas(98,strcat('mod_index_boxplot_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.fig'));
+    exportgraphics(figure(98),strcat('mod_index_boxplot_across_celltypes_by_dataset_',num2str(n_datasets),'_datasets.pdf'), 'ContentType', 'vector');
 
     
     save('mod_index_contexts_distribution_stats','stats')
