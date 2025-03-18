@@ -4,7 +4,7 @@ plot_info.plot_labels = {'Sounds','Sounds'}; %{'Stim','Ctrl'}; % Alternative cou
 speed_range = [20,70];
 mod_params.mod_type = 'simple';
 
-if contains(plot_info.plot_labels,'Stim')
+if any(contains(plot_info.plot_labels,'Stim'))
     stim_info_to_use = stim_info; %stim_info_combined or stim_info
     neural_data_to_use = dff_st; %dff_st_combined or dff_st
     mod_to_use = 'mod'; %'mod_sounds' or 'mod'
@@ -57,17 +57,15 @@ save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepat
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_specified = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr_specified, all_celltypes, params, save_dir);
 
-%%
+%% plot across datasets/mice
 plot_info.y_lims = [-.2, .4];
 % Set labels for plots.
-plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
-params.plot_info = plot_info;
 params.info.chosen_mice = speed_params.chosen_mice;
 
 %save directory
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
+[combined_sig_cells_specified, ~] = union_sig_cells(sig_mod_boot_thr_specified(:,1)', sig_mod_boot_thr_specified(:,2)', mod_indexm_specified);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_specified, combined_sig_cells_specified, all_celltypes, params, save_dir);
 
