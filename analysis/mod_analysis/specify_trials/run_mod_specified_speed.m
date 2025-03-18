@@ -21,7 +21,7 @@ end
 
 %% Get aligned velocity
 mouse_vel_aligned_sounds = run_velocity_opto_code_using_sound(speed_params.chosen_mice,params.info.mouse_date,params.info.serverid,speed_params.frames_before_event, speed_params.frames_after_event,stim_info_to_use); %using ctrl and sound only trials
-mouse_vel_context = speed_cdf_across_contexts([],mouse_vel_aligned_sounds,plot_info,stim_trials_context,ctrl_trials_context,speed_params.chosen_mice,50:60);
+mouse_vel_context = speed_cdf_across_contexts([],mouse_vel_aligned_sounds,plot_info,stim_trials_context,ctrl_trials_context,speed_params.chosen_mice,50:60); %frames from where to get speed from
 
 %find trials within specified speed_range
 [speed_trials_stim,speed_trials_ctrl] = find_speed_trials(mouse_vel_context,speed_range,stim_trials_context,ctrl_trials_context); %finds trials within certain speed range
@@ -37,35 +37,29 @@ mod_params.savepath = fullfile(save_to_use, 'mod', mod_params.mod_type, mod_para
 %% MAKE PLOTS USING NEW MOD INDEX
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = speed_params.chosen_mice;
+params.info.chosen_mice = speed_params.chosen_mice;
 
 %plot % modulated cells per context
 sig_mod_boot_thr_specified = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm_specified, sig_mod_boot_specified, sorted_cells,mod_params.savepath);
-% sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
 
 % Make plots of modulation index across contexts/cell types
 % Set y-axis limits for the plots.
 plot_info.y_lims = [-.4, .4];
 % Set labels for plots.
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
-overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
+overlap_labels = {'Active', 'Passive','Both'}; 
 params.plot_info = plot_info;
-params.info.chosen_mice = speed_params.chosen_mice;
 
 %save directory
-save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = [mod_params.savepath];%
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-mod_index_stats_specified = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr_specified, all_celltypes, params, save_dir);
+mod_index_stats_specified = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm_specified, sig_mod_boot_thr_specified, all_celltypes, params, save_dir);
 
 %% plot across datasets/mice
 plot_info.y_lims = [-.2, .4];
-% Set labels for plots.
-params.info.chosen_mice = speed_params.chosen_mice;
-
-%save directory
-save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 [combined_sig_cells_specified, ~] = union_sig_cells(sig_mod_boot_thr_specified(:,1)', sig_mod_boot_thr_specified(:,2)', mod_indexm_specified);
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_specified, combined_sig_cells_specified, all_celltypes, params, save_dir);
+mod_index_stats_specified_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_specified, combined_sig_cells_specified, all_celltypes, params, save_dir);
 
