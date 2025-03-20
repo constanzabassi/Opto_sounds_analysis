@@ -1,4 +1,4 @@
-function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, plot_info, save_path, string1, string2)
+function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, plot_info, save_path, string1, string2,varargin)
     % Plots scatter data for modulation indices of optogenetically modulated cells
     % 
     % This function visualizes modulation index data for different neuron types under passive 
@@ -17,7 +17,11 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
     %   modl_fit      - Cell array containing fitted linear models for each cell type.
 
     % Define plot limits
-    minmax = [-1, 1];
+    if nargin > 7
+        minmax = varargin{1,1};
+    else
+        minmax = [-1, 1];
+    end
 
     % Create figure and plot identity line
     figure(2324); clf;

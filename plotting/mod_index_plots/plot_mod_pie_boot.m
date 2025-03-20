@@ -1,4 +1,4 @@
-function [sorted_cells] = plot_mod_pie_boot(mod_params, sorted_cells, mod_index_all, significant_neurons, savepath)
+function [sorted_cells] = plot_mod_pie_boot(mod_params, sorted_cells, mod_index_all, significant_neurons, savepath, total_cells)
 % PLOT_MOD_PIE_BOOT - Plot modulation pie charts for cells.
 %
 % This function generates pie charts that show the proportions of cells 
@@ -43,7 +43,7 @@ if isempty(sorted_cells)
     f = figure(72); clf;
     hold on;
     
-    total_cells = length(mod_index_all);
+%     total_cells = length(mod_index_all);
     % Calculate the proportion of cells in each modulation category
     pos_pct = length(al_pos_mod) / total_cells;
     neg_pct = length(al_neg_mod) / total_cells;
@@ -100,11 +100,13 @@ else
         cellType = cellTypeNames{celltypes};
         % Retrieve the IDs (or indices) for the current cell type.
         cellIDs = sorted_cells.(cellType);
-        totalCells = length(cellIDs);
+%         totalCells = length(mod_index_all);%length(cellIDs);
         
         % Count how many of these cells fall into each modulation category.
         pos_count = sum(ismember(cellIDs, al_pos_mod));
         neg_count = sum(ismember(cellIDs, al_neg_mod));
+        totalCells = total_cells(celltypes);
+%         totalCells = length(cellIDs);
         non_mod_count = totalCells - (pos_count + neg_count);
         
         % Compute the percentages for the pie chart.

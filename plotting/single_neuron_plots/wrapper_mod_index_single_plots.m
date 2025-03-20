@@ -28,7 +28,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
 % all_trial_info_sounds = plot_params.trial_info;
 % passive_all_trial_info_sounds = plot_params.pass_trial_info;
 
-
+nContexts = size(stim_trials_context{1,1},2);
 % Loop through datasets.
 for current_dataset = dataset_to_plot
     fprintf('Processing dataset %d/%d...\n', current_dataset, length(dataset_to_plot));
@@ -36,7 +36,7 @@ for current_dataset = dataset_to_plot
     for context = context_to_plot
         % Get condition labels from trial info.
         if context == 1
-            if contains(save_string,'sound')  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
+            if nContexts == 2  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
                 current_conditions = [all_trial_info_sounds(current_dataset).opto.condition];
                 current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition,all_trial_info_sounds(current_dataset).sound_only.condition];
             else
@@ -44,7 +44,7 @@ for current_dataset = dataset_to_plot
                 current_conditions_ctrl = [all_trial_info_sounds(current_dataset).ctrl.condition];
             end
         elseif context == 2
-            if contains(save_string,'sound')  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
+            if nContexts == 2  %for sound alignment I included [control, sound_only trials] so I need to concatenate trial types here)
                 current_conditions = [passive_all_trial_info_sounds(current_dataset).opto.condition];
                 current_conditions_ctrl = [passive_all_trial_info_sounds(current_dataset).ctrl.condition,passive_all_trial_info_sounds(current_dataset).sound_only.condition];
             else
@@ -90,7 +90,7 @@ for current_dataset = dataset_to_plot
         fprintf('sig_neurons dataset %d/%d...\n', current_dataset, length(sig_neurons));
         % Plot individual modulated neurons.
         time_vector = [1:122];
-        if length(sig_neurons) > 1
+        if ~isempty(sig_neurons)
             plot_individual_mod_neurons(stim_data(pooled_stim_indices, :, :), ...
                                         ctrl_data(pooled_ctrl_indices, :, :), ...
                                         mod_index, sig_neurons, time_vector, [current_dataset, context], [length(left_stim_all), length(left_ctrl_all)], ...
