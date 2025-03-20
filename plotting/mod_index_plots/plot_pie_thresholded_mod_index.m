@@ -43,8 +43,8 @@ for context = 1:size(sig_mod_boot,2)
     mod_index_all = cat(2, mod_indexm{:, context}); %{dataset x context}
 
     % Extract the significant indices and the modulation indices for the current context.
-    current_sig = sig_mod_boot(:, context);
-    current_mod_index = mod_indexm(:, context);
+    current_sig = sig_mod_boot(mod_params.chosen_mice, context);
+    current_mod_index = mod_indexm(mod_params.chosen_mice, context);
 
     % Convert local significant neuron indices to global indices.
     % This helper function should take in the significant indices from each dataset and
