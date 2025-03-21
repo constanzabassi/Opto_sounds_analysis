@@ -57,7 +57,7 @@ for cel_type = 1:length(celltypes_ids)
 
     set(gca,'fontsize',12,'Units','Inches','Position',positions(cel_type,:));
     stats.p_all{cel_type} = p_stim;
-    utils.set_current_fig;
+%     utils.set_current_fig;
 end
 
 hold off
@@ -122,7 +122,7 @@ for cel_type = 1:length(celltypes_ids)
     xlim([0 length(behavioral_contexts)+1])
     set(gca,'fontsize',12,'box','off','Units','Inches','Position',positions(cel_type,:));
     stats.p_all{cel_type} = p_stim;
-    utils.set_current_fig;
+%     utils.set_current_fig;
 end
 
 hold off

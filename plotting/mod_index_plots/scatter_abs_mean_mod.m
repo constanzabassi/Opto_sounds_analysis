@@ -111,14 +111,14 @@ ylim([0,yli(2)])
 if nargin > 6
         ylim(varargin{1,1});
 end
-set(gca,'FontSize',14);
+set(gca,'FontSize',12);
 set(gcf,'Color','w')
 set(gca,'FontName','Arial')
 %set(gca,'Color','k'b)
 set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
 xtickangle(45)
-set(gcf,'units','points','position',[10,100,500,200])
-set(gcf,'units','points','position',[10,100,(500/length(celltypes_ids)*length(plot_info.behavioral_contexts)),200])
+% set(gcf,'units','points','position',[10,100,500,200])
+set(gcf,'units','points','position',[10,100,(350/length(celltypes_ids)*length(plot_info.behavioral_contexts)),160])
 
 % for ce = 1:length(celltypes_ids)
 %     [KW.p_val(ce),KW.tbl{ce}, KW.stats_cell{ce}] = kruskalwallis([stim_mod(celltypes_ids{1,ce},:)],[1:length(plot_info.behavioral_contexts)],'off');
@@ -138,5 +138,6 @@ if ~isempty(save_dir)
     cd(save_dir)
     saveas(600,strcat('abs_mod_index_scatter_across_celltypes_',num2str(length(chosen_mice)),'_datasets.svg'));
     saveas(600,strcat('abs_mod_index_scatter_across_celltypes_',num2str(length(chosen_mice)),'_datasets.fig'));
+    exportgraphics(figure(600),strcat('abs_mod_index_scatter_across_celltypes_',num2str(length(chosen_mice)),'_datasets.pdf'), 'ContentType', 'vector');
     save('abs_mod_index_stats_scatter','mod_stats');
 end

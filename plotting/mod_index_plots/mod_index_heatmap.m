@@ -24,12 +24,15 @@ xticks([1:size(mod_to_plot,2)]);
 xticklabels(plot_info.behavioral_contexts);
 ylabel('Neurons')
 set(heatmap_plot,'AlphaData',~isnan(mod_to_plot(id,:))); %,~isnan(stim_mod(chosen_cels(id),:)))
-set(gca,'color',[.7 .7 .7],'fontsize',14);
-axis square
-box off
-set(gcf,'position',[100,100,300,300])
+set(gca,'color',[.7 .7 .7],'fontsize',12);
+set(gcf,'position',[100,100,200,200])
 movegui(gcf, 'center')
-utils.set_current_fig;
+
+% axis square
+% box off
+% set(gcf,'position',[100,100,300,180])
+% movegui(gcf, 'center')
+% utils.set_current_fig;
 
 if ~isempty(save_dir)
     mkdir(save_dir)

@@ -87,7 +87,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             % Plot error bar (SEM)
             errorbar(x_pos(context), mean_cel, err, 'o', ...
                 'Color', plot_info.colors_celltypes(celltype,:), ...
-                'LineWidth', 1.3, 'MarkerSize', 3,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
+                'LineWidth', 1, 'MarkerSize', 2,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
             
             mean_cell_all = [mean_cell_all, mean_cel];
         end
@@ -132,13 +132,13 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     end
     
     % Set figure properties
-    set(gca,'FontSize',14);
+    set(gca,'FontSize',12);
     set(gcf,'Color','w')
     set(gca,'FontName','Arial')
 %     set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
     box off
     xtickangle(45)
-    set(gcf,'units','points','position',[10,100,(500/n_celltypes*num_contexts),200]);
+    set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),150]);
     utils.set_current_fig;
     
     % Store statistics
@@ -154,6 +154,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         cd(save_dir)
         saveas(700,strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
         saveas(700,strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
+        exportgraphics(figure(700),strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
         save(strcat('abs_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
     end
 end

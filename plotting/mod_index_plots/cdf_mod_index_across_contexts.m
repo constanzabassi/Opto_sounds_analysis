@@ -30,7 +30,7 @@ else
     binss = bin(1):0.01:bin(2);
 end
 
-positions = utils.calculateFigurePositions(1, 4, .5, []);
+positions = utils.calculateFigurePositions(1, 5, .5, []);
 
 % Determine cell type groups if applicable
 if strcmp(mode, 'celltype')
@@ -82,11 +82,12 @@ for plot_idx = 1:num_plots
         ylabel('Cumulative Fraction'); 
     end
     xlabel('Modulation Index');
-    set(gca, 'FontSize', 12, 'Units', 'inches', 'Position', positions(plot_idx, :));
+    set(gca, 'FontSize', 10, 'Units', 'inches', 'Position', positions(plot_idx, :));
     grid on;
     
     % Legend
-    stim_legend = utils.generate_legend_entries(label{1}, behavioral_contexts);
+    stim_legend =  behavioral_contexts;
+%     stim_legend = utils.generate_legend_entries(label{1}, behavioral_contexts);
     if ~isempty(ctrl_mod)
         ctrl_legend = utils.generate_legend_entries(label{2}, behavioral_contexts);
         legend_entries = [stim_legend, ctrl_legend];
