@@ -52,7 +52,8 @@ for context = 1:size(sig_mod_boot,2)
     global_sig_ids = convert_indices_local_to_global(current_sig, cellfun(@length, mod_indexm(:, context)));
 
     % Call the plotting function to plot the distribution (e.g., a pie chart)of modulation indices and might return sorted cell order if needed.
-    sorted_cells = plot_mod_pie_boot(mod_params, sorted_cells, mod_index_all, global_sig_ids, mod_savepath);
+     [cellfun(@(x) x.pyr_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.som_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.pv_cells,all_celltypes,'UniformOutput',false)];
+    sorted_cells = plot_mod_pie_boot(mod_params, sorted_cells, mod_index_all, global_sig_ids, mod_savepath, total_cells);
 
     % Now, for each dataset, apply the modulation threshold.
     for dataset_index = mod_params.chosen_mice

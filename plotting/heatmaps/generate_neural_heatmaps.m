@@ -249,7 +249,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                 subplot(1, 2, context)
                 field_name_stim = sprintf('%s_%s','stim', lower(dir_name{direction}));
                 field_name_ctrl = sprintf('%s_%s','ctrl', lower(dir_name{direction}));
-                diff_data_by_context = data_by_context_raw{context}.(field_name_stim) - data_by_context_raw{context}.(field_name_ctrl);
+                diff_data_by_context = data_by_context_raw{context}.(field_name_stim) - data_by_context_raw{context}.(field_name_ctrl); %mean(data_by_context_raw{context}.(field_name_ctrl)(:,61:122),2); %data_by_context_raw{context}.(field_name_ctrl);
 
                 [sorted_idx, ~] = sort_neurons(diff_data_by_context, params)
                 plot_single_direction_heatmap(diff_data_by_context, ...
@@ -257,7 +257,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                     params.context_labels{context}, (dir_name{direction})), params);
                 utils.set_current_fig;
                 set(gca,'FontSize',12);
-                caxis([-.025 .09])
+                caxis([-.03 .1])
 
             end
                     % Add super title and colorbar
@@ -273,6 +273,73 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
                     sprintf('%s_diff_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
             end
         end
+
+
+       for direction = 1:2
+            figure('Position', [100 100 500 500]);%figure('Position', [100 100 800 500]);
+            dir_name = {'Left', 'Right'};
+            for context = 1:nContexts
+                subplot(1, 2, context)
+                field_name_stim = sprintf('%s_%s','stim', lower(dir_name{direction}));
+                field_name_ctrl = sprintf('%s_%s','ctrl', lower(dir_name{direction}));
+                diff_data_by_context = data_by_context_raw{context}.(field_name_ctrl) -  mean(data_by_context_raw{context}.(field_name_ctrl)(:,50:60),2) ;
+
+                [sorted_idx, ~] = sort_neurons(diff_data_by_context, params)
+                plot_single_direction_heatmap(diff_data_by_context, ...
+                    sorted_idx, sprintf('%s - %s Sound', ...
+                    params.context_labels{context}, (dir_name{direction})), params);
+                utils.set_current_fig;
+                set(gca,'FontSize',12);
+                caxis([-.03 .1])
+
+            end
+                    % Add super title and colorbar
+            sgtitle('Response Difference POST-PRE SOUNDS', 'FontWeight', 'normal');
+            cb = colorbar;
+            cb.Position = [0.915 0.37 0.02 0.3];%[0.92 0.1 0.02 0.8]; %left,bottom,idth,height
+            cb.Label.String = 'Difference';
+            
+            if isfield(params, 'savepath')
+                saveas(gcf, fullfile(params.savepath, ...
+                    sprintf('%s_diff_postpre_responses_heatmap_%s.png', dir_name{direction},type)));
+                exportgraphics(gcf,fullfile(params.savepath, ...
+                    sprintf('%s_diff_postpre_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
+            end
+       end
+
+              for direction = 1:2
+            figure('Position', [100 100 500 500]);%figure('Position', [100 100 800 500]);
+            dir_name = {'Left', 'Right'};
+            for context = 1:nContexts
+                subplot(1, 2, context)
+                field_name_stim = sprintf('%s_%s','stim', lower(dir_name{direction}));
+                field_name_ctrl = sprintf('%s_%s','ctrl', lower(dir_name{direction}));
+                diff_data_by_context = data_by_context_raw{context}.(field_name_stim) -  mean(data_by_context_raw{context}.(field_name_stim)(:,50:60),2) ;
+
+                [sorted_idx, ~] = sort_neurons(diff_data_by_context, params)
+                plot_single_direction_heatmap(diff_data_by_context, ...
+                    sorted_idx, sprintf('%s - %s Sound', ...
+                    params.context_labels{context}, (dir_name{direction})), params);
+                utils.set_current_fig;
+                set(gca,'FontSize',12);
+                caxis([-.03 .1])
+
+            end
+                    % Add super title and colorbar
+            sgtitle('Response Difference POST-PRE STIM+SOUNDS', 'FontWeight', 'normal');
+            cb = colorbar;
+            cb.Position = [0.915 0.37 0.02 0.3];%[0.92 0.1 0.02 0.8]; %left,bottom,idth,height
+            cb.Label.String = 'Difference';
+            
+            if isfield(params, 'savepath')
+                saveas(gcf, fullfile(params.savepath, ...
+                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s.png', dir_name{direction},type)));
+                exportgraphics(gcf,fullfile(params.savepath, ...
+                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
+            end
+        end
+
+
         
 
 

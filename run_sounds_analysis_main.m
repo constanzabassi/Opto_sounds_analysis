@@ -77,7 +77,7 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 % Set y-axis limits for the plots.
 plot_info.y_lims = [-.4, .4];
 % Set labels for plots.
-plot_info.plot_labels = {'Left Sounds','Right Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.plot_labels = {'Sounds','Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 params.plot_info = plot_info;

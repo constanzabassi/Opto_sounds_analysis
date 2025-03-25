@@ -11,10 +11,12 @@ function mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_
     % 2. Plot overlap between contexts
 %     contexts_to_compare = [1,2]; % Active vs Passive
 %     overlap_labels = {'Active', 'Passive', 'Both'};
-    percent_cells = calculate_sig_overlap_percentages(...
-        sig_mod_boot, ...
-        mod_indexm, contexts_to_compare);
-    plot_sig_overlap_pie(percent_cells, overlap_labels, save_dir, contexts_to_compare);
+    if size(sig_mod_boot,2) > 1 %must have more than one context
+        percent_cells = calculate_sig_overlap_percentages(...
+            sig_mod_boot, ...
+            mod_indexm, contexts_to_compare);
+        plot_sig_overlap_pie(percent_cells, overlap_labels, save_dir, contexts_to_compare);
+    end
 
     % 3. Plot modulation index distributions
     [context_mod_all, ~, ~, ~, celltypes_ids] = organize_sig_mod_index_contexts_celltypes(...

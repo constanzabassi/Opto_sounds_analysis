@@ -3,12 +3,12 @@ info_str = 'deconv_all'; %data/ running trial data/ mod index sign
 dynamics_params.name_string = 'sig_sound_cells_deconv5559';%'0104_pos_54-59trials3060_1sec' %include threshold, frames used, bins used (based on running speed)
 
 dynamics_params.threshold_single_side = 1; %0 or 1
-dynamics_params.mod_threshold  = 0.1;
+dynamics_params.mod_threshold  = 0.5;
 dynamics_params.chosen_mice = [1:24];
 
 sig_mod_boot_thr = get_thresholded_sig_cells(params.info, dynamics_params, mod_indexm, sig_mod_boot, sorted_cells, [],0);
 [combined_sig_cells_dynamics, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
-dynamics_params.sig_mod_boot_thr = combined_sig_cells_dynamics; %combined_sig_cells_dynamics; %non_sig_cells;
+dynamics_params.sig_mod_boot_thr = opto_only_cells';%combined_sig_cells_dynamics; %combined_sig_cells_dynamics; %non_sig_cells;
 
 
 %deconv_response{context,mouse,cel}.stim
