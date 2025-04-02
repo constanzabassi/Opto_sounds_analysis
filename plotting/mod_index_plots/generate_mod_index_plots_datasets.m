@@ -20,7 +20,7 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
     %     zero because we are taking means across + and - mod indices
     [all_stats.box_stats_datasets] = mod_index_violin_across_celltypes_datasets(save_dir, mod_index_by_dataset, params.plot_info, (params.plot_info.y_lims));
 
-    y_lim_ratio = 1.25;
+    y_lim_ratio = 1;
     % Scatter Plot of abs(mod index)
     scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);

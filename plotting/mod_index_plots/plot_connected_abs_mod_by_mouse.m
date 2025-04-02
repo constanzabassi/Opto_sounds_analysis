@@ -71,12 +71,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 mod_stats.stats(celltype,context).sem = err;
                 mod_stats.stats(celltype,context).n_valid_datasets = length(valid_data);
                  % Calculate 95% CI using bootstrapping
-                ci = bootci(1000, @mean, valid_data);
-                mod_stats.stats(celltype,context).ci = ci;
-                mod_stats.stats(celltype,context).effect_size = ...
-                (mean(valid_data) - 0) / std(valid_data); % Cohen's d
-                err_low = mean_cel - ci(1);  % lower bound error
-                err_up = ci(2) - mean_cel;   % upper bound error
+                mod_stats.stats(celltype,context).basic_stats =  get_basic_stats(valid_data)
             end
 
 %             % Plot error bar (CI)
