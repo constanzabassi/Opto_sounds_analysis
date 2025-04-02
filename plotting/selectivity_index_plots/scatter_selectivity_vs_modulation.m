@@ -1,11 +1,12 @@
-function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results)
+function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results, savepath)
     % Create figure with subplots for each context
     nDatasets = length(mod_index_results);
-    figure('Position', [100 100 600 250]);
+    figure('Position', [100 100 600 300]);
     
     contexts = {'Active', 'Passive'};
 
-%     positions = utils.calculateFigurePositions(1,3,0.5,[]);
+    positions = utils.calculateFigurePositions(1,3,0.8,[]);
+    positions(:,2) = positions(:,2)-1.5;
     
     % Create dummy points for legend
     dummy_h = zeros(1,3);
@@ -79,11 +80,22 @@ function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results
         grid on;
         xlim([-1 1]);
         ylim([-1 1]);
+        set(gca,'Units', 'inches', 'Position', positions(ctx, :))
         utils.set_current_fig;
         
     end
     
     % Add single legend to the figure
-    legend(dummy_h, 'Location', 'eastoutside');
+    legend(dummy_h, 'Location', [0.78551832733277,0.228000002324581,0.204999996423721,0.175999995350838]) %'eastoutside');
     sgtitle('Modulation Index by Sound Direction and Selectivity');
+
+    % Save figure if path provided
+        if ~isempty(savepath)
+            mkdir(savepath)
+            saveas(gcf, fullfile(savepath, ...
+                'scatter_selective_vs_modulation.png'));
+            saveas(gcf, fullfile(savepath, ...
+                 'scatter_selective_vs_modulation.fig'));
+            exportgraphics(gcf,'scatter_selective_vs_modulation.pdf', 'ContentType', 'vector');
+        end
 end

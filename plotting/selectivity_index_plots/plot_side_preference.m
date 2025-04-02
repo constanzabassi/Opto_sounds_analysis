@@ -1,4 +1,4 @@
-function plot_side_preference(selectivity_results_all, params)
+function plot_side_preference(selectivity_results_all, params,savepath)
     pool_types = {'left', 'right'};
     
     figure('Position', [100 100 700 200]);
@@ -30,4 +30,13 @@ function plot_side_preference(selectivity_results_all, params)
         colorList= (colormaps.slanCM('plasma',100));
         colormap(colorList) % redblue
     end
+    % Save figure if path provided
+        if ~isempty(savepath)
+            mkdir(savepath)
+            saveas(gcf, fullfile(savepath, ...
+                'side_preference_counts.png'));
+            saveas(gcf, fullfile(savepath, ...
+                 'side_preference_counts.fig'));
+            exportgraphics(gcf,'side_preference_counts.pdf', 'ContentType', 'vector');
+        end
 end

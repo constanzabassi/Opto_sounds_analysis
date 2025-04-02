@@ -29,5 +29,6 @@ function plot_selectivity_consistency(selectivity_results_all, savepath)
                 'scatter_modulation_comparison_across_selective.png'));
             saveas(gcf, fullfile(savepath, ...
                  'scatter_modulation_comparison_across_selective.fig'));
+            exportgraphics(gcf,'scatter_modulation_comparison_across_selective.pdf', 'ContentType', 'vector');
         end
 end

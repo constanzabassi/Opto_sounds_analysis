@@ -1,10 +1,10 @@
 
-function plot_avg_traces_direction_comparison(avg_results, selectivity_results, params)
+function plot_avg_traces_direction_comparison(avg_results, selectivity_results,save_dir,varargin)
     % Plot average responses for both left and right selective populations
     
-    if nargin < 3
+    
         params = get_default_params();
-    end
+
     
     % Create figure with 2 rows (left/right selective) x 2 columns (left/right sounds)
     figure('Position', [100 100 900 800]);
@@ -72,7 +72,12 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results, 
             end
             
             utils.set_current_fig;
-            ylim([.10 .4])
+            
+            if nargin > 3
+                ylim(varargin{1,1});
+            else
+                ylim([.10 .4])
+            end
         end
         
         % Add row label
@@ -81,6 +86,13 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results, 
             'EdgeColor', 'none', 'FontSize', 12);
 
         
+    end
+% Save plots
+    if ~isempty(save_dir)
+        mkdir(save_dir);
+        saveas(gcf, fullfile(save_dir, 'avg_traces_direction_comparison_datasets.png'));
+        saveas(gcf, fullfile(save_dir, 'avg_traces_direction_comparison_datasets.fig'));
+        exportgraphics(gcf,fullfile(save_dir, 'avg_traces_direction_comparison_datasets.pdf'), 'ContentType', 'vector');
     end
 end
 
