@@ -25,23 +25,35 @@ sound_mod_results = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\p
 sound_average = load('V:\Connie\results\opto_sound_2025\context\sounds\avg\trial_averaged_results_sounds.mat').avg_results_sounds;
 
 %previously calculated selecvitiy
-selectivity_indexm = load('V:\Connie\results\opto_sound_2025\context\sounds\selectivity\mod_indexm.mat').mod_indexm;
+% selectivity_indexm = load('V:\Connie\results\opto_sound_2025\context\sounds\selectivity\mod_indexm.mat').mod_indexm;
+selectivity_indexm = load('V:\Connie\results\opto_sound_2025\context\sounds\selectivity\prepost_ctrl\mod_indexm.mat').mod_indexm;
 
 load('V:\Connie\results\opto_sound_2025\context\data_info\sorted_cells.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 %% Analyze modulation indices by selectivity pools
-
+%Sounds first
 mod_indexm = sound_mod;
 sig_mod_boot = sound_sig_mod_boot;
 mod_index_results = sound_mod_results;
 avg_results = sound_average;
 data_type = 'sounds';
-base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
-mkdir(base)
+base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\prepost_ctrl\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
+mkdir(base);
 
-wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type)
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.3],'Response (ΔF/F)');
 
-% %%
+%% opto second
+mod_indexm = opto_mod;
+sig_mod_boot = opto_sig_mod_boot;
+mod_index_results = opto_mod_results;
+avg_results = find_average_difference(opto_average, sound_average); %opto_average;
+data_type = 'opto';
+base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\prepost_ctrl\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
+mkdir(base);
+
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.1,.2],'Difference in ΔF/F');
+
+%%
 % mod_params.mod_threshold = .1;% 0 is no threshold applied
 % mod_params.threshold_single_side = 1;% 0 is no threshold applied
 % mod_params.chosen_mice = 1:25;
