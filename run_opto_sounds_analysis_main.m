@@ -61,9 +61,20 @@ modulation_type = 1; %positive or negative
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:24];
 
+%using previously calculated mod index from prepost (looking at spont to
+%find the thresholded cells!)
+load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot.mat');
+load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\mod_indexm.mat');
 %plot % modulated cells per context
-sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
-% sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
+mod_params.threshold_single_side = 0;
+sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, [],0);
+
+
+%%
+load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
+
+% sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
+% % sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
 
 %plot % overlap of modulated cells across contexts!
 contexts_to_compare = [1,2]; %[1:3];%[1,2]; %[1,2]; %[1:3];
@@ -88,7 +99,7 @@ overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % 
 params.plot_info = plot_info;
 
 %save directory
-save_dir = [mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = []; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr(:,3), all_celltypes, params,save_dir);
@@ -104,10 +115,11 @@ save(fullfile(save_dir, 'mod_index_stats.mat'), 'mod_index_stats');
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 % Set y-axis limits for the plots.
 plot_info.y_lims = [-.2, .4];
+params.plot_info = plot_info;
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params, save_dir);
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats');
 
 %% COMPARE OPTO SOUND NEURONS
 sound_sig = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -201,5 +213,7 @@ sound_only_cells = setdiff_sig_cells(combined_sound_cells(1:24),combined_sig_cel
 cells_to_test = sound_only_cells;
 modl_fit = scatter_index_sigcells(cells_to_test, all_celltypes, [{mod_indexm{:,2}}',{sound_indexm{:,2}}'], plot_info, curr_savepath, 'Passive Opto', 'Passive Sound')
 [p_val_mod] = histogram_diff_index_sig_cells(cells_to_test, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, curr_savepath, 'Abs(pass opto) - Abs(pass sound)')
+
+
 
 
