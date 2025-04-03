@@ -1,4 +1,4 @@
-function sig_mod_boot_thr = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_savepath)
+function sig_mod_boot_thr = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, mod_savepath)
 % plot_pie_thresholded_mod_index organizes modulation indices across contexts, applies a threshold,
 % and produces plots. It then saves the thresholded significant modulation indices.
 %
@@ -52,7 +52,12 @@ for context = 1:size(sig_mod_boot,2)
     global_sig_ids = convert_indices_local_to_global(current_sig, cellfun(@length, mod_indexm(:, context)));
 
     % Call the plotting function to plot the distribution (e.g., a pie chart)of modulation indices and might return sorted cell order if needed.
-     [cellfun(@(x) x.pyr_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.som_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.pv_cells,all_celltypes,'UniformOutput',false)];
+    total_cells_all = [cellfun(@(x) length(x.pyr_cells),all_celltypes,'UniformOutput',false);cellfun(@(x) length(x.som_cells),all_celltypes,'UniformOutput',false);cellfun(@(x) length(x.pv_cells),all_celltypes,'UniformOutput',false)];
+    % Convert cell array to a numeric matrix
+    total_cells_all_mat = cell2mat(total_cells_all);
+    % Sum across columns
+    total_cells = sum(total_cells_all_mat, 2);
+
     sorted_cells = plot_mod_pie_boot(mod_params, sorted_cells, mod_index_all, global_sig_ids, mod_savepath, total_cells);
 
     % Now, for each dataset, apply the modulation threshold.
