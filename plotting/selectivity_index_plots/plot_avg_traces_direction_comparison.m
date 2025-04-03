@@ -13,17 +13,24 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     params.colors.passive = [0.5,0.5,0.5];
     params.stim_onset = 61;
 
-    
-    % Plot left selective population
-    plot_population('both.left', 1 );
-    
-    % Plot right selective population
-    plot_population('both.right', 2);
+    if nargin > 3
+        % Plot left selective population
+        save_name = plot_population('both.left', 1, varargin);
+        
+        % Plot right selective population
+        save_name = plot_population('both.right', 2, varargin);
+    else
+        % Plot left selective population
+        save_name = plot_population('both.left', 1);
+        
+        % Plot right selective population
+        save_name = plot_population('both.right', 2);
+    end
 
     
     sgtitle('Population Responses by Selectivity', 'FontWeight', 'normal');
     
-    function plot_population(pool_type, row)
+    function save_name = plot_population(pool_type, row,varargin)
         parts = strsplit(pool_type, '.');
         cell_indices = selectivity_results.(parts{1}).(parts{2}).cell_indices;
         directions = {'Left', 'Right'};
@@ -56,7 +63,18 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             
             % Format plot
             xlabel('Time (s)');
-            ylabel('Response (ΔF/F)');
+            if nargin > 2 && numel(varargin)>0 &&length(varargin{1, 1}{1, 1}{1, 1})>1
+                ylabel(varargin{1, 1}{1, 1}{1, 1}{1, 2});
+                ylabel_text = varargin{1, 1}{1, 1}{1, 1}{1, 2};
+            else
+                ylabel('Response (ΔF/F)');
+                ylabel_text = 'Response (ΔF/F)';
+            end
+                        % Sanitize ylabel text for filenames (remove spaces and special characters)
+            save_name = strrep(ylabel_text, ' ', '_');  % Replace spaces with underscores
+            save_name = regexprep(save_name, '[^\w_]', '');  % Remove non-alphanumeric characters except underscores
+
+
             title(sprintf('%s Sound (n=%d)', directions{dir}, length(cell_indices)));
             
             % Add axis ticks
@@ -73,8 +91,8 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             
             utils.set_current_fig;
             
-            if nargin > 3
-                ylim(varargin{1,1});
+            if nargin > 2 && numel(varargin)>0
+                ylim(varargin{1, 1}{1, 1}{1, 1}{1});
             else
                 ylim([.10 .4])
             end
@@ -87,12 +105,13 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
 
         
     end
-% Save plots
+
+    % Save plots with the ylabel in the filename
     if ~isempty(save_dir)
         mkdir(save_dir);
-        saveas(gcf, fullfile(save_dir, 'avg_traces_direction_comparison_datasets.png'));
-        saveas(gcf, fullfile(save_dir, 'avg_traces_direction_comparison_datasets.fig'));
-        exportgraphics(gcf,fullfile(save_dir, 'avg_traces_direction_comparison_datasets.pdf'), 'ContentType', 'vector');
+        saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.png']));
+        saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.fig']));
+        exportgraphics(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.pdf']), 'ContentType', 'vector');
     end
 end
 

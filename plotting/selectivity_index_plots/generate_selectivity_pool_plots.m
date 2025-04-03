@@ -18,7 +18,7 @@ plot_side_preference(selectivity_results, params, savepath);
 scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results, savepath);
 
 %average plots separated by selectivity
-if nargin > 6
+if nargin > 8
     plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath,varargin);
 else
     plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath);
