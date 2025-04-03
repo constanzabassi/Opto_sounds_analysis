@@ -8,5 +8,5 @@ function sig_cells = get_significant_neurons(sig_mod_boot,mod_index,mode)
 if strcmp(mode,'union')
     [sig_cells, ~] = union_sig_cells(sig_mod_boot(:,1)', sig_mod_boot(:,2)', mod_index);
 else
-    sig_cells = sig_mod_boot(:,3); %from spontaneous context
+    sig_cells = sig_mod_boot(:,3)'; %from spontaneous context
 end

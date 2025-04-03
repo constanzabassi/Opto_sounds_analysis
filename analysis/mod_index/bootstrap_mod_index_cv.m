@@ -35,7 +35,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
 %
 %   Author: Your Name, Date
     %%% Step 1: Compute Averages for Group1 and Group2 %%%
-    if (strcmp(mod_type, 'prepost') || strcmp(mod_type, 'prepost_sound')) && length(response_range) > 1
+    if (strcmp(mod_type, 'prepost') || strcmp(mod_type, 'prepost_sound') || strcmp(mod_type,'prepost_abs')) && length(response_range) > 1
         % For prepost comparisons: use two different response windows.
         % using subset1 which is probably stim data
         group1 = mean(data_subset1(:, :, response_range{1}), 3);  % e.g., post period
@@ -45,7 +45,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             group1 = mean(data_subset2(:, :, response_range{1}), 3);
             group2 = mean(data_subset2(:, :, response_range{2}), 3);
         end
-    elseif strcmp(mod_type, 'prepost_ctrl') 
+    elseif strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'prepost_ctrl_abs')
             group1 = mean(data_subset1(:, :, response_range{1}), 3) - mean(data_subset1(:, :, response_range{2}), 3);
             group2 = mean(data_subset2(:, :, response_range{2}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
 
@@ -66,6 +66,10 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         observed_mod = compute_mod_index_prepost(group1, group2);
     elseif strcmp(mod_type, 'prepost_num')
         observed_mod = compute_mod_index_prepost_numerator(group1, group2);
+    elseif strcmp(mod_type, 'prepost_ctrl_abs')
+        observed_mod = compute_mod_index_ctrl_abs(group1, group2);
+    elseif strcmp(mod_type,'prepost_abs')
+        observed_mod = compute_mod_index_prepost_abs(group1, group2);
     else
         error('Invalid mod_type. Choose from ''ctrl'', ''influence'', ''prepost'', or ''prepost_sound''.');
     end
@@ -94,6 +98,10 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             bootMod(shuff, :) = compute_mod_index_prepost(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'prepost_num')
             bootMod(shuff, :) = compute_mod_index_prepost_numerator(simGroup1, simGroup2);
+        elseif strcmp(mod_type, 'prepost_ctrl_abs')
+            bootMod(shuff, :) = compute_mod_index_ctrl_abs(simGroup1, simGroup2);
+        elseif strcmp(mod_type,'prepost_abs')
+            bootMod(shuff, :) = compute_mod_index_prepost_abs(simGroup1, simGroup2);
         else
             error('Invalid mod_type in bootstrapping. Choose from ''ctrl'', ''influence'', ''prepost'', or ''prepost_sound''.');
         end
