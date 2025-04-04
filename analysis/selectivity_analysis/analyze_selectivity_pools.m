@@ -1,4 +1,4 @@
-function [selectivity_results_by_dataset,selectivity_results_all] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, sig_mod_boot_thr,all_celltypes, params)
+function [selectivity_results_by_dataset,selectivity_results_all] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results,selectivity_index_results, sig_mod_boot_thr,all_celltypes, params)
 
     
     % Get significant cells across active and passive contexts
@@ -21,11 +21,15 @@ function [selectivity_results_by_dataset,selectivity_results_all] = analyze_sele
         % Get selectivity indices for current dataset
         selectivity_active = selectivity_indexm{dataset_index,1};
         selectivity_passive = selectivity_indexm{dataset_index,2};
+
+        %Get significantly selective neurons for current dataset (use
+        %uniont of active and passive)
+        sig_selective_neurons = union(selectivity_index_results(dataset_index).context(1).sig_neurons,selectivity_index_results(dataset_index).context(2).sig_neurons);
         
         % Categorize into selectivity pools
         pools{dataset_index} = categorize_selective_cells(selectivity_active, ...
             selectivity_passive, selectivity_threshold, ...
-            combined_sig_cells{1,dataset_index});
+            combined_sig_cells{1,dataset_index},sig_selective_neurons, params);
         
 %         % Analyze modulation indices for each pool
 %         selectivity_results_by_dataset{dataset_index} = analyze_mod_by_selectivity_pool(...

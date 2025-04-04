@@ -37,7 +37,9 @@ function [combined_results, all_pool_indices] = process_pool_data(all_results, c
                 'passive_max_mod', [], ...
                 'active_preferred', {{}}, ...
                 'passive_preferred', {{}}, ...
-                'cell_indices', []);
+                'cell_indices', [], ...
+                'relative_cell_indices', [], ...
+                'dataset_ids', []);
             indices = [];
             
             % Concatenate data across datasets
@@ -49,7 +51,7 @@ function [combined_results, all_pool_indices] = process_pool_data(all_results, c
                 global_indices = curr_pool.cell_indices + cells_cumsum(d_idx);
                 
                 % Accumulate data
-                pool_data = accumulate_pool_data(pool_data, curr_pool, global_indices);
+                pool_data = accumulate_pool_data(pool_data, curr_pool, global_indices, d_idx);
                 indices = [indices; global_indices(:)];
             end
             
@@ -60,7 +62,7 @@ function [combined_results, all_pool_indices] = process_pool_data(all_results, c
     end
 end
 
-function pool_data = accumulate_pool_data(pool_data, curr_pool, global_indices)
+function pool_data = accumulate_pool_data(pool_data, curr_pool, global_indices, dataset_id)
     % Accumulate modulation data from both contexts
     pool_data.active_left_mod = [pool_data.active_left_mod; curr_pool.active_left_mod(:)];
     pool_data.active_right_mod = [pool_data.active_right_mod; curr_pool.active_right_mod(:)];
@@ -71,6 +73,10 @@ function pool_data = accumulate_pool_data(pool_data, curr_pool, global_indices)
     pool_data.active_preferred = [pool_data.active_preferred; curr_pool.active_preferred(:)];
     pool_data.passive_preferred = [pool_data.passive_preferred; curr_pool.passive_preferred(:)];
     pool_data.cell_indices = [pool_data.cell_indices; global_indices(:)];
+    n_cells = numel(curr_pool.cell_indices);
+    pool_data.relative_cell_indices = [pool_data.relative_cell_indices; curr_pool.cell_indices(:)];
+    pool_data.dataset_ids = [pool_data.dataset_ids; repmat(dataset_id, n_cells, 1)];
+
 end
 
 function pool_struct = create_pool_struct(pool_data)
@@ -84,7 +90,9 @@ function pool_struct = create_pool_struct(pool_data)
         'passive_max_mod', pool_data.passive_max_mod, ...
         'active_preferred', {pool_data.active_preferred}, ...
         'passive_preferred', {pool_data.passive_preferred}, ...
-        'cell_indices', pool_data.cell_indices);
+        'cell_indices', pool_data.cell_indices, ...
+        'relative_cell_indices', pool_data.relative_cell_indices, ...
+        'dataset_ids', pool_data.dataset_ids);
     
     % Add statistics
     pool_struct.stats = compute_pool_stats(pool_struct);

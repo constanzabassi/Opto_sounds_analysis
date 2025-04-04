@@ -15,7 +15,7 @@ plot_selectivity_consistency(selectivity_results, savepath);
 plot_side_preference(selectivity_results, params, savepath); 
 
  %scatter plot of modulation index separated by sides and selectivity
-scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results, savepath);
+scatter_selectivity_vs_modulation(selectivity_results, mod_index_results, savepath);
 
 %average plots separated by selectivity
 if nargin > 8

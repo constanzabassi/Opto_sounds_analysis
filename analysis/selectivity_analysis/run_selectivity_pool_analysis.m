@@ -45,7 +45,7 @@ params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect
 base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
-wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.5],'Response (ΔF/F)');
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.5],'Response (ΔF/F)');
 
 %% opto second
 mod_indexm = opto_mod;

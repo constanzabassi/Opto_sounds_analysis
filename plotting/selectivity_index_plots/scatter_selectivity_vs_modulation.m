@@ -1,4 +1,4 @@
-function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results, savepath)
+function scatter_selectivity_vs_modulation(selectivity_results, mod_index_results, savepath)
     % Create figure with subplots for each context
     nDatasets = length(mod_index_results);
     figure('Position', [100 100 600 300]);
@@ -26,16 +26,17 @@ function scatter_selectivity_vs_modulation(selectivity_indexm, mod_index_results
         for d = 1:nDatasets
             % Get modulation and selectivity data
             mod_data = mod_index_results(d).context(ctx).cv_mod_index_separate;
-            sel_idx = selectivity_indexm{d,ctx};
+%             sel_idx = selectivity_indexm{d,ctx};
             
             % Get raw modulation values
             left_mod = mod_data.left;
             right_mod = mod_data.right;
             
             % Categorize by selectivity
-            left_selective = sel_idx >threshold;
-            right_selective = sel_idx < threshold*-1;
-            nonsel = abs(sel_idx) <= threshold;
+            left_selective = selectivity_results.both.left.relative_cell_indices(selectivity_results.both.left.dataset_ids == d) ;%sel_idx >threshold;
+            right_selective = selectivity_results.both.right.relative_cell_indices(selectivity_results.both.right.dataset_ids == d) ;%sel_idx < threshold*-1;
+            nonsel = selectivity_results.both.nonsel.relative_cell_indices(selectivity_results.both.nonsel.dataset_ids == d) ;%abs(sel_idx) <= threshold;
+
             
             % Plot each selectivity group (without DisplayName to avoid multiple legend entries)
             %non selective

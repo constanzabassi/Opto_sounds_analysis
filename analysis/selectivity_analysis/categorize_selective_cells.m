@@ -1,4 +1,4 @@
-function pools = categorize_selective_cells(selectivity_active, selectivity_passive, threshold, sig_cells, params)
+function pools = categorize_selective_cells(selectivity_active, selectivity_passive, threshold, sig_cells,sig_selective_neurons, params)
     % Categorizes neurons into selectivity pools for both active and passive contexts
     %
     % Inputs:
@@ -19,11 +19,11 @@ function pools = categorize_selective_cells(selectivity_active, selectivity_pass
     
     % Categorize cells in active context
     [pools.active.left, pools.active.right, pools.active.nonsel] = ...
-        categorize_selectivity_context(selectivity_active, threshold, sig_cells);
+        categorize_selectivity_context(selectivity_active, threshold, sig_cells, sig_selective_neurons);
     
     % Categorize cells in passive context
     [pools.passive.left, pools.passive.right, pools.passive.nonsel] = ...
-        categorize_selectivity_context(selectivity_passive, threshold, sig_cells);
+        categorize_selectivity_context(selectivity_passive, threshold, sig_cells, sig_selective_neurons);
     
 %     % Find cells selective in both contexts
 %     pools.both.left = union(pools.active.left, pools.passive.left);
