@@ -46,8 +46,11 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             group2 = mean(data_subset2(:, :, response_range{2}), 3);
         end
     elseif strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'prepost_ctrl_abs')
+        % Ensure your data is in double precision
+            data_subset1 = double(data_subset1);
+            data_subset2 = double(data_subset2);
             group1 = mean(data_subset1(:, :, response_range{1}), 3) - mean(data_subset1(:, :, response_range{2}), 3);
-            group2 = mean(data_subset2(:, :, response_range{2}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
+            group2 = mean(data_subset2(:, :, response_range{1}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
 
     else
         % For 'ctrl' and 'influence', use the first response_range:
@@ -70,6 +73,8 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         observed_mod = compute_mod_index_ctrl_abs(group1, group2);
     elseif strcmp(mod_type,'prepost_abs')
         observed_mod = compute_mod_index_prepost_abs(group1, group2);
+    elseif strcmp(mod_type,'ctrl_abs')
+        observed_mod = compute_mod_index_ctrl_abs(group1, group2);
     else
         error('Invalid mod_type. Choose from ''ctrl'', ''influence'', ''prepost'', or ''prepost_sound''.');
     end
@@ -102,6 +107,8 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             bootMod(shuff, :) = compute_mod_index_ctrl_abs(simGroup1, simGroup2);
         elseif strcmp(mod_type,'prepost_abs')
             bootMod(shuff, :) = compute_mod_index_prepost_abs(simGroup1, simGroup2);
+        elseif strcmp(mod_type,'ctrl_abs')
+            bootMod(shuff, :) = compute_mod_index_ctrl_abs(simGroup1, simGroup2);
         else
             error('Invalid mod_type in bootstrapping. Choose from ''ctrl'', ''influence'', ''prepost'', or ''prepost_sound''.');
         end

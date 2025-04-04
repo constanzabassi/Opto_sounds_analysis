@@ -9,6 +9,9 @@ elseif strcmp(mod_type, 'prepost_sound') && length(response_range) > 1
     data1_fold_avg = mean(data2_fold(:, :, response_range{1}), 3); %use first only (assuming ctrl) for sounds
     data2_fold_avg = mean(data2_fold(:, :, response_range{2}), 3); %use first only (assuming ctrl) for sounds
 elseif strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'prepost_ctrl_abs')
+    % Ensure your data is in double precision
+    data_subset1 = double(data_fold);
+    data_subset2 = double(data2_fold);
     data1_fold_avg = mean(data_fold(:, :, response_range{1}), 3) - mean(data_fold(:, :, response_range{2}), 3); %difference of values pre-post
     data2_fold_avg = mean(data2_fold(:, :, response_range{1}), 3)- mean(data2_fold(:, :, response_range{2}), 3);
 else
