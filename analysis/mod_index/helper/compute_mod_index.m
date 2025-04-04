@@ -19,6 +19,8 @@ function mod_index = compute_mod_index(avg1, avg2, mod_type)
             mod_index = compute_mod_index_prepost_numerator(avg1, avg2); %post,pre
         case 'prepost_abs'
             mod_index = compute_mod_index_prepost_abs(avg1, avg2); %post,pre 
+        case 'ctrl_abs'
+            mod_index = compute_mod_index_ctrl_abs(avg1, avg2);
         otherwise
             error('Invalid mod_type. Choose from ''ctrl'', ''influence'', or ''prepost''');
     end
