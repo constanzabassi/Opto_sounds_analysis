@@ -1,4 +1,4 @@
-function wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type)
+function wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
     % WRAPPER FUNCTION FOR SELECTIVITY POOL ANALYSIS
     %
     % Inputs:
@@ -40,16 +40,16 @@ function wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_bo
         
         %decide which contexts to use to define significant neurons
         if contains(data_type, 'sound')
-            sig_cells = get_significant_neurons(sig_mod_boot, mod_indexm, 'union'); %union of active and passive
+            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
         else
-            sig_cells = get_significant_neurons(sig_mod_boot, mod_indexm, 'spont');
+            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'spont');
         end
         
         %separate neurons into left/right/non selective based on their
         %selecvitiy index (currently using .1 as threshold)
-        [selectivity_results_by_dataset, selectivity_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, current_sig_cells, all_celltypes, params);
+        [selectivity_results_by_dataset, selectivity_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, sig_cells', all_celltypes, params);
         
         % Plot modulation indices for each pool
-        generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath);
+        generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
     end
 end
