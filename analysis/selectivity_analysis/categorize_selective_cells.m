@@ -1,4 +1,4 @@
-function pools = categorize_selective_cells(selectivity_active, selectivity_passive, threshold, sig_cells)
+function pools = categorize_selective_cells(selectivity_active, selectivity_passive, threshold, sig_cells, params)
     % Categorizes neurons into selectivity pools for both active and passive contexts
     %
     % Inputs:
@@ -25,14 +25,39 @@ function pools = categorize_selective_cells(selectivity_active, selectivity_pass
     [pools.passive.left, pools.passive.right, pools.passive.nonsel] = ...
         categorize_selectivity_context(selectivity_passive, threshold, sig_cells);
     
+%     % Find cells selective in both contexts
+%     pools.both.left = union(pools.active.left, pools.passive.left);
+%     pools.both.right = union(pools.active.right, pools.passive.right);
+%     
+%     % Find consistently non-selective cells
+%     pools.both.nonsel = union(pools.active.nonsel, pools.passive.nonsel);
+
     % Find cells selective in both contexts
-    pools.both.left = union(pools.active.left, pools.passive.left);
-    pools.both.right = union(pools.active.right, pools.passive.right);
+    % Ensure neurons do not switch selectivity between contexts
+    common_left = intersect(pools.active.left, pools.passive.left);
+    common_right = intersect(pools.active.right, pools.passive.right);
     
-    % Find consistently non-selective cells
-    pools.both.nonsel = union(pools.active.nonsel, pools.passive.nonsel);
+    % Find neurons that switch from left to right or vice versa
+    switchers = intersect(pools.active.left, pools.passive.right);
+    switchers = union(switchers, intersect(pools.active.right, pools.passive.left));
     
-%     % Add metadata about selectivity consistency
+    % Define selective pools based on mode
+    if strcmp(params.selectivity_sounds.selectivity_sig_mode, 'union')
+        % Union, but remove switchers
+        pools.both.left = setdiff(union(pools.active.left, pools.passive.left), switchers);
+        pools.both.right = setdiff(union(pools.active.right, pools.passive.right), switchers);
+    elseif strcmp(params.selectivity_sounds.selectivity_sig_mode, 'intersect')
+        % Strict intersection
+        pools.both.left = common_left;
+        pools.both.right = common_right;
+    else
+        error('Invalid selectivity_sig_mode. Choose ''union'' or ''intersect''.');
+    end
+
+    % Non-selective pool: Anything that isn't in left or right
+    pools.both.nonsel = setdiff(sig_cells, [pools.both.left, pools.both.right]);
+    
+    % Add metadata about selectivity consistency
 %     pools.stats.consistency = compute_selectivity_consistency(pools);
 end
 % 
@@ -41,7 +66,7 @@ end
 %     consistency = struct();
 %     
 %     % Calculate total cells in each category
-%     consistency.total_cells = length([pools.active.left; pools.active.right; pools.active.nonsel]);
+%     consistency.total_cells = length([pools.active.left, pools.active.right, pools.active.nonsel]);
 %     
 %     % Calculate numbers of consistent cells
 %     consistency.consistent_left = length(pools.both.left);
