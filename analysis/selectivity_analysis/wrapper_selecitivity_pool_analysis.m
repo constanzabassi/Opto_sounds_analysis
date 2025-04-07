@@ -1,4 +1,4 @@
-function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, current_sig_cells, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
+function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, mod_indexm2, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
     % WRAPPER FUNCTION FOR SELECTIVITY POOL ANALYSIS
     %
     % Inputs:
@@ -23,6 +23,10 @@ function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecit
         struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savepath', [base 'negative_modulated']),
         struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savepath', [base 'all_modulated'])
     };
+
+    % Initialize containers
+    selectivity_results_all = cell(1, length(param_sets));
+    selectivity_results_by_dataset_all = cell(1, length(param_sets));
     
     for i = 1:length(param_sets)
         mod_params = param_sets{i};
@@ -34,22 +38,29 @@ function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecit
         
         selectivity_params.savepath = mod_params.savepath;
         mkdir(selectivity_params.savepath);
+
         
-        %separate sig cells based on threshold (and single side or not)
 %         current_sig_cells = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, selectivity_params.savepath, 0);
         
         %decide which contexts to use to define significant neurons
         if contains(data_type, 'sound')
+            %separate sig cells based on threshold (and single side or not)
+            current_sig_cells = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot);
             sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
         else
+            %separate sig cells based on threshold (and single side or not)
+            current_sig_cells = get_thresholded_sig_cells_simple( mod_params, mod_indexm2, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
             sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'spont');
         end
         
         %separate neurons into left/right/non selective based on their
         %selecvitiy index (currently using .1 as threshold)
-        [selectivity_results_by_dataset, selectivity_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, selectivity_index_results ,sig_cells', all_celltypes, params);
+        [sel_by_dataset, sel_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, selectivity_index_results ,sig_cells', all_celltypes, params);
         
         % Plot modulation indices for each pool
-        selectivity_results.both.flagged_neurons{i} = generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
-    end
+        sel_results.both.flagged_neurons = generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
+        selectivity_results_all{i} = sel_results;
+        selectivity_results_by_dataset_all{i} = sel_by_dataset;
+    end 
+
 end
