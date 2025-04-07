@@ -19,7 +19,9 @@ function plot_selectivity_consistency(selectivity_results_all, savepath)
         
         % Add correlation
         r = corrcoef(active_mods, passive_mods);
-        text(0.1, 0.9, sprintf('r = %.2f', r(1,2)), 'Units', 'normalized');
+        if length(r) > 1
+            text(0.1, 0.9, sprintf('r = %.2f', r(1,2)), 'Units', 'normalized');
+        end
     end
 
     % Save figure if path provided

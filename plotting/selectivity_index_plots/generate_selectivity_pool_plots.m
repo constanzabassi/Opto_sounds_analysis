@@ -1,4 +1,4 @@
-function generate_selectivity_pool_plots(selectivity_results,selectivity_indexm,mod_index_results,avg_results,all_celltypes,sig_cells, params, savepath,varargin)
+function flagged_neurons = generate_selectivity_pool_plots(selectivity_results,selectivity_indexm,mod_index_results,avg_results,all_celltypes,sig_cells, params, savepath,varargin)
 % scatter of selectivity index across contexts (significant neurons only)
 modl_fit = scatter_index_sigcells(sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], params.plot_info, savepath, 'Active Selectivity', 'Passive Selectivity');
 
@@ -12,7 +12,7 @@ plot_selectivity_comparison(selectivity_results, savepath);
 plot_selectivity_consistency(selectivity_results, savepath); 
 
 %plots counts of preferred side
-plot_side_preference(selectivity_results, params, savepath); 
+flagged_neurons = plot_side_preference(selectivity_results, params, savepath); 
 
  %scatter plot of modulation index separated by sides and selectivity
 scatter_selectivity_vs_modulation(selectivity_results, mod_index_results, savepath);

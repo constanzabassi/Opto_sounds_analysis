@@ -9,7 +9,7 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     % Create figure with 2 rows (left/right selective) x 2 columns (left/right sounds)
     figure('Position', [100 100 900 800]);
 
-        params.colors.active = 'k';
+        params.colors.active = [0,0,0];
     params.colors.passive = [0.5,0.5,0.5];
     params.stim_onset = 61;
 
@@ -19,12 +19,18 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
         
         % Plot right selective population
         save_name = plot_population('both.right', 2, varargin);
+
+        % Plot non-selective population (added as the third row)
+        save_name = plot_population('both.nonsel', 3, varargin);
     else
         % Plot left selective population
         save_name = plot_population('both.left', 1);
         
         % Plot right selective population
         save_name = plot_population('both.right', 2);
+
+        % Plot non-selective population (added as the third row)
+        save_name = plot_population('both.nonsel', 3);
     end
 
     
@@ -32,11 +38,15 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     
     function save_name = plot_population(pool_type, row,varargin)
         parts = strsplit(pool_type, '.');
-        cell_indices = selectivity_results.(parts{1}).(parts{2}).cell_indices;
+        if strcmp(parts{2}, 'nonsel')
+            cell_indices = selectivity_results.both.nonsel.cell_indices;
+        else
+            cell_indices = selectivity_results.(parts{1}).(parts{2}).cell_indices;
+        end
         directions = {'Left', 'Right'};
         
         for dir = 1:2
-            subplot(2, 2, (row-1)*2 + dir);
+            subplot(3, 2, (row-1)*2 + dir);
             hold on;
             
             % Get responses for this direction in both contexts
@@ -86,8 +96,11 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             % Add legend only once
             if row == 1 && dir == 1
                 legend([h1.mainLine, h2.mainLine], {'Active', 'Passive'}, ...
-                    'Location', 'best', 'box', 'off');
+                    'Location', 'southeast', 'box', 'off');
+%                 utils.place_text_labels({'Active', 'Passive'}, [params.colors.active;params.colors.passive],.3);
             end
+
+            
             
             utils.set_current_fig;
             
@@ -97,10 +110,17 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
                 ylim([.10 .4])
             end
         end
+
+        % Add row label
+        if strcmp(parts{2}, 'nonsel')
+            row_label = 'Non-Selective';
+        else
+            row_label = sprintf('%s Selective', parts{2});
+        end
         
         % Add row label
-        annotation('textbox', [0.01, 1.05-row*0.5, 0.1, 0.1], ...
-            'String', sprintf('%s Selective', parts{2}), ...
+        annotation('textbox', [0.01, 1.05 - row * 0.33, 0.1, 0.1], ...
+            'String', row_label, ...
             'EdgeColor', 'none', 'FontSize', 12);
 
         
