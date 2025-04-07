@@ -1,4 +1,4 @@
-function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
+function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, current_sig_cells, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
     % WRAPPER FUNCTION FOR SELECTIVITY POOL ANALYSIS
     %
     % Inputs:
@@ -36,7 +36,7 @@ function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecit
         mkdir(selectivity_params.savepath);
         
         %separate sig cells based on threshold (and single side or not)
-        current_sig_cells = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, selectivity_params.savepath, 0);
+%         current_sig_cells = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, selectivity_params.savepath, 0);
         
         %decide which contexts to use to define significant neurons
         if contains(data_type, 'sound')
