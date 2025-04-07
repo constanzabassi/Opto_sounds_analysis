@@ -1,4 +1,4 @@
-function wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
+function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
     % WRAPPER FUNCTION FOR SELECTIVITY POOL ANALYSIS
     %
     % Inputs:
@@ -50,6 +50,6 @@ function wrapper_selecitivity_pool_analysis(base, params, mod_indexm, sig_mod_bo
         [selectivity_results_by_dataset, selectivity_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, selectivity_index_results ,sig_cells', all_celltypes, params);
         
         % Plot modulation indices for each pool
-        generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
+        selectivity_results.both.flagged_neurons{i} = generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
     end
 end

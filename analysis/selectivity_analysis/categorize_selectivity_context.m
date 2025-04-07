@@ -17,5 +17,5 @@ function [left_sel, right_sel, nonsel] = categorize_selectivity_context(selectiv
     % Find selective cells
     right_sel = sig_cells(selectivity(sig_cells) <= -threshold & ismember(sig_cells, sig_selective_neurons));
     left_sel = sig_cells(selectivity(sig_cells) >= threshold & ismember(sig_cells, sig_selective_neurons));
-    nonsel = sig_cells(abs(selectivity(sig_cells)) < threshold);
+    nonsel = sig_cells(abs(selectivity(sig_cells)) < threshold); %| ~ismember(sig_cells, sig_selective_neurons));
 end
