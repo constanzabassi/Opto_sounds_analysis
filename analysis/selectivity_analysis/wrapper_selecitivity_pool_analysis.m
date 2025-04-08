@@ -1,4 +1,4 @@
-function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, mod_indexm2, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
+function [selectivity_results_by_dataset_all,selectivity_results_all] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm, mod_indexm2, sig_mod_boot, mod_index_results, selectivity_index_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type, varargin)
     % WRAPPER FUNCTION FOR SELECTIVITY POOL ANALYSIS
     %
     % Inputs:
@@ -58,7 +58,7 @@ function [selectivity_results_by_dataset, selectivity_results] = wrapper_selecit
         [sel_by_dataset, sel_results] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, selectivity_index_results ,sig_cells', all_celltypes, params);
         
         % Plot modulation indices for each pool
-        sel_results.both.flagged_neurons = generate_selectivity_pool_plots(selectivity_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
+        sel_results.both.flagged_neurons = generate_selectivity_pool_plots(sel_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
         selectivity_results_all{i} = sel_results;
         selectivity_results_by_dataset_all{i} = sel_by_dataset;
     end 

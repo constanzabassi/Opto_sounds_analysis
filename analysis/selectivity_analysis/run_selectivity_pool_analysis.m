@@ -25,6 +25,7 @@ sound_mod = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_s
 sound_mod_results = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_index_results.mat').results;
 [sound_sig_cells, ~] = union_sig_cells(sound_sig_mod_boot_thr(:,1)', sound_sig_mod_boot_thr(:,2)', sound_mod);
 sound_average = load('V:\Connie\results\opto_sound_2025\context\sounds\avg\trial_averaged_results_sounds.mat').avg_results_sounds;
+sound_stim_average = load('V:\Connie\results\opto_sound_2025\context\sounds\avg\trial_averaged_results_sounds_stim.mat').avg_results;
 
 %previously calculated selecvitiy
 selectivity_mode = 'prepost_ctrl';
@@ -43,11 +44,13 @@ sig_mod_boot = sound_sig_mod_boot;
 mod_index_results = sound_mod_results;
 avg_results = sound_average;
 data_type = 'sounds';
-params.selectivity_sounds.selectivity_sig_mode = 'intersect'; %'union' or 'intersect'
+params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect'
 base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
 [selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Response (ΔF/F)');
+
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, sound_stim_average, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound+Stim (ΔF/F)');
 
 %% opto second
 mod_indexm = opto_mod;
@@ -55,7 +58,7 @@ sig_mod_boot = opto_sig_mod_boot;
 mod_index_results = opto_mod_results;
 avg_results = find_average_difference(opto_average, sound_average); %opto_average;
 data_type = 'opto';
-params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect'
+params.selectivity_sounds.selectivity_sig_mode = 'intersect'; %'union' or 'intersect'
 base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
