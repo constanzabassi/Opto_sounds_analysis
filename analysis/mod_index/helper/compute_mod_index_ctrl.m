@@ -20,6 +20,8 @@ function mod_index = compute_mod_index_ctrl(stim_avg, ctrl_avg)
 %     mod_index: 1 x nNeurons vector of modulation indices.
     nNeurons = size(stim_avg, 2);
     mod_index = zeros(1, nNeurons);
+
+    epsilon = 1e-5;  % small number to stabilize denominator
     for cel = 1:nNeurons
         % Compute the average response for the neuron across trials.
         stim_val = mean(stim_avg(:, cel));
@@ -27,7 +29,7 @@ function mod_index = compute_mod_index_ctrl(stim_avg, ctrl_avg)
         if (stim_val + ctrl_val) == 0
             mod_index(cel) = 0;
         else
-            mod_index(cel) = (stim_val - ctrl_val) / (stim_val + ctrl_val);
+            mod_index(cel) = (stim_val - ctrl_val) / (stim_val + ctrl_val + epsilon);
         end
         % If the result is exactly 1 or -1 and one of the responses is zero, set index to 0.
         if ((mod_index(cel) == 1 || mod_index(cel) == -1) && (stim_val == 0 || ctrl_val == 0)) || abs(mod_index(cel)) > 1
