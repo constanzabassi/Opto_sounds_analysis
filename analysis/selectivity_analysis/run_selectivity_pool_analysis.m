@@ -70,7 +70,14 @@ wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto_mod_prepost, s
 avg_results = sound_average;
 wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto_mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Sound ΔF/F');
 
-%%
+%% compare the overlap of opto neurons and sound neurons
+
+contexts_to_compare = [1,2]; %[1:3];%[1,2]; %[1,2]; %[1:3];
+overlap_labels = {'Opto Only', 'Sound Only','Opto&Sound','Not Modulated'}; 
+save_dir = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both'];
+[percent_cells, percent_cells_per_dataset] = calculate_sig1_vs_sig2_overlap(opto_sig_cells(1:24,:), sound_sig_mod_boot_thr, opto_mod, contexts_to_compare);
+plot_sig_overlap_pie(mean(percent_cells_per_dataset), overlap_labels, save_dir, contexts_to_compare);
+
 % mod_params.mod_threshold = .1;% 0 is no threshold applied
 % mod_params.threshold_single_side = 1;% 0 is no threshold applied
 % mod_params.chosen_mice = 1:25;
