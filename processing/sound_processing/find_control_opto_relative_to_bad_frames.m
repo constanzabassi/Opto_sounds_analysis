@@ -1,4 +1,4 @@
-function [control_output, opto_output, control_output_bad_frames, opto_output_bad_frames] = find_control_opto_relative_to_bad_frames(passive_frames, bad_frames, context_tr, context_num)
+function [control_output, opto_output, excludedIndices, control_output_bad_frames, opto_output_bad_frames] = find_control_opto_relative_to_bad_frames(passive_frames, bad_frames, context_tr, context_num)
 % FIND_CONTROL_opto_relative_to_FRAMES identifies trial indices for control and opto conditions 
 % based on corrected frame information.
 %
@@ -17,6 +17,8 @@ function [control_output, opto_output, control_output_bad_frames, opto_output_ba
 %                                 that correspond to control conditions.
 %     opto_output               - Sorted vector of trial indices (from passive_frames)
 %                                 that correspond to opto conditions.
+%       extra_output            - Sorted vector of trial indices that
+%                                   include bad frames that were excluded (i.e. markpoint early triggers or not having full imaging trials)
 %     control_output_bad_frames - Sorted vector of indices (into bad_frames) for control.
 %     opto_output_bad_frames    - Sorted vector of indices (into bad_frames) for opto.
 %
@@ -30,9 +32,20 @@ function [control_output, opto_output, control_output_bad_frames, opto_output_ba
 %
 %   Author: Your Name, Date
 
+%get excluded bad_frames
+min_frames_current_context = min(passive_frames.corr_frames(:,1));
+max_frames_current_context = max(passive_frames.corr_frames(:,2));
+last_value = find([bad_frames(:,2) - max_frames_current_context]>=0);
+first_value = find([bad_frames(:,1) - min_frames_current_context]>=0);
+bad_frames_within_context = [first_value(1):last_value(1)-1];
+all_trials_current_context = [context_tr{context_num,1},context_tr{context_num,2}];
+excluded_trials = setdiff(bad_frames_within_context,all_trials_current_context)'; %excluded for different reasons like not having full imaging trials!
+
+
 % Initialize containers for indices found from passive_frames.
 controlIndices = [];
 optoIndices = [];
+excludedIndices = [];
 
 % Loop over shifts (1 to 3).
 for shift = 1:4
@@ -46,6 +59,9 @@ for shift = 1:4
     
     % Similarly, for opto (context_tr{context_num,1}).
     optoIndices = [optoIndices; find(ismember(adjustedFrames, bad_frames(context_tr{context_num,1})))];
+
+    %do it for exclulded trials too
+    excludedIndices = [excludedIndices; find(ismember(adjustedFrames,bad_frames(excluded_trials)))];
 end
 
 % Sort the trial indices (from passive_frames) for control and opto.
@@ -70,5 +86,7 @@ end
 % Sort the indices from bad_frames and output as column vectors.
 control_output_bad_frames = sort(controlBadIndices)';
 opto_output_bad_frames = sort(optoBadIndices)';
+
+
 
 end

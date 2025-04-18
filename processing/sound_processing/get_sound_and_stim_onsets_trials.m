@@ -112,12 +112,12 @@ for dataset_index = 1:length(info.mouse_date)
     
     %%% 5) Extract Control and Opto Trials %%%
     %get indices of opto and control that match bad_frames
-    [control_output, opto_output] = find_control_opto_relative_to_bad_frames(frames_var, bad_frames, context_tr, context_num);
+    [control_output, opto_output,excluded_output] = find_control_opto_relative_to_bad_frames(frames_var, bad_frames, context_tr, context_num);
     
     %%% 6) Identify Sound-Only Trials %%%
     [repeatloc, first_repeat] = unique(frames_var.trial_num);
     first_repeat = first_repeat(setdiff(repeatloc, excluded_trials));
-    sound_only_output = setdiff(first_repeat, [control_output; opto_output]);
+    sound_only_output = setdiff(first_repeat, [control_output; opto_output; excluded_output]);
 
     %%% 7) Compute Sound Onsets and Alignment Frames %%%
     alignment_frames = [frames_var.corr_frames(:,1)-1, frames_var.corr_frames(:,1)+2];
