@@ -97,7 +97,7 @@ for dataset_index = 1:length(info.mouse_date)
             if strcmpi(context_type, 'passive')
                 frames_to_add = alignment_frames_single_mouse(1, count2);
             end
-            trials_with_imaging = [trials_with_imaging, find(abs(imaging(trial).frame_id(1) + frames_to_add - alignment_frames(exp, 1)) < 4)];
+            trials_with_imaging = [trials_with_imaging, find(abs(imaging(trial).frame_id(1) + frames_to_add - alignment_frames(exp, 1)) < 3)];
         end
         new_exp = exp(trials_with_imaging);
         all_exp = [all_exp, new_exp];
@@ -111,7 +111,7 @@ for dataset_index = 1:length(info.mouse_date)
             if strcmpi(context_type, 'passive')
                 frames_to_add = alignment_frames_single_mouse(1, count2);
             end
-            trials_with_imaging = [trials_with_imaging, find(abs(imaging(trial).frame_id(1) + frames_to_add - alignment_frames(nonexp, 1)) < 4)];
+            trials_with_imaging = [trials_with_imaging, find(abs(imaging(trial).frame_id(1) + frames_to_add - alignment_frames(nonexp, 1)) < 3)];
         end
         new_nonexp = nonexp(trials_with_imaging);
         all_nonexp = [all_nonexp, new_nonexp];

@@ -16,12 +16,13 @@ function all_trial_info = get_trial_info_contexts(info,context_type,savepath)
 
         % Load bad frames
 %         load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'bad_frames.mat'));
-        load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', '60', 'context_tr.mat')); %trials separated by context
-        load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', '60', 'bad_frames.mat'));
-%         load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', '60', 'exp.mat'));
-%         load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', '60', 'nonexp.mat'));
+        load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', 'updated', 'context_tr.mat')); %trials separated by context
+        load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', 'updated', 'bad_frames.mat'));
+        exp = load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', 'updated', 'exp.mat')).exp;
+        nonexp = load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'context_stim', 'updated', 'nonexp.mat')).nonexp;
         load('V:\Connie\results\opto_sound_2025\context\data_info\alignment_frames.mat'); %using bad frames exp and non exp to get these from opto_align function (from pooled_data sound_opto code)
-
+%         alignment_frames{1, dataset_index}.opto = exp;
+%         alignment_frames{1, dataset_index}.ctrl = nonexp;
         %load alignment data
         load(fullfile(num2str(current_server), 'Connie', 'ProcessedData', num2str(current_dataset), 'alignment_info.mat'));
         %%% 2) Select imaging and bad_frames!
