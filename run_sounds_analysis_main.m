@@ -10,6 +10,7 @@ params.plot_info = plot_info;
 % %get sound info (a bit slow so I saved inside:
 % %'V:/Connie/results/opto_sound_2025/context' loaded in pooled_activity_sounds
 
+%%% this uses alignment_frames from run_opto_sounds_analysis_main pool
 % [sound_onsets_all, alignment_frames_all, control_output_all, opto_output_all,sound_only_all, loc_trial, all_trial_info_sounds] = compile_trial_data_stim_sound(params.info,{'active','passive'},params.info.savepath);
 %% Pool activity across mice
 % neural data will be sound + ctrl or sound only trials!!!
@@ -36,6 +37,13 @@ params.plot_info = plot_info;
 
 [context_data.deconv,~,~] = organize_2context(sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
 [~,deconv_st_combined] = combine_stim_info_dff_st(sound_context_data.active, sound_context_data.passive, sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
+
+filename = fullfile(params.info.savepath_sounds, 'data_info')
+save(fullfile(filename, "ctrl_trials_context.mat"),"ctrl_trials_context");
+save(fullfile(filename, "stim_trials_context.mat"),"stim_trials_context");
+save(fullfile(filename, "context_data.mat"),"context_data",'-v7.3');
+save(fullfile(filename, "stim_info_combined.mat"),"stim_info_combined");
+% save(fullfile(filename, "dff_st_combined.mat"),"dff_st_combined");
 
 %% Get average responses
 % Setup parameters
@@ -147,7 +155,7 @@ plot_avg_traces_direction_comparison(avg_results_sounds, selectivity_results, se
 
 %%
 selectivity_params = params.selectivity_sounds; 
-selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
+selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl')
 
 [selectivity_index_resultsv2, selectivity_sig_mod_bootv2, selectivity_indexmv2] = ...
     wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.savepath);

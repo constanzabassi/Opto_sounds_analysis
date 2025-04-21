@@ -10,6 +10,7 @@ params.plot_info = plot_info;
 % %get sound info (a bit slow so I saved inside:
 % %'V:/Connie/results/opto_sound_2025/context' loaded in pooled_activity_sounds
 
+%%% this uses alignment_frames from run_opto_sounds_analysis_main pool
 % [sound_onsets_all, alignment_frames_all, control_output_all, opto_output_all,sound_only_all, loc_trial, all_trial_info_sounds] = compile_trial_data_stim_sound(params.info,{'active','passive'},params.info.savepath);
 %% Pool activity across mice
 % neural data will be sound + ctrl or sound only trials!!!
@@ -37,6 +38,13 @@ params.plot_info = plot_info;
 [context_data.deconv,~,~] = organize_2context(sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
 [~,deconv_st_combined] = combine_stim_info_dff_st(sound_context_data.active, sound_context_data.passive, sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp);
 
+filename = fullfile(params.info.savepath_sounds, 'data_info')
+save(fullfile(filename, "ctrl_trials_context.mat"),"ctrl_trials_context");
+save(fullfile(filename, "stim_trials_context.mat"),"stim_trials_context");
+save(fullfile(filename, "context_data.mat"),"context_data",'-v7.3');
+save(fullfile(filename, "stim_info_combined.mat"),"stim_info_combined");
+% save(fullfile(filename, "dff_st_combined.mat"),"dff_st_combined");
+
 %% Get average responses
 % Setup parameters
 avg_params = struct(...
@@ -51,7 +59,7 @@ generate_neural_heatmaps(dff_st_combined, stim_trials_context, ctrl_trials_conte
 
 %% Calculate modulation indices
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?
-mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode);
+mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode)
 
 [mod_index_results, sig_mod_boot, mod_indexm] = ...
     wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles,  mod_params.savepath);
@@ -60,7 +68,7 @@ mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
 
 %plot % modulated cells per context
-sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,mod_params.savepath);
+sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,all_celltypes, mod_params.savepath);
 % sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
 
 %plot % overlap of modulated cells across contexts!
@@ -77,7 +85,7 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 % Set y-axis limits for the plots.
 plot_info.y_lims = [-.4, .4];
 % Set labels for plots.
-plot_info.plot_labels = {'Left Sounds','Right Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.plot_labels = {'Sounds','Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 params.plot_info = plot_info;
@@ -102,7 +110,8 @@ params.info.chosen_mice = [1:25];
 save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
-mod_index_stats = generate_mod_index_plots_datasets([1:25], mod_indexm, combined_sig_cells, all_celltypes, params, []);
+[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
 
 
 
@@ -114,7 +123,7 @@ selectivity_params = params.selectivity_sounds;
 selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
 
 [selectivity_index_results, selectivity_sig_mod_boot, selectivity_indexm] = ...
-    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.simple_or_not, selectivity_params.savepath);
+    wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.savepath);
 
 
 [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
@@ -146,7 +155,7 @@ plot_avg_traces_direction_comparison(avg_results_sounds, selectivity_results, se
 
 %%
 selectivity_params = params.selectivity_sounds; 
-selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl');
+selectivity_params.savepath = fullfile(params.info.savepath_sounds, 'selectivity/prepost_ctrl')
 
 [selectivity_index_resultsv2, selectivity_sig_mod_bootv2, selectivity_indexmv2] = ...
     wrapper_mod_index_calculation(params.info, dff_st_combined, selectivity_params.response_range, selectivity_params.mod_type, selectivity_params.mode, stim_trials_context, ctrl_trials_context,selectivity_params.nShuffles, selectivity_params.savepath);

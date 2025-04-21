@@ -29,7 +29,9 @@ save(fullfile(filename, 'sorted_cells.mat'), 'sorted_cells');
 [context_data.dff,stim_trials_context,ctrl_trials_context] = separate_structure_2context(dff_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv] = separate_structure_2context(deconv_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv_interp] = separate_structure_2context(deconv_st_interp,mouse_context_tr,stim_info);%  context.dff{context,mouse}
-
+save(fullfile(filename, "ctrl_trials_context.mat"),"ctrl_trials_context");
+save(fullfile(filename, "stim_trials_context.mat"),"stim_trials_context");
+save(fullfile(filename, "context_data.mat"),"context_data",'-v7.3');
 %% Get average responses
 % Setup parameters
 avg_params = struct(...
@@ -99,7 +101,7 @@ overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % 
 params.plot_info = plot_info;
 
 %save directory
-save_dir = []; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = [mod_params.savepath]; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr(:,3), all_celltypes, params,save_dir);

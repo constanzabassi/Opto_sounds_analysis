@@ -48,7 +48,7 @@ params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect
 base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
-[selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Response (ΔF/F)');
+[selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound (ΔF/F)');
 
 wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, sound_stim_average, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound+Stim (ΔF/F)');
 
@@ -58,7 +58,7 @@ sig_mod_boot = opto_sig_mod_boot;
 mod_index_results = opto_mod_results;
 avg_results = find_average_difference(opto_average, sound_average); %opto_average;
 data_type = 'opto';
-params.selectivity_sounds.selectivity_sig_mode = 'intersect'; %'union' or 'intersect'
+params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect'
 base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
