@@ -44,12 +44,14 @@ function [selectivity_results_by_dataset_all,selectivity_results_all] = wrapper_
         
         %decide which contexts to use to define significant neurons
         if contains(data_type, 'sound')
+            mod_params.data_type = 'sounds';
             %separate sig cells based on threshold (and single side or not)
-            current_sig_cells = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot);
+            [current_sig_cells,switching_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot);
             sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
         else
+            mod_params.data_type = 'opto';
             %separate sig cells based on threshold (and single side or not)
-            current_sig_cells = get_thresholded_sig_cells_simple( mod_params, mod_indexm2, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
+            [current_sig_cells,switching_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm2, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
             sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'spont');
         end
         
@@ -61,6 +63,13 @@ function [selectivity_results_by_dataset_all,selectivity_results_all] = wrapper_
         sel_results.both.flagged_neurons = generate_selectivity_pool_plots(sel_results, selectivity_indexm,mod_index_results, avg_results, all_celltypes, sig_cells, params, selectivity_params.savepath, varargin);
         selectivity_results_all{i} = sel_results;
         selectivity_results_by_dataset_all{i} = sel_by_dataset;
+
+        %plot switching cells (switch modulation between contexts)
+        %heatmap separated by selectivity
+        if contains(data_type, 'sound')
+            [~, sel_results_switch] = analyze_selectivity_pools(selectivity_indexm, mod_indexm, mod_index_results, selectivity_index_results ,switching_cells, all_celltypes, params);
+            plot_selectivity_comparison(sel_results_switch, [selectivity_params.savepath '/switching_cells/']); 
+        end
     end 
 
 end
