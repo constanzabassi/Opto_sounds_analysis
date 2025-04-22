@@ -17,6 +17,8 @@ function mod_index = compute_mod_index(avg1, avg2, mod_type)
             mod_index = compute_mod_index_prepost(avg1, avg2); %post,pre 
         case 'prepost_num'
             mod_index = compute_mod_index_prepost_numerator(avg1, avg2); %post,pre
+        case 'prepost_sound_num'
+            mod_index = compute_mod_index_prepost_numerator(avg1, avg2); %post,pre
         case 'prepost_abs'
             mod_index = compute_mod_index_prepost_abs(avg1, avg2); %post,pre 
         case 'ctrl_abs'

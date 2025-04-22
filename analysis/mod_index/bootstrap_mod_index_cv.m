@@ -40,7 +40,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         % using subset1 which is probably stim data
         group1 = mean(data_subset1(:, :, response_range{1}), 3);  % e.g., post period
         group2 = mean(data_subset1(:, :, response_range{2}), 3);  % e.g., pre period (for 'prepost')
-        if strcmp(mod_type, 'prepost_sound') || strcmp(mod_type, 'prepost_num') 
+        if strcmp(mod_type, 'prepost_sound') || strcmp(mod_type, 'prepost_num') || strcmp(mod_type, 'prepost_sound_num') 
             % For 'prepost_sound', use control data for both groups.
             group1 = mean(data_subset2(:, :, response_range{1}), 3);
             group2 = mean(data_subset2(:, :, response_range{2}), 3);
@@ -67,7 +67,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         observed_mod = compute_mod_index_influence(group1, group2);
     elseif strcmp(mod_type, 'prepost') || strcmp(mod_type, 'prepost_sound')
         observed_mod = compute_mod_index_prepost(group1, group2);
-    elseif strcmp(mod_type, 'prepost_num')
+    elseif strcmp(mod_type, 'prepost_num') || strcmp(mod_type, 'prepost_sound_num')
         observed_mod = compute_mod_index_prepost_numerator(group1, group2);
     elseif strcmp(mod_type, 'prepost_ctrl_abs')
         observed_mod = compute_mod_index_ctrl_abs(group1, group2);
@@ -103,7 +103,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             bootMod(shuff, :) = compute_mod_index_influence(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'prepost') || strcmp(mod_type, 'prepost_sound')
             bootMod(shuff, :) = compute_mod_index_prepost(simGroup1, simGroup2);
-        elseif strcmp(mod_type, 'prepost_num')
+        elseif strcmp(mod_type, 'prepost_num') || strcmp(mod_type, 'prepost_sound_num')
             bootMod(shuff, :) = compute_mod_index_prepost_numerator(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'prepost_ctrl_abs')
             bootMod(shuff, :) = compute_mod_index_ctrl_abs(simGroup1, simGroup2);
