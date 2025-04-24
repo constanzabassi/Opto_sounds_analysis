@@ -112,6 +112,29 @@ modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{
 modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto', 'Active Opto');
 modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto', 'Passive Opto');
 
+curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both\opto_sound_intersect']; %'V:\Connie\results\opto_sound_2025\context\mod\selectivity\opto_sound';
+opto_sound_sig_cells = intersect_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+modl_fit = scatter_index_sigcells(opto_sound_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(opto_sound_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(opto_sound_sig_cells, all_celltypes, [{opto_mod{:,1}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Active Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(opto_sound_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(opto_sound_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound!', 'Passive Opto!');
+
+curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both\opto_only']; %'V:\Connie\results\opto_sound_2025\context\mod\selectivity\opto_sound';
+opto_only_sig_cells = setdiff_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+modl_fit = scatter_index_sigcells(opto_only_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(opto_only_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(opto_only_sig_cells, all_celltypes, [{opto_mod{:,1}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Active Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(opto_only_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(opto_only_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound!', 'Passive Opto!');
+
+curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both\sound_only']; %'V:\Connie\results\opto_sound_2025\context\mod\selectivity\opto_sound';
+sound_only_sig_cells = setdiff_sig_cells(sound_sig_cells(1,1:24),opto_sig_cells', opto_mod);
+modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{opto_mod{:,1}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Active Opto!', 'Passive Opto!');
+modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound!', 'Active Opto!');
+modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound!', 'Passive Opto!');
 
 %% compare rates pre?
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
