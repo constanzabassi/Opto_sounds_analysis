@@ -86,14 +86,17 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
     % Format figure
     utils.set_current_fig;
 
+    %
+    sig_cel_string = ~isempty(sig_mod_boot);
+
     % Save figure if a save path is provided
     if ~isempty(save_path)
         if ~exist(save_path, 'dir')
             mkdir(save_path);
         end
         
-        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_' string1 '_' string2 '.png']));
-        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_' string1 '_' string2 '.svg']));
-        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
+        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
+        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
     end
 end

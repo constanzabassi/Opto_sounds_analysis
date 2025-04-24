@@ -20,7 +20,9 @@ scatter_selectivity_vs_modulation(selectivity_results, mod_index_results, savepa
 %average plots separated by selectivity
 if nargin > 8
     plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath,varargin);
+    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results, savepath,varargin);
 else
     plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath);
+    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results, savepath);
 end
 
