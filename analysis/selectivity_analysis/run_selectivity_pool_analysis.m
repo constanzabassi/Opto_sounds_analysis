@@ -49,7 +49,9 @@ base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type
 mkdir(base);
 
 [selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound (ΔF/F)');
-
+% results organized as selectivity{i} where i is +, -, or all modulatedneurons
+save('selectivity_pool_results','selectivity_pool_results_by_dataset', 'selectivity_pool_results');
+save('selectivity_pool_results','selectivity_pool_results');
 wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, sound_stim_average, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound+Stim (ΔF/F)');
 
 %% opto second
@@ -63,6 +65,7 @@ base = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\' data_type
 mkdir(base);
 
 [selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,opto_mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Difference in ΔF/F');
+save('selectivity_pool_results','selectivity_pool_results_by_dataset', 'selectivity_pool_results');
 
 avg_results = opto_average;
 wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto_mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Stim+Sound ΔF/F');
@@ -83,3 +86,40 @@ plot_sig_overlap_pie(mean(percent_cells_per_dataset), overlap_labels, save_dir, 
 % mod_params.chosen_mice = 1:25;
 % selectivity_params.savepath = 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\prepost_ctrl\sound_opto_cells';
 % mkdir(selectivity_params.savepath)
+
+%% compare opto and sound mod indices
+
+curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both']; %'V:\Connie\results\opto_sound_2025\context\mod\selectivity\opto_sound';
+%Modulation
+modl_fit = scatter_index_sigcells([], all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
+modl_fit = scatter_index_sigcells(sound_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath,'Active Sound', 'Active Opto' );
+modl_fit = scatter_index_sigcells(opto_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath,'Active Sound', 'Active Opto!');
+
+modl_fit = scatter_index_sigcells([], all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto' );
+modl_fit = scatter_index_sigcells(sound_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath,'Passive Sound', 'Passive Opto' );
+modl_fit = scatter_index_sigcells(opto_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto!');
+
+
+% opto_mod = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl_num\separate\mod_indexm.mat').mod_indexm;
+% opto_mod = load('V:\Connie\results\opto_sound_2025\context\mod\prepost_num\separate\mod_indexm.mat').mod_indexm;
+% sound_mod = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound_num\separate\mod_indexm.mat').mod_indexm;
+% sound_opto_mod = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl_num\separate\mod_indexm.mat').mod_indexm;
+
+
+modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{sound_opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto', 'Active Sound');
+modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{sound_opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto', 'Passive Sound');
+
+modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Spont Opto', 'Active Opto');
+modl_fit = scatter_index_sigcells([], all_celltypes, [{opto_mod_prepost{:,3}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Spont Opto', 'Passive Opto');
+
+
+%% compare rates pre?
+load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
+load('V:\Connie\results\opto_sound_2025\context\data_info\ctrl_trials_context.mat');
+load('V:\Connie\results\opto_sound_2025\context\data_info\stim_trials_context.mat');
+
+frame_window = 55:59;
+
+[deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]);
+[spike_trial_cel_mouse,spike_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,frame_window,stim_trials_context, ctrl_trials_context);
+
