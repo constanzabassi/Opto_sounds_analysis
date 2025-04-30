@@ -9,13 +9,21 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
     figure(2324); clf;
     
     % Define main axes
-    mainAx = axes('Position', [0.15 0.15 0.65 0.65]);
+    mainAx = axes('Position', [0.19 0.19 0.65 0.65]);
     hold(mainAx, 'on');
     plot(mainAx, [minmax(1), minmax(2)], [minmax(1), minmax(2)], '--', 'Color', [0.5 0.5 0.5]);
 
     % Axes for histograms
     topAx = axes('Position', [0.15 0.81 0.65 0.15]); % X-axis histogram
     rightAx = axes('Position', [0.81 0.15 0.15 0.65]); % Y-axis histogram
+    % Adjust histogram axes accordingly
+    topAx.Position = [mainAx.Position(1), ...
+                      mainAx.Position(2) + mainAx.Position(4) + 0.01, ...
+                      mainAx.Position(3), 0.13];
+    
+    rightAx.Position = [mainAx.Position(1) + mainAx.Position(3) + 0.01, ...
+                        mainAx.Position(2), ...
+                        0.13, mainAx.Position(4)];
 
     hold(topAx, 'on'); hold(rightAx, 'on');
     axis(topAx, 'tight'); axis(rightAx, 'tight');
@@ -46,13 +54,16 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
             % Collect data for fitting and histograms
             all_x = [all_x; x(:)];
             all_y = [all_y; y(:)];
+
         end
+        
+
 
         if ~isempty(all_x)
             modl_fit{cell_type} = fitlm(all_x, all_y);
             text(mainAx, minmax(1)+0.05, minmax(2) +0.05 - 0.1 * cell_type, ...
                 sprintf('R² = %.3f', modl_fit{cell_type}.Rsquared.Ordinary), ...
-                'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 14);
+                'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 8);
 
             % Plot histograms
             histogram(topAx, all_x, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
@@ -70,7 +81,19 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
     xlim(mainAx, minmax);
     ylim(mainAx, minmax);
     box(mainAx, 'off');
-    utils.set_current_fig;
+    % Remove x and y axis for topAx (X-axis histogram)
+    topAx.XTick = [];
+    topAx.YTick = [];
+    topAx.Visible = 'off';
+    % Remove x and y axis for rightAx (Y-axis histogram)
+    rightAx.XTick = [];
+    rightAx.YTick = [];
+    rightAx.Visible = 'off';
+
+    box(rightAx, 'off');
+    set(mainAx, 'FontSize', 12)
+    set(gcf, 'Position', [100, 100, 300, 300]);  % [left bottom width height]
+    
 
 
     % Save figure
@@ -79,8 +102,8 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
         if ~exist(save_path, 'dir')
             mkdir(save_path);
         end
-        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
-        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
-        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
+        saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
+        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
     end
 end
