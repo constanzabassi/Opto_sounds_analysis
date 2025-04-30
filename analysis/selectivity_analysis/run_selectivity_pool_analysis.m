@@ -135,6 +135,31 @@ modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{opto_mo
 modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{opto_mod{:,1}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Active Opto!', 'Passive Opto!');
 modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound!', 'Active Opto!');
 modl_fit = scatter_index_sigcells(sound_only_sig_cells, all_celltypes, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound!', 'Passive Opto!');
+%%
+plot_info.colors_celltypes = [0.6, 0.6, 0.6; 0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1]; %0.9/0.6/0.2 or 1,0.7,0
+opto_only_sig_cells = setdiff_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+sound_only_sig_cells = setdiff_sig_cells(sound_sig_cells(1,1:24),opto_sig_cells', opto_mod);
+opto_sound_sig_cells = intersect_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+all_cells =[cellfun(@(x) x.pyr_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.som_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.pv_cells,all_celltypes,'UniformOutput',false)];
+num_cells = cellfun(@length, all_cells );
+
+pooled_cell_types = {};
+for dataset = 1:24
+    current_sig_cells = [sound_only_sig_cells{dataset}, opto_only_sig_cells{dataset}, opto_sound_sig_cells{dataset}];
+    pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
+    pooled_cell_types{dataset}.sound = sound_only_sig_cells{dataset};
+    pooled_cell_types{dataset}.opto = opto_only_sig_cells{dataset};
+    pooled_cell_types{dataset}.both = opto_sound_sig_cells{dataset};
+
+end
+
+curr_savepath = [];
+
+modl_fit = scatter_index_sigcells([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
+modl_fit = scatter_index_sigcells([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
+
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
 
 %% compare rates pre?
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
