@@ -157,20 +157,31 @@ curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\bo
 
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
-[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, '|Passive Sound - Passive Opto|',1,[-1,1]);
-[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, '|Active Sound - Active Opto|',1,[-1,1]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, '|Passive Sound| - |Passive Opto|',1,[-1,1]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, '|Active Sound| - |Active Opto|',1,[-1,1]);
+
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{opto_mod{:,1}}',{opto_mod{:,2}}'], plot_info, curr_savepath, '|Active Opto| - |Passive Opto|',1,[-1,1]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,1}}',{sound_mod{:,2}}'], plot_info, curr_savepath, '|Active Sound| - |Passive Sound|',1,[-1,1]);
+
+
+plot_info.celltype_names = {'Unmod','Sound','Opto','Both'};
+plot_info.y_lims = [-.2, .4];
+% Set labels for plots.
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+params.plot_info = plot_info;
+mod_index_stats_datasets = generate_mod_index_plots_datasets([1:24], opto_mod, [], pooled_cell_types, params, []);
 
 %% compare rates pre?
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\ctrl_trials_context.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\stim_trials_context.mat');
 
-frame_window = 63:73;
+frame_window = 50:59;
 
 [deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]); %context_data.deconv_interp
 [spike_trial_cel_mouse,spike_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,frame_window,stim_trials_context, ctrl_trials_context);
 
 [spike_context_matrix,spike_context_matrix_ctrl] = into_mod_structure(spike_trial_cel_mouse,all_celltypes); %same as mod structure for easy plotting!
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
-[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, [], '|Active pre - Passive pre|',1,[-1,1]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, curr_savepath, '|Active pre| - |Passive pre|',1,[-2,2]);
 

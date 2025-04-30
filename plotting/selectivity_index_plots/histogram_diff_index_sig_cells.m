@@ -63,7 +63,7 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             end
             
             hold on
-            histogram(difference, 'BinWidth', 0.05, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
+            histogram(difference, 'BinWidth', 0.1, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
                 'EdgeColor', plot_info.colors_celltypes(cell_type,:), 'FaceAlpha', 0.9, 'Normalization', 'count');
             xline(0, '--k', 'LineWidth', 2);
             
@@ -117,8 +117,10 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
     if ~isempty(save_path)
         mkdir(save_path); % Create directory if it doesn't exist
         cd(save_path);
-        saveas(gcf, ['histogram_diff_index_sig_cells_' string '.png']);
-        saveas(gcf, ['histogram_diff_index_sig_cells_' string '.svg']);
-        exportgraphics(gcf, ['histogram_diff_index_sig_cells_' string '.pdf'], 'ContentType', 'vector'); % Save as PDF
+        safe_string = regexprep(string, '[^\w\d_-]', '_');
+
+        saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.png']);
+        saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.svg']);
+        exportgraphics(gcf, ['histogram_diff_index_sig_cells_' safe_string '.pdf'], 'ContentType', 'vector'); % Save as PDF
     end
 end

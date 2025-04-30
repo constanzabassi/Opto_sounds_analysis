@@ -11,7 +11,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     num_contexts = 2;
     unique_mice = unique(mouseID);
     n_mice = length(unique_mice);
-    n_celltypes = 3;
+    n_celltypes =  size( mod_index_by_dataset,3);;
     count = 0;
     x_lines = 0:num_contexts*n_celltypes+1;
     
@@ -133,7 +133,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
 %     set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
     box off
     xtickangle(45)
-    set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),150]);
+    set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),170]);
     utils.set_current_fig;
     
     % Store statistics

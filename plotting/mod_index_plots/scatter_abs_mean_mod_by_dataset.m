@@ -10,7 +10,7 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
     
     % Get number of datasets
     n_datasets = length(mod_index_by_dataset);
-    n_celltypes = 3;
+    n_celltypes =  size( mod_index_by_dataset,3);
 
     dataset_means_all = zeros(n_datasets,num_contexts,n_celltypes);
     

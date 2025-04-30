@@ -12,7 +12,7 @@ function mod_stats = scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_datase
     num_contexts = 2; %length(plot_info.behavioral_contexts);
     unique_mice = unique(mouseID);
     n_mice = length(unique_mice);
-    n_celltypes = 3;
+    n_celltypes =  size( mod_index_by_dataset,3);
     mean_cell_all = [];
 
     dataset_means_all = zeros(n_mice,num_contexts,n_celltypes);

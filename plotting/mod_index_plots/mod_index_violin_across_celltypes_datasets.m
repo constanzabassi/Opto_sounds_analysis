@@ -6,7 +6,7 @@ positions = utils.calculateFigurePositions(1, 6, .5, []);
 
 % Get number of datasets
 n_datasets = length(mod_index_by_dataset);
-n_celltypes = 3;
+n_celltypes = size( mod_index_by_dataset,3);
 num_contexts = 2;
 
 %initialize plotting variables
