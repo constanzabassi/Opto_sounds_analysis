@@ -34,8 +34,8 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
     % Determine if we're plotting selected or all cells
     if ~isempty(sig_mod_boot)
         celltype_fields = fields(all_celltypes{1,1}); % Get neuron type labels
-
-        for cell_type = 1:3
+        n_celltypes = length(celltype_fields);
+        for cell_type = 1:n_celltypes
             all_indices = []; % Store all data points for regression
             
             for dataset_index = 1:length(sig_mod_boot) % Iterate over datasets
@@ -64,15 +64,27 @@ function modl_fit = scatter_index_sigcells(sig_mod_boot, all_celltypes, index, p
     else
         % Plot all available neuron data if no specific cells were chosen
         celltype_fields = fields(all_celltypes{1,1});
-        
-        for cell_type = 1:3
+        n_celltypes = length(celltype_fields);
+                    all_indices = []; % Store all data points for regression
+
+        for cell_type = 1:n_celltypes
             for dataset_index = 1:length(all_celltypes)
                 scatter(index{dataset_index,1}(all_celltypes{dataset_index}.(celltype_fields{cell_type})), ...
                         index{dataset_index,2}(all_celltypes{dataset_index}.(celltype_fields{cell_type})), ...
                         'MarkerEdgeColor', plot_info.colors_celltypes(cell_type, :), ...
                         'MarkerEdgeAlpha', 1, 'LineWidth', 1.5);
             end
+            all_indices = [all_indices; index{dataset_index,1}(all_celltypes{dataset_index}.(celltype_fields{cell_type}))', index{dataset_index,2}(all_celltypes{dataset_index}.(celltype_fields{cell_type}))'];
+        modl_fit{cell_type} = fitlm(all_indices(:,1), all_indices(:,2));
+
+        % Display R² value
+        text(minmax(2), minmax(2) + 0.1 - 0.1 * cell_type, ...
+            sprintf('R² = %.3f', modl_fit{cell_type}.Rsquared.Ordinary), ...
+            'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 14);
+
         end
+        
+
     end
 
     % Finalize plot settings
