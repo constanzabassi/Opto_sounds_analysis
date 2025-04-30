@@ -1,4 +1,4 @@
-function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltypes, index, plot_info, save_path, string)
+function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltypes, index, plot_info, save_path, string,horizontalmode, varargin)
     % originally called histogram_mod_opto_cells
     % This function generates histograms of the absolute differences in index values 
     % for different cell types. It also performs a permutation test to determine
@@ -10,7 +10,11 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
         fieldss = fields(all_celltypes{1,1}); % Extract field names from first cell type structure
         for cell_type = 1:length(fieldss) % Loop over all cell types
             difference = []; % Initialize difference array
-            subplot(length(fieldss), 1, cell_type) % Create subplot for each cell type
+            if horizontalmode == 1
+                subplot(1, length(fieldss),  cell_type) % Create subplot for each cell type
+            else
+                subplot(length(fieldss), 1, cell_type) % Create subplot for each cell type
+            end
             
             for dataset_index = 1:length(chosen_cells)
                 % Find cells belonging to the current cell type
@@ -22,7 +26,7 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             
             hold on
             % Plot histogram of differences
-            histogram(difference, 'BinWidth', 0.1, 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
+            histogram(difference, 'BinWidth', 0.05, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
                 'EdgeColor', plot_info.colors_celltypes(cell_type,:), 'FaceAlpha', 0.9, 'Normalization', 'count');
             xline(0, '--k', 'LineWidth', 2);
             
@@ -47,15 +51,19 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
     else % If chosen_cells is empty, process all cells
         fieldss = fields(all_celltypes{1,1});
         for cell_type = 1:length(fieldss)
-            subplot(length(fieldss), 1, cell_type)
+            if horizontalmode == 1
+                subplot(1, length(fieldss),  cell_type) % Create subplot for each cell type
+            else
+                subplot(length(fieldss), 1, cell_type) % Create subplot for each cell type
+            end
             difference = [];
             
-            for dataset_index = 1:size(index, 1)
-                difference = [difference; abs(index{dataset_index,1}(all_celltypes{1,dataset_index}.(fieldss{cell_type}))) - abs(index{dataset_index,2}(all_celltypes{1,dataset_index}.(fieldss{cell_type})))];
+            for dataset_index = 1:length(all_celltypes)
+                difference = [difference, abs(index{dataset_index,1}(all_celltypes{1,dataset_index}.(fieldss{cell_type}))) - abs(index{dataset_index,2}(all_celltypes{1,dataset_index}.(fieldss{cell_type})))];
             end
             
             hold on
-            histogram(difference, 'BinWidth', 0.05, 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
+            histogram(difference, 'BinWidth', 0.05, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
                 'EdgeColor', plot_info.colors_celltypes(cell_type,:), 'FaceAlpha', 0.9, 'Normalization', 'count');
             xline(0, '--k', 'LineWidth', 2);
             
@@ -65,7 +73,11 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             plot(mean_diff, y_limits(2), 'v', 'MarkerSize', 6, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
             
             utils.set_current_fig;
-            xlim([-.5 .5]);
+            if nargin > 7
+                xlim(varargin{1,1});
+            else
+                xlim([-1 1]);
+            end
             box off;
             
             % Perform statistical test
@@ -79,11 +91,27 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
         end
     end
     
-    xlabel('Absolute Difference'); % Label x-axis
+    
     hold off;
     
     % Set figure size
-    set(gcf, 'units', 'points', 'position', [10, 100, 100, 400]);
+    if horizontalmode == 1
+        % Create invisible axes for shared label
+        % Set figure height higher to leave space for label
+        set(gcf, 'units', 'points', 'position', [10, 100, 400, 120]);
+        
+        % Create invisible axes for global x-label
+        han = axes('units', 'points', 'Position', [10, 30, 400, 100], 'Visible', 'off');
+        han.XLabel.Visible = 'on';
+        xlabel(han, string, 'FontSize', 12);
+
+
+    else
+        set(gcf, 'units', 'points', 'position', [15, 100, 176, 400]);
+        han = axes('units', 'points', 'Position',[15, 40, 138, 400],'Visible','off');
+        han.XLabel.Visible = 'on';
+        xlabel(han, string,'FontSize',12);
+    end
     
     % Save figure if save_path is provided
     if ~isempty(save_path)

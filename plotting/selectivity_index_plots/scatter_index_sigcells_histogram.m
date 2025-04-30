@@ -12,6 +12,10 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
     mainAx = axes('Position', [0.22 0.25 0.60 0.60]);
     hold(mainAx, 'on');
     plot(mainAx, [minmax(1), minmax(2)], [minmax(1), minmax(2)], '--', 'Color', [0.5 0.5 0.5]);
+%     xline(0.1,'--k')
+%         xline(-0.1,'--k')
+%         yline(0.1,'--k')
+%         yline(-0.1,'--k')
 
     % Axes for histograms
     topAx = axes('Position', [0.15 0.81 0.65 0.15]); % X-axis histogram
