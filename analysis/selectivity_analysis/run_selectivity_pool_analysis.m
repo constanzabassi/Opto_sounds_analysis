@@ -157,14 +157,20 @@ curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\bo
 
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, '|Passive Sound - Passive Opto|',1,[-1,1]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, '|Active Sound - Active Opto|',1,[-1,1]);
 
 %% compare rates pre?
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\ctrl_trials_context.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\stim_trials_context.mat');
 
-frame_window = 55:59;
+frame_window = 63:73;
 
-[deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]);
+[deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]); %context_data.deconv_interp
 [spike_trial_cel_mouse,spike_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,frame_window,stim_trials_context, ctrl_trials_context);
+
+[spike_context_matrix,spike_context_matrix_ctrl] = into_mod_structure(spike_trial_cel_mouse,all_celltypes); %same as mod structure for easy plotting!
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, [], '|Active pre - Passive pre|',1,[-1,1]);
 
