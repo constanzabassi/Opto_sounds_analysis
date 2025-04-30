@@ -9,7 +9,7 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
     figure(2324); clf;
     
     % Define main axes
-    mainAx = axes('Position', [0.19 0.19 0.65 0.65]);
+    mainAx = axes('Position', [0.22 0.25 0.60 0.60]);
     hold(mainAx, 'on');
     plot(mainAx, [minmax(1), minmax(2)], [minmax(1), minmax(2)], '--', 'Color', [0.5 0.5 0.5]);
 
@@ -49,7 +49,7 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
 
             % Scatter plot
             scatter(mainAx, x, y, 'MarkerEdgeColor', plot_info.colors_celltypes(cell_type, :), ...
-                'MarkerEdgeAlpha', .7, 'LineWidth', 1.5);
+                'MarkerEdgeAlpha', .7, 'LineWidth', 1.5, 'SizeData',20);
 
             % Collect data for fitting and histograms
             all_x = [all_x; x(:)];
@@ -63,14 +63,19 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
             modl_fit{cell_type} = fitlm(all_x, all_y);
             text(mainAx, minmax(1)+0.05, minmax(2) +0.05 - 0.1 * cell_type, ...
                 sprintf('R² = %.3f', modl_fit{cell_type}.Rsquared.Ordinary), ...
-                'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 8);
+                'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 6);
 
             % Plot histograms
-            histogram(topAx, all_x, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
-                'EdgeColor', 'none', 'FaceAlpha', 0.5, 'Orientation', 'vertical');
+%             histogram(topAx, all_x,'Normalization','probability','BinWidth', 0.05, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
+%                 'EdgeColor', 'none', 'FaceAlpha', 0.5, 'Orientation', 'vertical');
+% 
+%             histogram(rightAx, all_y,'Normalization','probability','BinWidth', 0.05, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
+%                 'EdgeColor', 'none', 'FaceAlpha', 0.5, 'Orientation', 'horizontal');
 
-            histogram(rightAx, all_y, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
-                'EdgeColor', 'none', 'FaceAlpha', 0.5, 'Orientation', 'horizontal');
+            histogram(topAx, all_x, 'Normalization','probability','BinWidth', 0.1,'BinWidth', 0.05,'BinLimits', minmax, 'EdgeColor', plot_info.colors_celltypes(cell_type, :), ...
+                'Orientation', 'vertical','DisplayStyle','stairs', 'LineWidth',1.2);
+            histogram(rightAx, all_y,'Normalization','probability','BinWidth', 0.1, 'BinWidth', 0.05,'BinLimits', minmax, 'EdgeColor', plot_info.colors_celltypes(cell_type, :), ...
+                'Orientation', 'horizontal','DisplayStyle','stairs', 'LineWidth',1.2);
         end
     end
 
@@ -92,7 +97,7 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
 
     box(rightAx, 'off');
     set(mainAx, 'FontSize', 12)
-    set(gcf, 'Position', [100, 100, 300, 300]);  % [left bottom width height]
+    set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
     
 
 

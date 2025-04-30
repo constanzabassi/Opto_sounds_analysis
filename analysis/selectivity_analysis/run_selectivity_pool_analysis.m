@@ -153,12 +153,9 @@ for dataset = 1:24
 
 end
 
-curr_savepath = [];
+curr_savepath = ['V:\Connie\results\opto_sound_2025\context\selectivity_pools\both\all_cells']; %'V:\Connie\results\opto_sound_2025\context\mod\selectivity\opto_sound';
 
-modl_fit = scatter_index_sigcells([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
-modl_fit = scatter_index_sigcells([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
-
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,1}}',{opto_mod{:,1}}'], plot_info, curr_savepath, 'Active Sound', 'Active Opto');
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{sound_mod{:,2}}',{opto_mod{:,2}}'], plot_info, curr_savepath, 'Passive Sound', 'Passive Opto');
 
 %% compare rates pre?
