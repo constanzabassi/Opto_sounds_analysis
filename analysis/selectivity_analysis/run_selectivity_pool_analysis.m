@@ -169,14 +169,15 @@ plot_info.y_lims = [-.2, .4];
 % Set labels for plots.
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 params.plot_info = plot_info;
-mod_index_stats_datasets = generate_mod_index_plots_datasets([1:24], opto_mod, [], pooled_cell_types, params, []);
+mod_index_stats_datasets_opto = generate_mod_index_plots_datasets([1:24], opto_mod, [], pooled_cell_types, params, [curr_savepath '\opto\']);
+mod_index_stats_datasets_sounds = generate_mod_index_plots_datasets([1:24], sound_mod, [], pooled_cell_types, params, [curr_savepath '\sounds\']);
 
 %% compare rates pre?
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\ctrl_trials_context.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\stim_trials_context.mat');
 
-frame_window = 50:59;
+frame_window = 50:59;%63:92;
 
 [deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]); %context_data.deconv_interp
 [spike_trial_cel_mouse,spike_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,frame_window,stim_trials_context, ctrl_trials_context);
@@ -184,4 +185,14 @@ frame_window = 50:59;
 [spike_context_matrix,spike_context_matrix_ctrl] = into_mod_structure(spike_trial_cel_mouse,all_celltypes); %same as mod structure for easy plotting!
 modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
 [p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{spike_context_matrix{:,1}}',{spike_context_matrix{:,2}}'], plot_info, curr_savepath, '|Active pre| - |Passive pre|',1,[-2,2]);
+mod_index_stats_datasets_pre = generate_mod_index_plots_datasets([1:24], spike_context_matrix, [], pooled_cell_types, params, [curr_savepath '\deconv_pre\']);
+
+frame_window = 50:59;%63:92;
+[dff_response,~] = unpack_context_mouse_celltypes(context_data.dff,[],all_celltypes,[1:25]); %context_data.deconv_interp
+[dff_trial_cel_mouse,dff_context_celltype] = calc_avg_rate_across_context_celltype_choosetrials(dff_response,frame_window,stim_trials_context, ctrl_trials_context);
+
+[dff_context_matrix,dff_context_matrix_ctrl] = into_mod_structure(dff_trial_cel_mouse,all_celltypes); %same as mod structure for easy plotting!
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{dff_context_matrix{:,1}}',{dff_context_matrix{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{dff_context_matrix{:,1}}',{dff_context_matrix{:,2}}'], plot_info, [], '|Active pre| - |Passive pre|',1,[-.5,.5]);
+mod_index_stats_datasets_pre = generate_mod_index_plots_datasets([1:24], dff_context_matrix, [], pooled_cell_types, params, [curr_savepath '\dff_pre\']);
 
