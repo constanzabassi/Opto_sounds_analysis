@@ -1,6 +1,11 @@
-function [data,context_tr] = load_experimental_data(server, dataset_path, path_string, multiple_contexts)
+function [data,context_tr,extra,extra2] = load_experimental_data(server, dataset_path, path_string, multiple_contexts, load_extra)
 %load neural data (dff/deconv), stimulus onsets, and context_trials if
 %multiple trials available
+
+% Set default for optional argument
+    if nargin < 5
+        load_extra = false;
+    end
 
     base_path = fullfile(server, 'Connie', 'ProcessedData', dataset_path);
     
@@ -18,6 +23,16 @@ function [data,context_tr] = load_experimental_data(server, dataset_path, path_s
     if multiple_contexts
         %has the trials relative to bad frames and stim/ctrl for each context
         context_tr = load_mat_file(exp_path, 'context_tr.mat');
+    end
+
+    % Load extra data if requested
+    if load_extra
+        extra = load_mat_file(base_path, '/VR/imaging.mat'); % <-- Adjust filename as needed
+        extra2 = load_mat_file(base_path, '/alignment_info.mat'); % <-- Adjust filename as needed
+
+    else
+        extra = [];
+        extra2 = [];
     end
 end
 
