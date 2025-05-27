@@ -56,8 +56,13 @@ dataset_to_plot = 9;
 context_to_plot = [1];
 sig_neurons_to_plot = [];
 modulation_type = 1; %positive or negative
+ plot_info = params.plot_info;
+ plot_info.plot_mode = 'ctrl';% stim ctrl or both
+ plot_info.plot_avg = 1;
+
+
  wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
-     dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto');
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
 
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
@@ -71,6 +76,9 @@ load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\mod_indexm.
 mod_params.threshold_single_side = 0;
 sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells, all_celltypes, [],0);
 
+%PLOT MODULATED NEURONS in the spontaneous context
+context_num = 3;
+[percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, [], 'horizontal',all_celltypes);
 
 %%
 load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
