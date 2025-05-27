@@ -1,6 +1,11 @@
+function set_current_fig(varargin)
 %% set current figure
 set(gca,'FontName','Arial');
-set(gca,'FontSize',14);
+if nargin > 0
+    set(gca,'FontSize',varargin{1,1});
+else
+    set(gca,'FontSize',8);
+end
 set(gcf,'Color','w')
 set(gca,'FontName','Arial')
 %set(gca,'Color','k'b)

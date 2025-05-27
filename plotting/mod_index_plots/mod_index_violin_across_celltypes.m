@@ -41,7 +41,7 @@ for cel_type = 1:length(celltypes_ids)
                 xline_vars(1) = possible_tests(t,1); 
                 xline_vars(2) = possible_tests(t,2); 
                 xval = 0;  
-                plot_pval_star(xval, 1+ct, p_stim(t), xline_vars,0.01)
+                utils.plot_pval_star(xval, 1+ct, p_stim(t), xline_vars,0.01)
                 ct = ct+0.1;
             end
 
@@ -106,7 +106,7 @@ for cel_type = 1:length(celltypes_ids)
                 xline_vars(1) = possible_tests(t,1); 
                 xline_vars(2) = possible_tests(t,2); 
                 xval = 0;  
-                plot_pval_star(xval, .7+ct, p_stim(t), xline_vars,0.01)
+                utils.plot_pval_star(xval, .7+ct, p_stim(t), xline_vars,0.01)
                 ct = ct+0.1;
             end
 

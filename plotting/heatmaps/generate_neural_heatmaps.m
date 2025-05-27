@@ -66,8 +66,10 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             cellCount = size(stim_data,2); % trials x cells x frames
             if ~isempty(sig_mod_boot)
                 mod_cells = sig_mod_boot{1,current_dataset}; %
+                save_name = 'sig_cells';
             else
                 mod_cells = 1:cellCount;
+                save_name = 'all_cells';
             end
     
             % Calculate and concatenate means
@@ -185,14 +187,14 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
         
         if isfield(params, 'savepath')
             saveas(gcf, fullfile(params.savepath, ...
-                sprintf('%s_responses_heatmap_%s.png', current_cond,type)));
+                sprintf('%s_responses_heatmap_%s_%s.png', current_cond,type,save_name)));
             exportgraphics(gcf,fullfile(params.savepath, ...
-                sprintf('%s_responses_heatmap_%s.pdf', current_cond,type)), 'ContentType', 'vector');
+                sprintf('%s_responses_heatmap_%s_%s.pdf', current_cond,type,save_name)), 'ContentType', 'vector');
         end
     end
         
         if isfield(params, 'savepath')
-            saveas(gcf, fullfile(params.savepath, sprintf('context_%d_heatmap.png', context)));
+            saveas(gcf, fullfile(params.savepath, sprintf('context_%d_heatmap_%s.png', context,save_name)));
         end
 
 
@@ -229,9 +231,9 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             
             if isfield(params, 'savepath')
                 saveas(gcf, fullfile(params.savepath, ...
-                    sprintf('%s_%s_responses_heatmap_%s.png', current_cond,dir_name{direction},type)));
+                    sprintf('%s_%s_responses_heatmap_%s_%s.png', current_cond,dir_name{direction},type,save_name)));
                 exportgraphics(gcf,fullfile(params.savepath, ...
-                    sprintf('%s_%s_responses_heatmap_%s.pdf', current_cond,dir_name{direction},type)), 'ContentType', 'vector');
+                    sprintf('%s_%s_responses_heatmap_%s_%s.pdf', current_cond,dir_name{direction},type,save_name)), 'ContentType', 'vector');
             end
         end
         
@@ -268,9 +270,9 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             
             if isfield(params, 'savepath')
                 saveas(gcf, fullfile(params.savepath, ...
-                    sprintf('%s_diff_responses_heatmap_%s.png', dir_name{direction},type)));
+                    sprintf('%s_diff_responses_heatmap_%s_%s.png', dir_name{direction},type,save_name)));
                 exportgraphics(gcf,fullfile(params.savepath, ...
-                    sprintf('%s_diff_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
+                    sprintf('%s_diff_responses_heatmap_%s_%s.pdf', dir_name{direction},type,save_name)), 'ContentType', 'vector');
             end
         end
 
@@ -301,9 +303,9 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             
             if isfield(params, 'savepath')
                 saveas(gcf, fullfile(params.savepath, ...
-                    sprintf('%s_diff_postpre_responses_heatmap_%s.png', dir_name{direction},type)));
+                    sprintf('%s_diff_postpre_responses_heatmap_%s_%s.png', dir_name{direction},type,save_name)));
                 exportgraphics(gcf,fullfile(params.savepath, ...
-                    sprintf('%s_diff_postpre_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
+                    sprintf('%s_diff_postpre_responses_heatmap_%s_%s.pdf', dir_name{direction},type,save_name)), 'ContentType', 'vector');
             end
        end
 
@@ -333,9 +335,9 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
             
             if isfield(params, 'savepath')
                 saveas(gcf, fullfile(params.savepath, ...
-                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s.png', dir_name{direction},type)));
+                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s_%s.png', dir_name{direction},type,save_name)));
                 exportgraphics(gcf,fullfile(params.savepath, ...
-                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s.pdf', dir_name{direction},type)), 'ContentType', 'vector');
+                    sprintf('%s_diff_postpre_stim_responses_heatmap_%s_%s.pdf', dir_name{direction},type,save_name)), 'ContentType', 'vector');
             end
         end
 
@@ -345,7 +347,7 @@ passive_all_trial_info_sounds = load('V:\Connie\results\opto_sound_2025\context\
 
         
         if isfield(params, 'savepath')
-            saveas(gcf, fullfile(params.savepath, sprintf('context_%d_heatmap.png', context)));
+            saveas(gcf, fullfile(params.savepath, sprintf('context_%d_heatmap_%s.png', context,save_name)));
         end
 
 

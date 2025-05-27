@@ -117,14 +117,14 @@ for plot_idx = 1:num_plots
         if p_cdf_stim(t) < 0.05 / size(possible_tests, 1)
             xline_vars = [binss(find(stim_cdf_contexts{1, possible_tests(t, 1)} > 0.6 + ct, 1, 'first')), ...
                           binss(find(stim_cdf_contexts{1, possible_tests(t, 2)} > 0.6 + ct, 1, 'first'))];
-            plot_pval_star(0, 0.61 + ct, p_cdf_stim(t), xline_vars, 0.01);
+            utils.plot_pval_star(0, 0.61 + ct, p_cdf_stim(t), xline_vars, 0.01);
             ct = ct + 0.03;
         end
         
         if ~isempty(ctrl_mod) && p_cdf_paired(t) < 0.05 / size(possible_tests, 1)
             xline_vars = [binss(find(ctrl_cdf_contexts{1, t} > 0.8 + ct2, 1, 'first')), ...
                           binss(find(stim_cdf_contexts{1, t} > 0.8 + ct2, 1, 'first'))];
-            plot_pval_star(0, 0.81 + ct2, p_cdf_paired(t), xline_vars, 0.01);
+            utils.plot_pval_star(0, 0.81 + ct2, p_cdf_paired(t), xline_vars, 0.01);
             ct2 = ct2 + 0.03;
         end
     end

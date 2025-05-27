@@ -7,7 +7,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     %   plot_info - structure with plotting parameters
     
     figure(700);clf
-    
+    positions = utils.calculateFigurePositions(1, 5, .5, []);
     num_contexts = 2;
     unique_mice = unique(mouseID);
     n_mice = length(unique_mice);
@@ -106,7 +106,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             if p_val_mod(t,celltype) < 0.05/n_celltypes
                 xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
                 ct = ct + 0.03;
-                plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, ...
+                utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, ...
                     0.01, plot_info.colors_celltypes(celltype,:))
             end
         end
@@ -133,7 +133,8 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
 %     set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
     box off
     xtickangle(45)
-    set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),170]);
+%     set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),170]);
+    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
     utils.set_current_fig;
     
     % Store statistics

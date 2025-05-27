@@ -45,7 +45,7 @@ for ce = 1:length(celltypes_ids)%length(possible_tests)
         if p_val_mod(t,ce) < 0.05/length(possible_tests)
             xline_vars = possible_tests(t,:);   
             ct = ct+.03;
-            plot_pval_star(0, y_val+ct, p_val_mod(t,ce), xline_vars,0.01,plot_info.colors_celltypes(ce,:))
+            utils.plot_pval_star(0, y_val+ct, p_val_mod(t,ce), xline_vars,0.01,plot_info.colors_celltypes(ce,:))
         end
     end
 end
@@ -96,7 +96,7 @@ for c = 1:length(celltypes_ids) %celltypes
         if p_val_mod(t,ce) < 0.05/length(celltypes_ids)
             xline_vars = possible_tests(t,:)+((c-1)*length(plot_info.behavioral_contexts));  
             ct = ct+.03;
-            plot_pval_star(0, y_val+ct, p_val_mod(t,ce), xline_vars,0.01,plot_info.colors_celltypes(ce,:))
+            utils.plot_pval_star(0, y_val+ct, p_val_mod(t,ce), xline_vars,0.01,plot_info.colors_celltypes(ce,:))
         end
     end
 

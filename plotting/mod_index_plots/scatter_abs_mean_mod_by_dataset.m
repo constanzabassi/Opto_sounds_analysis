@@ -84,7 +84,7 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
                 if p_val_mod(t,celltype) < 0.05/length(possible_tests)
                     xline_vars = possible_tests(t,:);
                     ct = ct+.03;
-                    plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
+                    utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
                 end
             end
         end
@@ -178,7 +178,7 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
                 if p_val_mod(t,celltype) < 0.05/n_celltypes
                     xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
                     ct = ct + 0.03;
-                    plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
+                    utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
                 end
             end
         end

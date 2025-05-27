@@ -3,6 +3,7 @@ figure(94);clf;
 % cd 'C:\Code\Github\+colormaps'
 % colorList= (colormaps.slanCM('coolwarm',100));
 % colormap(colorList) % redblue
+positions = utils.calculateFigurePositions(1, 5, .5, []);
 mod_to_plot = stim_mod(:,1:length(plot_info.behavioral_contexts));
 colormap redblue
 meancontextmod = nanmean(mod_to_plot(:,:) , 2);%nanmean(stim_mod(chosen_cels,:) , 2);
@@ -24,8 +25,9 @@ xticks([1:size(mod_to_plot,2)]);
 xticklabels(plot_info.behavioral_contexts);
 ylabel('Neurons')
 set(heatmap_plot,'AlphaData',~isnan(mod_to_plot(id,:))); %,~isnan(stim_mod(chosen_cels(id),:)))
-set(gca,'color',[.7 .7 .7],'fontsize',12);
-set(gcf,'position',[100,100,200,200])
+set(gca,'color',[.7 .7 .7],'fontsize',8);
+% set(gcf,'position',[100,100,200,200])
+set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 movegui(gcf, 'center')
 
 % axis square

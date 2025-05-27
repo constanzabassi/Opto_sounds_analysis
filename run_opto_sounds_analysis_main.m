@@ -42,7 +42,7 @@ avg_params = struct(...
 % Get averages
 [avg_results_stim ,avg_results_by_dataset_stim,avg_results_ctrl, avg_results_by_dataset_ctrl] = wrapper_trial_averaging(params.info, dff_st,stim_trials_context,ctrl_trials_context, avg_params, [params.info.savepath '/avg/']);
 % generate_heatmaps(context_data, sorted_cells, info);
-generate_neural_heatmaps(dff_st, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:24], params, 'opto')
+generate_neural_heatmaps(dff_st, stim_trials_context, ctrl_trials_context,[],[1:24], params, 'opto');
 
 
 %% Calculate modulation indices
@@ -79,6 +79,8 @@ sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm
 %PLOT MODULATED NEURONS in the spontaneous context
 context_num = 3;
 [percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, [], 'horizontal',all_celltypes);
+%heatmap of mean
+generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 
 %%
 load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
@@ -109,7 +111,7 @@ overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % 
 params.plot_info = plot_info;
 
 %save directory
-save_dir = [mod_params.savepath]; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = ['V:\Connie\results\opto_sound_2025\context\mod\prepost\separate'];%[mod_params.savepath]; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr(:,3), all_celltypes, params,save_dir);
