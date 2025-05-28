@@ -1,4 +1,4 @@
-function mean_across_celltype = celltypes_avg_fr_traces(deconv_response,colors,lineStyles_contexts,celltypes_ids,frames,stim_frame,save_dir,thrs,ylims)
+function mean_across_celltype = celltypes_avg_fr_traces(deconv_response,colors,lineStyles_contexts,celltypes_ids,frames,stim_frame,save_dir,thrs,ylims,varargin)
 f1 = figure(96);clf
 t = tiledlayout(1,size(deconv_response,3),'TileSpacing','Compact','Padding','Compact');
 
@@ -9,7 +9,7 @@ for celtype = 1:size(deconv_response,3)
         mean_across_cells_mice = [];
         mean_across_cells_mice_ctrl =[];
         for mouse = 1:size(deconv_response,2)
-            size(deconv_response{context,mouse,celtype}.stim,1)
+            cellCount = size(deconv_response{context,mouse,celtype}.stim,2);
             if size(deconv_response{context,mouse,celtype}.stim,1)>1 && size(deconv_response{context,mouse,celtype}.ctrl,1)>1
                 mean_across_cells = mean(deconv_response{context,mouse,celtype}.stim); %gives mean across trials (cells x frames)
                 mean_across_cells_ctrl = mean(deconv_response{context,mouse,celtype}.ctrl);
@@ -23,7 +23,7 @@ for celtype = 1:size(deconv_response,3)
         end
         
         set(0, 'CurrentFigure', f1)
-        title(celltypes_ids{1,celtype},'FontSize',12,'FontName','arial','FontWeight','normal');
+        title(celltypes_ids{celtype},'FontSize',12,'FontName','arial','FontWeight','normal');
         hold on
         b(context) = plot(mean(mean_across_cells_mice_ctrl));
         if length(unique(lineStyles_contexts))>1
@@ -44,7 +44,7 @@ for celtype = 1:size(deconv_response,3)
         xticks([31 61 91])
         xticklabels([-1 0 1])
 
-        [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(stim_frame(f,1), length([31:91]));
+        [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(stim_frame(1,1), length([31:91]));
         xticks(xticks_in);
         xticklabels(xticks_lab);
 

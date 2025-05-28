@@ -11,7 +11,10 @@ else
 end
 chosen_cells ={};
 for dataset_index = chosen_mice
-    
+    dataset_index
+    if dataset_index == 3
+        a=1;
+    end
     if ~isempty(sig_mod_boot) && ~isempty(sig_mod_boot{1,dataset_index})
         for ce = 1:length(fieldss)
             chosen_cells{dataset_index,ce} = sig_mod_boot{1,dataset_index}(find(ismember(sig_mod_boot{1,dataset_index},all_celltypes{1,dataset_index}.(fieldss{ce})))) ;
@@ -20,9 +23,14 @@ for dataset_index = chosen_mice
         for ce = 1:length(fieldss)
             chosen_cells{dataset_index,ce} = all_celltypes{1,dataset_index}.(fieldss{ce});
         end
+    else isempty(sig_mod_boot{1,dataset_index})
+        for ce = 1:length(fieldss)
+        chosen_cells{dataset_index,ce} = {};
+        end
     end
     
     for context = 1:size(deconv_st,1)
+        context
         for cel = 1:length(fieldss)
             if ~isempty(chosen_cells) && length(chosen_cells{dataset_index,cel})>1 && all(cellfun(@(x) size(x.stim,1), {deconv_st{1:size(deconv_st,1),dataset_index}}) > 2) %at least 2 cells of this cell type!, at least 3 trials across all contexts for this mouse! % 
                 deconv_response{context,dataset_index,cel}.stim = deconv_st{context,dataset_index}.stim(:,chosen_cells{dataset_index,cel},:);

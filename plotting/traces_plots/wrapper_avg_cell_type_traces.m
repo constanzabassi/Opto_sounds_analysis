@@ -1,0 +1,35 @@
+function wrapper_avg_cell_type_traces(context_data,all_celltypes,mod_indexm,sig_mod_boot,chosen_mice,savepath,data_type,plot_info)
+
+    % Define the parameter sets
+    param_sets = { 
+        struct('mod_threshold', 0.1, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated']),
+        struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated']),
+        struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
+    };
+
+for i = 1:length(param_sets)
+        mod_params = param_sets{i};
+        mod_params.chosen_mice = chosen_mice;
+
+        %get the significant neurons (positive, negative, both);
+        if contains(data_type, 'sound')
+            mod_params.data_type = 'sounds';
+            %separate sig cells based on threshold (and single side or not)
+            [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot);
+            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
+        else
+            mod_params.data_type = 'opto';
+            %separate sig cells based on threshold (and single side or not)
+            [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
+            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'spont');
+        end 
+
+        %get context,mouse,celltype responses (across all trials (not
+        %separated by left or rigth)- so overall avg)
+        [neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells,all_celltypes,chosen_mice); %context_data.deconv_interp
+
+        %plot avg traces (plotting active and passive)
+        avg_across_neurons = 0; %SEM across all neurons vs across datasets
+        contexts_to_plot = [1,2]; %
+        plot_avg_traces_baseline_subtracted(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_3contexts,{'-','-'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
+end

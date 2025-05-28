@@ -95,7 +95,7 @@ for plot_idx = 1:num_plots
         legend_entries = stim_legend;
     end
     color_index =1+count2:length(behavioral_contexts)+count2;
-    utils.place_text_labels(legend_entries, colors(color_index,:), 0.4, 12);
+    utils.place_text_labels(legend_entries, colors(color_index,:), 0.4, 8);
 
     %increase context
     count2=count2+length(behavioral_contexts);

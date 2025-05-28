@@ -23,7 +23,7 @@ for celtype = 1:size(deconv_response,3)
         end
         
         set(0, 'CurrentFigure', f1)
-        title(celltypes_ids{1,celtype},'FontSize',12,'FontName','arial','FontWeight','normal');
+        title(celltypes_ids{celtype},'FontSize',12,'FontName','arial','FontWeight','normal');
         hold on
 %         b(context) = plot(mean(mean_across_cells_mice_ctrl));
 %         if length(unique(lineStyles_contexts))>1
