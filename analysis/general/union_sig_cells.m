@@ -18,10 +18,11 @@ function [output, output_relative,index_context1_all,index_context2_all] = union
                 output{m} = sig_mod_boot_thr2{1, m};
             else
                 [output{m},index_context1,index_context2] = union(sig_mod_boot_thr{1, m}, sig_mod_boot_thr2{1, m});
+                index_context1_all = [index_context1_all;index_context2];
+                index_context2_all = [index_context2_all;index_context2];
+
             end
             output_relative = [output_relative, output{m} + numcells(m)];
-            index_context1_all = [index_context1_all;index_context2];
-            index_context2_all = [index_context2_all;index_context2];
         end
     else
         % If additional inputs are provided

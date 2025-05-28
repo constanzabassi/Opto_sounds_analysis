@@ -64,6 +64,11 @@ mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mo
 [mod_index_results, sig_mod_boot, mod_indexm] = ...
     wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles,  mod_params.savepath);
 %% Compare modulation indices across contexts and cell types
+mod_params = params.mod_sounds; %use 'prespose'/'separate'?
+mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode);
+load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\mod_indexm.mat');
+load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot.mat');
+
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
 
@@ -80,6 +85,11 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:25], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
+
+%average traces
+savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
+wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
 
 %% Make plots of modulation index across contexts/cell types (pooling all cells across all mice)
 % Set y-axis limits for the plots.
