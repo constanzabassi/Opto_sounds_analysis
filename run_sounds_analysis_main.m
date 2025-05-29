@@ -57,6 +57,15 @@ avg_params = struct(...
 %
 generate_neural_heatmaps(dff_st_combined, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:25], params, 'sound')
 
+%simplified (uses all trials)
+context_num = [1,2];
+generate_neural_heatmaps_simple(dff_st_combined, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:25], params, 'sound',context_num);
+
+% taking the differences
+difference_params.type = 'ctrl_sub_pre'; % options: 'stim_sub_ctrl_all','stim_sub_ctrl_post','stim_sub_pre','ctrl_sub_pre'
+difference_params.pre_frames = 1:60; %params.frames.before;
+difference_params.post_frames = params.frames.after;
+generate_neural_heatmaps_difference(dff_st_combined, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:25], params, 'sound',context_num,difference_params);
 %% Calculate modulation indices
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?
 mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode)
@@ -88,6 +97,7 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 
 %average traces
 savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
+load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
 

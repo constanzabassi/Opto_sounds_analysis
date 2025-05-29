@@ -10,16 +10,34 @@ plot_info.colors_celltypes = [0.37 0.75 0.49 %light green
                             0.17 0.35 0.8  %blue
                             0.82 0.04 0.04]; % red  
 
-%active,passive,spont for each cell type
-plot_info.colors_celltypes_3contexts = [0.16, 0.40, 0.24
-                               0.30 0.58 0.40 %light green
-                               0.54, 0.82, 0.64
-                               0.13, 0.24, 0.51
-                            0.17 0.35 0.8  %blue
-                            0.55, 0.65, 0.89
-                            0.50, 0.06, 0.10
-                            0.82 0.04 0.04
-                            0.92, 0.36, 0.41]; % red  
+% %active,passive,spont for each cell type
+plot_info.colors_celltypes_3contexts = [0.16, 0.40, 0.24 %dark green
+                               0.54, 0.82, 0.64 %0.30 0.58 0.40 %light green
+                               0.54, 0.82, 0.64 %light green
+                               0.13, 0.24, 0.51 %dark blue
+                            0.55, 0.65, 0.89 % light blue 0.17 0.35 0.8  %blue
+                            0.55, 0.65, 0.89 % light blue 
+                            0.50, 0.06, 0.10 %dark red
+                            0.92, 0.36, 0.41 % light red 0.82 0.04 0.04
+                            0.92, 0.36, 0.41];% light red  
+% plot_info.colors_celltypes_3contexts = [
+%     % Greens
+%     0.16, 0.40, 0.24;  % original dark green
+%     0.56, 0.75, 0.52;  % light green (CVD-safe)
+%     0.73, 0.88, 0.70;  % lighter green (CVD-safe)
+% 
+%     % Blues
+%     0.13, 0.24, 0.51;  % original dark blue
+%     0.38, 0.60, 0.82;  % light blue (CVD-safe)
+%     0.66, 0.81, 0.96;  % lighter blue (CVD-safe)
+% 
+%     % Reds
+%     0.50, 0.06, 0.10;  % original dark red
+%     0.86, 0.44, 0.58;  % light red (CVD-safe, like rose)
+%     0.98, 0.70, 0.78   % lighter red (CVD-safe, pinkish)
+% ];
+
+
 
 plot_info.colors_celltypes_2contexts = [0.16, 0.40, 0.24 %green
                                0.30 0.58 0.40 
@@ -27,6 +45,24 @@ plot_info.colors_celltypes_2contexts = [0.16, 0.40, 0.24 %green
                             0.17 0.35 0.8  
                             0.50, 0.06, 0.10
                             0.82 0.04 0.04]; % red  
+
+plot_info.colors_celltypes_4contexts = [
+    0.16, 0.40, 0.24      % dark green
+    0.30, 0.58, 0.40      % mid green
+    0.54, 0.82, 0.64      % light green
+    0.74, 0.92, 0.80      % lightest green
+
+    0.13, 0.24, 0.51      % dark blue
+    0.17, 0.35, 0.80      % mid blue
+    0.55, 0.65, 0.89      % light blue
+    0.78, 0.84, 0.95      % lightest blue
+
+    0.50, 0.06, 0.10      % dark red
+    0.82, 0.04, 0.04      % mid red
+    0.92, 0.36, 0.41      % light red
+    0.97, 0.68, 0.70      % lightest red
+];
+
 
 plot_info.colors_contexts = [0.99, 0.42, 0 %dark orange
                                0.99, 0.62, 0 %medium

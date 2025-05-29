@@ -86,6 +86,13 @@ savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
 wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
 
+% taking the differences
+context_num = [1,2];
+difference_params.type = 'stim_sub_ctrl_post'; % options: 'stim_sub_ctrl_all','stim_sub_ctrl_post','stim_sub_pre','ctrl_sub_pre'
+difference_params.pre_frames = params.frames.before;
+difference_params.post_frames = params.frames.after;
+generate_neural_heatmaps_difference(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,3 )',[1:24], params, 'opto',context_num,difference_params);
+
 %%
 load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
 

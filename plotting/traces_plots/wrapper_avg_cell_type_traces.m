@@ -32,4 +32,6 @@ for i = 1:length(param_sets)
         avg_across_neurons = 0; %SEM across all neurons vs across datasets
         contexts_to_plot = [1,2]; %
         plot_avg_traces_baseline_subtracted(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_3contexts,{'-','-'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
+%         plot_avg_traces_baseline_subtracted_nosem(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_4contexts,{'-','--'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
+
 end
