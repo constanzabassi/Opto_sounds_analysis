@@ -18,6 +18,10 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     if nargin > 4
         ylims = varargin{1,1};
     end
+    abs_logic = 1;
+    if nargin > 5
+        abs_logic = 0;
+    end
     
     for celltype = 1:n_celltypes
         mean_cell_all = [];
@@ -36,7 +40,11 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 % Average across datasets for this mouse
                 mouse_data = [];
                 for d = mouse_datasets
-                    curr_data = abs(mod_index_by_dataset{d,context,celltype});
+                    if abs_logic == 1
+                        curr_data = abs(mod_index_by_dataset{d,context,celltype});
+                    else
+                        curr_data = (mod_index_by_dataset{d,context,celltype});
+                    end
                     mouse_data = [mouse_data; curr_data(:)];
                 end
                 mouse_means(context) = nanmean(mouse_data);
@@ -100,8 +108,16 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
             data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
             
+            if ~isempty(data1)
             [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
                 data1, data2, 10000, 'paired', 1);
+            else
+                p_val_mod(t,celltype) = 1;
+            end
+
+            if size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 && celltype > 1%assume only pyr has valid stuff
+                    p_val_mod(t,celltype) = 1;
+            end
             
             if p_val_mod(t,celltype) < 0.05/n_celltypes
                 xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
@@ -116,7 +132,12 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     xlim([x_lines(1) x_lines(end)])
     xticks(x_lines(2:end-1))
     xticklabels(repmat(plot_info.behavioral_contexts, 1, n_celltypes))
-    ylabel({'Absolute Modulation';'Index'})
+
+    if abs_logic == 1;
+        ylabel({'Absolute Modulation';'Index'})
+    else
+        ylabel({'Modulation Index'})
+    end
     
     % Set axis limits
     if nargin > 4
@@ -148,9 +169,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     if ~isempty(save_dir)
         mkdir(save_dir)
         cd(save_dir)
-        saveas(700,strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
-        saveas(700,strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
-        exportgraphics(figure(700),strcat('abs_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
-        save(strcat('abs_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
+        saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
+        saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
+        exportgraphics(figure(700),strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
+        save(strcat('abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
     end
 end

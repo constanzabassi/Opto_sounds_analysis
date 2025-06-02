@@ -24,9 +24,11 @@ for cel_type = 1:n_celltypes
         stats.stats{cel_type} = get_basic_stats(cellfun(@mean ,{mod_index_by_dataset{:,context,cel_type}}));
         %make plots
         hold on
-    
-        a(context) = Violin({cellfun(@nanmean ,{mod_index_by_dataset{:,context,cel_type}})},context,'ViolinColor',[{colors(cel_type,:)}],'EdgeColor',colors(cel_type,:),'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
-    
+
+        %make sure there is data
+        if all(~isnan(stats.stats{cel_type}.ci(:,1)))
+            a(context) = Violin({cellfun(@nanmean ,{mod_index_by_dataset{:,context,cel_type}})},context,'ViolinColor',[{colors(cel_type,:)}],'EdgeColor',colors(cel_type,:),'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
+        end
         
         if cel_type == 1
             ylabel('Modulation Index')

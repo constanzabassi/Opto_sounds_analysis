@@ -168,12 +168,24 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
             
             for t = 1:size(possible_tests,1)
                 % Get data for statistical test
-                data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
-                data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
+                if size(possible_tests,1) == 1 && size(mod_stats.stats,1) > 1
+                    data1 = mod_stats.stats(celltype,possible_tests(1)).valid_means;
+                    data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means;
+                elseif size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 %assume only pyr has valid stuff
+                    valid_cell = 1;
+                    data1 = mod_stats.stats(valid_cell,possible_tests(1)).valid_means;
+                    data2 = mod_stats.stats(valid_cell,possible_tests(2)).valid_means;
+                else
+                    data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
+                    data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
+                end
                 
                 % Perform statistical test
                 [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
                     data1, data2, 10000, 'paired', 1);
+                if size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 && celltype > 1%assume only pyr has valid stuff
+                    p_val_mod(t,celltype) = 1;
+                end
                 
                 if p_val_mod(t,celltype) < 0.05/n_celltypes
                     xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);

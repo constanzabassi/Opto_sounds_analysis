@@ -15,6 +15,11 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
 
     %unpack mod index across datasets
     [mod_index_by_dataset,~] = unpack_modindexm(mod_index,sig_mod_boot_thr,all_celltypes,chosen_dataset);
+
+    [context_mod_all, ~, ~, ~, ~] = organize_sig_mod_index_contexts_celltypes(...
+        chosen_dataset, mod_index, sig_mod_boot_thr', all_celltypes,params.plot_info.celltype_names);
+    mod_index_heatmap(save_dir, context_mod_all, params.plot_info, ...
+        chosen_dataset, [-.4,.4]);
         
     %     % Violin and Box plots (non abs) - can result in values closer to
     %     zero because we are taking means across + and - mod indices
@@ -41,4 +46,9 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
       %by dataset
       all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
           params.plot_info, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
+
+            %by dataset
+      all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
+          params.plot_info, [-params.plot_info.y_lims(2),params.plot_info.y_lims(2)],0);
+
 end
