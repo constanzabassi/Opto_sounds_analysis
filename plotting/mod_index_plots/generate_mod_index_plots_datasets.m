@@ -47,8 +47,8 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
       all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
           params.plot_info, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
 
-            %by dataset
-      all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
-          params.plot_info, [-params.plot_info.y_lims(2),params.plot_info.y_lims(2)],0);
+%             %by dataset
+%       all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
+%           params.plot_info, [-params.plot_info.y_lims(2),params.plot_info.y_lims(2)],0);
 
 end

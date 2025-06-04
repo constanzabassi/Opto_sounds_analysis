@@ -146,6 +146,7 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
                     mod_stats.stats(celltype,context).mean = mean_cel;
                     mod_stats.stats(celltype,context).sem = err;
                     mod_stats.stats(celltype,context).n_valid_datasets = length(valid_data);
+                    mod_stats.stats(celltype,context).valid_datasets = find(~isnan(dataset_means));
                 end
                 
                 % Plot
@@ -171,10 +172,16 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
                 if size(possible_tests,1) == 1 && size(mod_stats.stats,1) > 1
                     data1 = mod_stats.stats(celltype,possible_tests(1)).valid_means;
                     data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means;
+                    if length(data1) ~= length(data2)
+                        data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means(mod_stats.stats(celltype,possible_tests(1)).valid_datasets);
+                    end
                 elseif size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 %assume only pyr has valid stuff
                     valid_cell = 1;
                     data1 = mod_stats.stats(valid_cell,possible_tests(1)).valid_means;
                     data2 = mod_stats.stats(valid_cell,possible_tests(2)).valid_means;
+                    if length(data1) ~= length(data2)
+                        data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means(mod_stats.stats(celltype,possible_tests(1)).valid_datasets);
+                    end
                 else
                     data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
                     data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;

@@ -103,6 +103,10 @@ for current_dataset = 1: length(info.mouse_date)
                 stim_data, ctrl_data, stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
         else
+            if context == 1 %only necessary when selecting specific trials from virmen (like correct vs incorrect)
+                current_conditions = current_conditions(stim_trials);
+                current_conditions_ctrl = current_conditions_ctrl(ctrl_trials);
+            end
             [~, ~, ~, ~, ~, ~, left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = ...
                 find_sound_trials_single(stim_trials, ctrl_trials, current_conditions, current_conditions_ctrl);
             if nargin > 9

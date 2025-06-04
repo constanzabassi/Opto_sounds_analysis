@@ -78,8 +78,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 mod_stats.stats(celltype,context).mean = mean_cel;
                 mod_stats.stats(celltype,context).sem = err;
                 mod_stats.stats(celltype,context).n_valid_datasets = length(valid_data);
+                mod_stats.stats(celltype,context).valid_datasets = find(~isnan(curr_means));
                  % Calculate 95% CI using bootstrapping
-                mod_stats.stats(celltype,context).basic_stats =  get_basic_stats(valid_data)
+                mod_stats.stats(celltype,context).basic_stats =  get_basic_stats(valid_data);
             end
 
 %             % Plot error bar (CI)
@@ -107,6 +108,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         for t = 1:size(possible_tests,1)
             data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
             data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
+            if length(data1) ~= length(data2)
+                data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means(mod_stats.stats(celltype,possible_tests(1)).valid_datasets);
+            end
             
             if ~isempty(data1)
             [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
