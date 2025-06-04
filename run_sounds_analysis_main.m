@@ -75,8 +75,8 @@ mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mo
 %% Compare modulation indices across contexts and cell types
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?
 mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode);
-load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\mod_indexm.mat');
-load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot.mat');
+load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
+load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot.mat');
 
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
@@ -97,7 +97,7 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 
 %average traces
 savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
-load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat');
+load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
 
@@ -270,3 +270,52 @@ save_dir = [params.info.savepath_sounds '/mod/sound_only/']; % '/spont_sig'];% '
 
 % Generate visualization suite
 [mod_index_stats] = generate_mod_index_plots(context_mod_all, celltypes_ids, params, save_dir);
+
+%% look at correct vs incorrect avg trials
+
+% stim_trials_context, ctrl_trials_context,fields, number to get, true or
+% false to get all passive/spont trials
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{1},true);
+[context_data_updated.dff,stim_trials_context,ctrl_trials_context] = organize_2context(sound_data.active.dff_st,sound_data.passive.dff_st, updated_mouse_tr_context);
+[context_data_updated.deconv,stim_trials_context,ctrl_trials_context] = organize_2context(sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp, updated_mouse_tr_context);
+
+mod_params.chosen_mice = 1:25;
+savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\correct_only';
+wrapper_avg_cell_type_traces(context_data_updated.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
+
+
+%now plot incorrect trials
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{0},true);
+[context_data_updated.dff,stim_trials_context,ctrl_trials_context] = organize_2context(sound_data.active.dff_st,sound_data.passive.dff_st, updated_mouse_tr_context);
+[context_data_updated.deconv,stim_trials_context,ctrl_trials_context] = organize_2context(sound_data.active.deconv_st_interp,sound_data.passive.deconv_st_interp, updated_mouse_tr_context);
+savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\incorrect_only';
+wrapper_avg_cell_type_traces(context_data_updated.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
+%% calculate modulation index separatly for correct vs incorrect trials
+mod_params = params.mod_sounds; %use 'prespose'/'separate'?
+mod_params.mode = 'simple';
+mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type, mod_params.mode,'correct_only')
+
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{1},true);
+[mod_index_results_correct, sig_mod_boot_correct, mod_indexm_correct] = ...
+    wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, update_stim_trials_context,update_ctrl_trials_context,mod_params.nShuffles,  mod_params.savepath);
+
+% mod_params.threshold_single_side = 0; mod_params.chosen_mice = 1:24;
+% sig_mod_boot_thr_corr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm_correct, sig_mod_boot_correct, sorted_cells, all_celltypes, [],0);
+mod_index_stats_datasets = generate_mod_index_plots_datasets([1:25], mod_indexm_correct,  combined_sig_cells, all_celltypes, params, mod_params.savepath);
+save(fullfile( mod_params.savepath, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
+
+
+%repeat using INCORRECT TRIALS
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{0},true);
+mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type, mod_params.mode,'incorrect_only')
+
+[mod_index_results_incorrect, sig_mod_boot_incorrect, mod_indexm_incorrect] = ...
+    wrapper_mod_index_calculation(params.info, dff_st_combined, mod_params.response_range, mod_params.mod_type, mod_params.mode, update_stim_trials_context,update_ctrl_trials_context,mod_params.nShuffles, mod_params.savepath);
+
+% mod_params.threshold_single_side = 0; mod_params.chosen_mice = 1:24;
+% sig_mod_boot_thr_incorr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm_incorrect, sig_mod_boot_incorrect, sorted_cells, all_celltypes, [],0);
+
+mod_index_stats_datasets = generate_mod_index_plots_datasets([1:25], mod_indexm_incorrect,  combined_sig_cells, all_celltypes, params, mod_params.savepath);
+save(fullfile(mod_params.savepath, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');

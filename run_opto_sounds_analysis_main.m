@@ -144,6 +144,32 @@ params.plot_info = plot_info;
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats');
 
+%% look at pre stimulus period?
+% find the mean of the significant cells (in sig_mod_boot) during the
+% after_frame periods for each trial
+after_frames_short = 62:72;
+before_frames = 49:59; %usually I do 50:60
+example_mouse = 10;
+neural_data_to_use = dff_st; %dff_st or deconv_st
+%[avg_mod_mouse,avg_mod_mouse_ctrl] = aftermeasure_trials_sigcells_new(chosen_mice, after_frames_short,sig_mod_boot_thr,dff_st,example_mouse);
+
+%define trial modulation-this one uses dot product of trial vs stim axis (difference post-pre of modulated neurons)
+% can look at dot product of pre trial or post trial mean vs stim axis
+[avg_mod_mouse,avg_mod_mouse_ctrl] = aftermeasure_trials_sigcells_stimaxis(chosen_mice, after_frames_short,before_frames,sig_mod_boot_thr,neural_data_to_use,example_mouse,info.savepath)
+
+% get post stim measure (here is the mean), z-score all the measures for
+% each mouse, does not use sig_cells for post_stim measure if given
+% sig_mod_boot ([] if want to use all of them)
+bframes= before_frames; %[48:58] ;
+[premean_activity_cells,premean_activity_cells_ctrl,cell_types_names,postmetric_all,postmetric_all_ctrl] = prestimmean_nosig(chosen_mice,bframes,neural_data_to_use,all_celltypes,sig_mod_boot_thr,avg_mod_mouse,avg_mod_mouse_ctrl);
+% [premean_activity_cells,premean_activity_cells_ctrl,cell_types_names,postmetric_all,postmetric_all_ctrl] = prestimratio_nosig(chosen_mice,bframes,dff_st,all_celltypes,sig_mod_boot_thr,avg_mod_mouse,avg_mod_mouse_ctrl);
+%make figures
+%scatter_aftermetric_mean_var_corr_nosig_new; was code that calculated and
+%plotted things
+
+% Create percentile divisions for premean_activity_cells for binning
+prtiles = [0 25 50 75 100];
+modl_fit = scatter_prestimmean_posttrialmeasure(premean_activity_cells,premean_activity_cells_ctrl,cell_types_names,postmetric_all,postmetric_all_ctrl,plot_info.colors_stimctrl(1,:),plot_info.colors_stimctrl(2,:),prtiles,info.savepath);
 
 %% COMPARE OPTO SOUND NEURONS
 sound_sig = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -238,6 +264,54 @@ cells_to_test = sound_only_cells;
 modl_fit = scatter_index_sigcells(cells_to_test, all_celltypes, [{mod_indexm{:,2}}',{sound_indexm{:,2}}'], plot_info, curr_savepath, 'Passive Opto', 'Passive Sound')
 [p_val_mod] = histogram_diff_index_sig_cells(cells_to_test, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], plot_info, curr_savepath, 'Abs(pass opto) - Abs(pass sound)')
 
+%% look at correct vs incorrect avg trials
+
+% stim_trials_context, ctrl_trials_context,fields, number to get, true or
+% false to get all passive/spont trials
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{1},true);
+[context_data_updated.deconv] = separate_structure_2context(deconv_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.dff] = separate_structure_2context(dff_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.deconv_interp] = separate_structure_2context(deconv_st_interp,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+
+mod_params.chosen_mice = 1:24;
+savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\correct_only';
+wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+
+%now plot incorrect trials
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{0},true);
+[context_data_updated.deconv] = separate_structure_2context(deconv_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.dff] = separate_structure_2context(dff_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.deconv_interp] = separate_structure_2context(deconv_st_interp,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\incorrect_only';
+wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+
+%% calculate modulation index separatly for correct vs incorrect trials
+mod_params = params.mod;
+mod_params.mode = 'simple';
+mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type, mod_params.mode,'correct_only')
+
+[mod_index_results_correct, sig_mod_boot_correct, mod_indexm_correct] = ...
+    wrapper_mod_index_calculation(params.info, dff_st, mod_params.response_range, mod_params.mod_type, mod_params.mode, update_stim_trials_context,update_ctrl_trials_context,mod_params.nShuffles, mod_params.savepath);
+
+mod_params.threshold_single_side = 0; mod_params.chosen_mice = 1:24;
+sig_mod_boot_thr_corr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm_correct, sig_mod_boot_correct, sorted_cells, all_celltypes, [],0);
 
 
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_correct,  sig_mod_boot_thr(:,3)', all_celltypes, params, mod_params.savepath);
+save(fullfile( mod_params.savepath, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
+%repeat using incorrect trials
+[update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{0},true);
+mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type, mod_params.mode,'incorrect_only')
+
+[mod_index_results_incorrect, sig_mod_boot_incorrect, mod_indexm_incorrect] = ...
+    wrapper_mod_index_calculation(params.info, dff_st, mod_params.response_range, mod_params.mod_type, mod_params.mode, update_stim_trials_context,update_ctrl_trials_context,mod_params.nShuffles, mod_params.savepath);
+
+mod_params.threshold_single_side = 0; mod_params.chosen_mice = 1:24;
+sig_mod_boot_thr_incorr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm_incorrect, sig_mod_boot_incorrect, sorted_cells, all_celltypes, [],0);
+
+
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm_incorrect,  sig_mod_boot_thr(:,3)', all_celltypes, params, mod_params.savepath);
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats');
