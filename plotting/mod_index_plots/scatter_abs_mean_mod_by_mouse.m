@@ -150,6 +150,7 @@ function mod_stats = scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_datase
                     mod_stats.stats(celltype,context).mean = mean_cel;
                     mod_stats.stats(celltype,context).sem = err;
                     mod_stats.stats(celltype,context).n_valid_datasets = length(valid_data);
+                    mod_stats.stats(celltype,context).valid_datasets = find(~isnan(mouse_means));
                 end
                     
                 
@@ -171,22 +172,40 @@ function mod_stats = scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_datase
             end
             
             for t = 1:size(possible_tests,1)
-                % Get data for statistical test
-%                 data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
-%                 data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
+                ctx1 = possible_tests(t,1);
+                ctx2 = possible_tests(t,2);
 
-                if size(possible_tests,1) == 1 && size(mod_stats.stats,1) > 1
-                    data1 = mod_stats.stats(celltype,possible_tests(1)).valid_means;
-                    data2 = mod_stats.stats(celltype,possible_tests(2)).valid_means;
-                elseif size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 %assume only pyr has valid stuff
-                    valid_cell = 1;
-                    data1 = mod_stats.stats(valid_cell,possible_tests(1)).valid_means;
-                    data2 = mod_stats.stats(valid_cell,possible_tests(2)).valid_means;
-                    
-                else
-                    data1 = mod_stats.stats(celltype,possible_tests(t,1)).valid_means;
-                    data2 = mod_stats.stats(celltype,possible_tests(t,2)).valid_means;
-                   
+                % Get data for statistical test
+                % Skip if this celltype has no data for either context
+                if isempty(mod_stats.stats) || ...
+                   celltype > size(mod_stats.stats,1) || ...
+                   isempty(mod_stats.stats(celltype,ctx1).valid_means) || ...
+                   isempty(mod_stats.stats(celltype,ctx2).valid_means)
+                    continue;
+                end
+
+                % Extract data
+                data1 = mod_stats.stats(celltype,ctx1).valid_means;
+                data2 = mod_stats.stats(celltype,ctx2).valid_means;
+
+                % Align datasets if lengths differ (use intersection of valid datasets if available)
+                if length(data1) ~= length(data2)
+                    if isfield(mod_stats.stats(celltype,ctx1), 'valid_datasets') && ...
+                       isfield(mod_stats.stats(celltype,ctx2), 'valid_datasets')
+                       
+                       % Intersect dataset indices from both contexts
+                       common_datasets = intersect(mod_stats.stats(celltype,ctx1).valid_datasets, ...
+                                                   mod_stats.stats(celltype,ctx2).valid_datasets);
+            
+                       [~, idx1] = ismember(common_datasets, mod_stats.stats(celltype,ctx1).valid_datasets);
+                       [~, idx2] = ismember(common_datasets, mod_stats.stats(celltype,ctx2).valid_datasets);
+            
+                       data1 = data1(idx1);
+                       data2 = data2(idx2);
+                    else
+                       % Skip if we can't align data
+                       continue;
+                    end
                 end
                 
                 [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
