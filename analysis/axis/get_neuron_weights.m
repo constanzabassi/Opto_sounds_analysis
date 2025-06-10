@@ -9,7 +9,7 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
         total_trials_stim = [size(dff_st{1, current_dataset}.stim,1),size(dff_st{2, current_dataset}.stim,1)]; %get total # trials across contexts
         total_trials_ctrl = [size(dff_st{1, current_dataset}.ctrl,1),size(dff_st{2, current_dataset}.ctrl,1)]; %get total # trials across contexts
 
-        train_frac = 0.7;
+        train_frac = 0.5;
         ctx_count = 0;ctx_count2 = 0;
         train_trials = [];
         test_trials = [];
@@ -38,6 +38,42 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
                 
         end
 
+        train_trials2 = test_trials;
+        test_trials2 = train_trials;
+        train_trials_ctr2 = test_trials_ctr ;
+        test_trials_ctr2 = train_trials_ctr; 
+        train_ctrl_trials_idx2 = test_ctrl_trials_idx;
+        test_ctrl_trials_idx2 = train_ctrl_trials_idx;
+        train_stim_trials_idx2 = test_stim_trials_idx;
+        test_stim_trials_idx2 =train_stim_trials_idx;
+
+%         ctx_count = 0;ctx_count2 = 0;
+%         train_trials2 = [];
+%         test_trials2 = [];
+% 
+%         train_trials_ctr2 = [];
+%         test_trials_ctr2 = [];
+% 
+%         trial_counts = [];
+%         for ctx = 1:2
+%             num_stim_train = round(total_trials_stim(ctx) * train_frac); % Number of train trials for stim
+%             num_ctrl_train = round(total_trials_ctrl(ctx) * train_frac); % Number of train trials for control
+%             
+%             % Generate random indices for train and test trials
+%             train_stim_trials_idx{ctx} = randperm((total_trials_stim(ctx)), num_stim_train)+ctx_count;
+%             test_stim_trials_idx{ctx} = setdiff((1:total_trials_stim(ctx))+ctx_count, train_stim_trials_idx{ctx});
+%             
+%             train_ctrl_trials_idx{ctx} = randperm((total_trials_ctrl(ctx)), num_ctrl_train)+ctx_count2;
+%             test_ctrl_trials_idx{ctx} = setdiff((1:total_trials_ctrl(ctx))+ctx_count2, train_ctrl_trials_idx{ctx});
+%             ctx_count = ctx_count+total_trials_stim(ctx);
+%             ctx_count2 = ctx_count2+total_trials_ctrl(ctx);
+%             
+%             train_trials2 = [train_trials2,train_stim_trials_idx{ctx}];
+%             test_trials2 = [test_trials2,test_stim_trials_idx{ctx}];
+%             train_trials_ctr2 = [train_trials_ctr2,train_ctrl_trials_idx{ctx}];
+%             test_trials_ctr2 = [test_trials_ctr2 ,test_ctrl_trials_idx{ctx}];
+%                 
+%         end
 
         for celltype = 1:4
 
@@ -79,7 +115,7 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
                 prepost_trial(tr,:,:) = [nanmean(data_matrix(tr, 1:n_neurons, aframes), [3]);
                                        nanmean(data_matrix(tr, 1:n_neurons, bframes), [3])]; % [post, pre]
             end
-            sound_diff = mean((squeeze(prepost_trial(:, 1,:))) -squeeze(prepost_trial(:, 2,:)),[1]); %difference size is neurons
+            sound_diff = mean((squeeze(prepost_trial(:, 1,:))) -squeeze(prepost_trial(:, 2,:)),[1]);%mean((squeeze(prepost_trial(:, 1,:))));% -squeeze(prepost_trial(:, 2,:)),[1]); %difference size is neurons
             norm_sound_diff = sound_diff ./ sqrt(sum(sound_diff.^2)); % Normalize sound axis
     
     
@@ -90,9 +126,11 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
             norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
     
             % --- 3) Calculate Active-Passive Axis (active - passive) ---
+
+            %use different trials to find this axis (just in case)
             active_passive_sound_mean = [
-                nanmean(ctrl_matrix(find(ismember( test_trials_ctr,test_ctrl_trials_idx{1})), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean(ctrl_matrix(find(ismember( test_trials_ctr,test_ctrl_trials_idx{2})), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                nanmean(ctrl_matrix(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{1})), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                nanmean(ctrl_matrix(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{2})), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
             context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
             norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
     
@@ -103,7 +141,7 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
                 tr = tr+1;
                 sound_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_stim_diff';
-                context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
+%                 context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
             end
 
             tr = 0;
@@ -111,6 +149,18 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
                 tr = tr+1;
                 sound_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_stim_diff';
+%                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
+            end
+
+            tr = 0;
+            for trial = test_trials_ctr2
+                tr = tr+1;
+                context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
+            end
+
+            tr = 0;
+            for trial = test_trials2
+                tr = tr+1;
                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
             end
 
@@ -124,12 +174,14 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
             for context = 1:2
                 proj{current_dataset,celltype,context}.sound = sound_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:); %total_trials{current_dataset, context, 1}
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
-                proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
+%                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
+                proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials2,test_stim_trials_idx2{context})),:);
                 
                 %ctrl
                 proj_ctrl{current_dataset,celltype,context}.sound = sound_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.stim = stim_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:);
-                proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:);
+%                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{context})),:);
 
                 trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:),2),nanmean(context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
                 trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:),2),nanmean(context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:),2),'Type','Pearson');
