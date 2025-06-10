@@ -1,4 +1,4 @@
-function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_st, chosen_mice, all_celltypes)
+function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_st, chosen_mice, all_celltypes,sig_mod_boot)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -79,6 +79,9 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
 
             if celltype == 4
                 mod_cells = 1:size(dff_st{1, current_dataset}.stim,2);
+                if ~isempty(sig_mod_boot)
+                    mod_cells = sig_mod_boot{1, current_dataset};
+                end
             else
                 mod_cells = all_celltypes{1,current_dataset}.(possible_celltypes{celltype});
             end
@@ -183,8 +186,9 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{context})),:);
 
-                trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:),2),nanmean(context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),:),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
-                trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:),2),nanmean(context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:),2),'Type','Pearson');
+                % find correlations before and after
+                trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),aframes),2),nanmean(context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),bframes),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
+                trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),aframes),2),nanmean(context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),bframes),2),'Type','Pearson');
 
             end
 
