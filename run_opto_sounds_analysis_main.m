@@ -83,8 +83,8 @@ context_num = 3;
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
 savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
-wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
 
 % taking the differences
 context_num = [1,2];
@@ -269,23 +269,23 @@ modl_fit = scatter_index_sigcells(cells_to_test, all_celltypes, [{mod_indexm{:,2
 % stim_trials_context, ctrl_trials_context,fields, number to get, true or
 % false to get all passive/spont trials
 [update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{1},true);
-[context_data_updated.deconv] = separate_structure_2context(deconv_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
-[context_data_updated.dff] = separate_structure_2context(dff_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
-[context_data_updated.deconv_interp] = separate_structure_2context(deconv_st_interp,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.deconv] = separate_structure_w_matrix(deconv_st,updated_mouse_tr_context);%  context.dff{context,mouse}
+[context_data_updated.dff] = separate_structure_w_matrix(dff_st,updated_mouse_tr_context);%  context.dff{context,mouse}
+[context_data_updated.deconv_interp] = separate_structure_w_matrix(deconv_st_interp,updated_mouse_tr_context);%  context.dff{context,mouse}
 
 mod_params.chosen_mice = 1:24;
 savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\correct_only';
-wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
 
 %now plot incorrect trials
 [update_stim_trials_context,update_ctrl_trials_context, updated_mouse_tr_context] = find_specified_VR_trials_in_context_trials(stim_trials_context, ctrl_trials_context, {'correct'},{0},true);
-[context_data_updated.deconv] = separate_structure_2context(deconv_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
-[context_data_updated.dff] = separate_structure_2context(dff_st,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
+[context_data_updated.deconv] = separate_structure_w_matrix(deconv_st,updated_mouse_tr_context);%  context.dff{context,mouse}
+[context_data_updated.dff] = separate_structure_w_matrix(dff_st,updated_mouse_tr_context);%  context.dff{context,mouse}
 [context_data_updated.deconv_interp] = separate_structure_2context(deconv_st_interp,updated_mouse_tr_context,stim_info);%  context.dff{context,mouse}
 savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics\incorrect_only';
-wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data_updated.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
 
 %% calculate modulation index separatly for correct vs incorrect trials
 mod_params = params.mod;
