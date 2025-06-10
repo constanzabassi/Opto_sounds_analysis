@@ -151,4 +151,95 @@ for t = 1:size(possible_tests,1)
 data1, data2, 10000,'paired',1);
 end
 
+%%
+% Parameters
+frame_range = 50:59; %60:90;
+num_bins = 8;
 
+all_proj = [];
+all_perf = [];
+
+% Collect data across datasets
+for dataset = 1:24
+    data = proj_ctrl{dataset, celltype, 1}.context; % choose one context for now
+    trial_means = mean(data(:, frame_range), 2);
+    correct = correct_trials{dataset}; % binary vector
+    
+    all_proj = [all_proj, trial_means'];
+    all_perf = [all_perf, correct];
+end
+
+% Bin engagement (trial_means) values
+edges = linspace(-1.5, 1.5, num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
+bin_centers = edges(1:end-1) + diff(edges)/2;
+binned_perf = zeros(num_bins, 1);
+binned_sem = zeros(num_bins, 1);
+
+for b = 1:num_bins
+    bin_idx = all_proj >= edges(b) & all_proj < edges(b+1);
+    trials_in_bin = all_perf(bin_idx);
+    
+    if ~isempty(trials_in_bin)
+        binned_perf(b) = mean(trials_in_bin);
+        binned_sem(b) = std(trials_in_bin) / sqrt(length(trials_in_bin));
+    else
+        binned_perf(b) = NaN;
+        binned_sem(b) = NaN;
+    end
+end
+
+% Plot
+figure;
+errorbar(bin_centers, binned_perf, binned_sem, '-o', 'LineWidth', 2);
+xlabel('Prestimulus "Engagement"');
+ylabel('Behavioral Performance (Fraction Correct)');
+ylim([0.5 1]);
+title('Mouse’s Task Performance');
+
+%%
+
+% Parameters
+pre_range = 50:59;     % prestimulus (engagement)
+resp_range = 63:93;  % poststimulus (response)
+num_bins = 10;
+
+all_engagement = [];
+all_response = [];
+
+% Aggregate across datasets (one context at a time)
+for dataset = 1:24
+    data = proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.sound; % context 1
+    pre_mean = mean(data(:, pre_range), 2);   % engagement
+    resp_mean = mean(data(:, resp_range), 2); % response to stim/sound
+
+    all_engagement = [all_engagement; pre_mean];
+    all_response = [all_response; resp_mean];
+end
+
+% Bin by engagement
+edges = linspace(-1.5, 1.5, num_bins+1); %linspace(min(all_engagement), max(all_engagement), num_bins+1);
+bin_centers = edges(1:end-1) + diff(edges)/2;
+binned_resp = zeros(num_bins,1);
+binned_resp_sem = zeros(num_bins,1);
+
+for b = 1:num_bins
+    bin_idx = all_engagement >= edges(b) & all_engagement < edges(b+1);
+    vals = all_response(bin_idx);
+
+    if ~isempty(vals)
+        binned_resp(b) = mean(vals);
+        binned_resp_sem(b) = std(vals) / sqrt(length(vals));
+    else
+        binned_resp(b) = NaN;
+        binned_resp_sem(b) = NaN;
+    end
+end
+
+% Plot
+figure;
+errorbar(bin_centers, binned_resp, binned_resp_sem, '-o', 'LineWidth', 2);
+xlabel('Prestimulus "Engagement"');
+ylabel('Neural Response to Sound/Stim');
+title('Stimulus Response vs Engagement');
+
+%% z score mean activity vs axis?
