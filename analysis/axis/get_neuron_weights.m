@@ -1,6 +1,9 @@
-function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_st, chosen_mice, all_celltypes,sig_mod_boot)
+function [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(dff_st, chosen_mice, all_celltypes,sig_mod_boot,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
+
+        %LOAD VIRMEN TRIAL INFO
+        all_trial_info = load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat').all_trial_info_sounds; %all_trial_info
 
         rng(2025);
     % Loop through the selected mice datasets
@@ -95,7 +98,7 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
             trials_ctrl = train_trials_ctr;
             % Define the frames for after and before stimulus
             aframes = 63:93;  % After stimulus
-            bframes = 50:59;   % Before stimulus
+            bframes = 1:59;   % Before stimulus
     
 %             % Initialize trial indexing containers
 %             context_count = 0;
@@ -121,19 +124,32 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
             sound_diff = mean((squeeze(prepost_trial(:, 1,:))) -squeeze(prepost_trial(:, 2,:)),[1]);%mean((squeeze(prepost_trial(:, 1,:))));% -squeeze(prepost_trial(:, 2,:)),[1]); %difference size is neurons
             norm_sound_diff = sound_diff ./ sqrt(sum(sound_diff.^2)); % Normalize sound axis
     
-    
-            % --- 2) Calculate Stimulus + Sound Axis (stim + sound - sound) ---
-            stim_sound_mean = mean(stim_matrix(train_trials, 1:n_neurons, aframes), [1, 3]);
-            sound_mean = mean(ctrl_matrix(train_trials_ctr, 1:n_neurons, aframes), [1, 3]);
-            stim_axis = stim_sound_mean - sound_mean; % Difference between stim + sound and sound
-            norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
+            if nargin > 4
+                mod_cells2 = varargin{1,1}{1, current_dataset};
+                stim_matrix2 = [dff_st{1, current_dataset}.stim(:,mod_cells2,:); dff_st{2, current_dataset}.stim(:,mod_cells2,:)]; % stim + sound (active and passive)
+                ctrl_matrix2 = [dff_st{1, current_dataset}.ctrl(:,mod_cells2,:); dff_st{2, current_dataset}.ctrl(:,mod_cells2,:)]; % sound only (active and passive)
+                
+                % --- 2) Calculate Stimulus + Sound Axis (stim + sound - sound) ---
+                stim_sound_mean = mean(stim_matrix2(train_trials,:, aframes), [1, 3]);
+                sound_mean = mean(ctrl_matrix2(train_trials_ctr, :, aframes), [1, 3]);
+                stim_axis = stim_sound_mean - sound_mean; % Difference between stim + sound and sound
+                norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
+            else
+                 % --- 2) Calculate Stimulus + Sound Axis (stim + sound - sound) ---
+                stim_sound_mean = mean(stim_matrix(train_trials, 1:n_neurons, aframes), [1, 3]);
+                sound_mean = mean(ctrl_matrix(train_trials_ctr, 1:n_neurons, aframes), [1, 3]);
+                stim_axis = stim_sound_mean - sound_mean; % Difference between stim + sound and sound
+                norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
+            end
+
+           
     
             % --- 3) Calculate Active-Passive Axis (active - passive) ---
 
             %use different trials to find this axis (just in case)
             active_passive_sound_mean = [
-                nanmean(ctrl_matrix(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{1})), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean(ctrl_matrix(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{2})), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                nanmean(ctrl_matrix(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{1})), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                nanmean(ctrl_matrix(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{2})), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
             context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
             norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
     
@@ -191,6 +207,10 @@ function [proj,proj_ctrl, weights,trial_corr_context] = get_neuron_weights(dff_s
                 trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),aframes),2),nanmean(context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),bframes),2),'Type','Pearson');
 
             end
+
+            %save correct trials
+            all_correct_trials = [all_trial_info(current_dataset).ctrl(:).correct];
+            percent_correct{current_dataset} = all_correct_trials(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{1})));
 
     
     
