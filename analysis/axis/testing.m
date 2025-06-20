@@ -26,7 +26,14 @@ hist_stats =  histogram_axis_across_contexts([1:24],proj_ctrl, 'context',celltyp
 edges_values = [-1,1.5];
 num_bins = 10;
 binned_perf_all = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,[]);
-%%
+%% response vs engagement axis
+frame_range1 = 50:59; %pre period
+frame_range2 = 63:93; %post period
+edges_values = [-2,2];
+num_bins = 10;
+plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj, 'sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
+
+%% TESTING BELOW
 current_dataset = 1;
 celltype = 4;
 colorss = [0,0,0;.5,.5,.5];
