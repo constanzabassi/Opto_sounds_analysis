@@ -1,4 +1,4 @@
-function [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(dff_st, chosen_mice, all_celltypes,sig_mod_boot,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct] = get_neuron_weights(dff_st, chosen_mice, all_celltypes,sig_mod_boot,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -98,7 +98,7 @@ function [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neur
             trials_ctrl = train_trials_ctr;
             % Define the frames for after and before stimulus
             aframes = 63:93;  % After stimulus
-            bframes = 1:59;   % Before stimulus
+            bframes = 50:59;   % Before stimulus
     
 %             % Initialize trial indexing containers
 %             context_count = 0;
@@ -148,8 +148,8 @@ function [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neur
 
             %use different trials to find this axis (just in case)
             active_passive_sound_mean = [
-                nanmean(ctrl_matrix(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{1})), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean(ctrl_matrix(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{2})), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                nanmean(ctrl_matrix(train_trials_ctr2(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{1}))), 1:n_neurons, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                nanmean(ctrl_matrix(train_trials_ctr2(find(ismember( train_trials_ctr2,train_ctrl_trials_idx2{2}))), 1:n_neurons, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
             context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
             norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
     
@@ -206,11 +206,19 @@ function [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neur
                 trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),aframes),2),nanmean(context_proj_ctrl(find(ismember( test_trials_ctr,test_ctrl_trials_idx{context})),bframes),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
                 trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),aframes),2),nanmean(context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),bframes),2),'Type','Pearson');
 
+                 % Normalize (z-score) the projections per dataset/context
+                for key = ["sound", "stim", "context"]
+                    this_proj = proj_ctrl{current_dataset,celltype,context}.(key);
+                    proj_ctrl_norm{current_dataset,celltype,context}.(key) = (this_proj - mean(this_proj,2)) ./ std(this_proj,[],2);
+                
+                    this_proj = proj{current_dataset,celltype,context}.(key);
+                    proj_norm{current_dataset,celltype,context}.(key) = (this_proj - mean(this_proj,2)) ./ std(this_proj,[],2);
+                end
             end
 
             %save correct trials
             all_correct_trials = [all_trial_info(current_dataset).ctrl(:).correct];
-            percent_correct{current_dataset} = all_correct_trials(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{1})));
+            percent_correct{current_dataset} = all_correct_trials(test_trials_ctr2(find(ismember( test_trials_ctr2,test_ctrl_trials_idx2{1}))));
 
     
     

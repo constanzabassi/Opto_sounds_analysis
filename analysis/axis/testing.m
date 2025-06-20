@@ -1,10 +1,31 @@
-function plot_projected_trials
-figure;
-hold on;
-for contexts = 1:2
-    plot(1:122,mean(sound_proj_ctrl(total_trials{current_dataset, contexts, 2},:)),'color', colorss(contexts,:)); % 
-end
+%% load context data
 
+load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
+load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
+
+% opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
+% opto_sig_cells = opto_sig_mod_boot_thr(:,3); %from spontaneous context
+% sound_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
+% sound_mod = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat').mod_indexm;
+% [sound_sig_cells, ~] = union_sig_cells(sound_sig_mod_boot_thr(:,1)', sound_sig_mod_boot_thr(:,2)', sound_mod);
+% [proj,proj_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,sound_sig_cells);
+%% plot mean projection traces across datasets
+celltype = 4; %4 = all
+
+plot_proj_mean_traces([1:24],proj_ctrl, 'sound',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+plot_proj_mean_traces([1:24],proj_ctrl, 'context',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+
+%% plot histogram across contexts
+frames_to_avg = 50:59;
+hist_stats =  histogram_axis_across_contexts([1:24],proj_ctrl, 'context',celltype, [],frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+
+%% performance vs context
+edges_values = [-1,1.5];
+num_bins = 10;
+binned_perf_all = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,[]);
 %%
 current_dataset = 1;
 celltype = 4;
@@ -33,6 +54,15 @@ for contexts = 1:2
 end
 end
 
+figure;
+hold on;
+for dataset = 1:24
+for contexts = 1:2
+    plot(1:122,(mean(proj{dataset,celltype,contexts}.stim) ),'color', colorss(contexts,:)); % 
+end
+end
+
+
 % figure;
 % hold on;
 % for dataset = 1:24
@@ -50,14 +80,34 @@ end
 end
 
 
-temp = [];temp2 =[];
+% temp = [];temp2 =[];
+% figure;
+% hold on;
+% for dataset = 1:size(trial_corr_context,1)
+%     scatter(trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim,'magenta'); % 
+%     scatter(trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound,'cyan'); % 
+%     temp = [temp;trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound];
+%     temp2 = [temp2;trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim];
+% end
+%% plot individual datasets
 figure;
-hold on;
-for dataset = 1:size(trial_corr_context,1)
-    scatter(trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim,'magenta'); % 
-    scatter(trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound,'cyan'); % 
-    temp = [temp;trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound];
-    temp2 = [temp2;trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim];
+
+for dataset_num = 1:24;
+subplot(5,5,dataset_num)
+hold on
+for contexts = 1:2
+    plot(1:122,(proj_ctrl{dataset_num,celltype,contexts}.sound) ,'color', colorss(contexts,:)); % - mean(proj_ctrl{dataset_num,celltype,contexts}.sound(:,1:59),'all')
+end
+end
+
+figure;
+
+for dataset_num = 1:24;
+subplot(5,5,dataset_num)
+hold on
+for contexts = 1:2
+    plot(1:122,(proj{dataset_num,celltype,contexts}.stim) ,'color', colorss(contexts,:)); % - mean(proj_ctrl{dataset_num,celltype,contexts}.sound(:,1:59),'all')
+end
 end
 %%
 figure;
@@ -74,7 +124,7 @@ all_data = cell(contexts, 1);
 for ctx = 1:contexts
     ctx_data = zeros(num_datasets, num_timepoints);
     for dataset = 1:num_datasets
-        data = proj_ctrl{dataset, celltype, ctx}.sound; %proj{dataset,celltype,ctx}.stim;%proj_ctrl{dataset, celltype, ctx}.sound; %proj{dataset,celltype,ctx}.stim;%proj{dataset,celltype,ctx}.stim%proj_ctrl{dataset, celltype, ctx}.sound;
+        data = proj{dataset,celltype,ctx}.stim;%proj{dataset,celltype,ctx}.stim;%proj_ctrl{dataset, celltype, ctx}.sound; %proj{dataset,celltype,ctx}.stim;%proj{dataset,celltype,ctx}.stim%proj_ctrl{dataset, celltype, ctx}.sound;
         baseline = 0; %mean(data(:,1:59), 'all');
         ctx_data(dataset, :) = mean(data) - baseline;
     end
@@ -103,8 +153,8 @@ title('Mean ± SEM of Sound Projection by Context');
 figure;
 hold on;
 
-frame_range = 50:60; %63:93; % specify the frames you're averaging over
-bin_edges = -1.5:0.2:1.5; % adjust bins as needed
+frame_range = 50:59; %63:93; % specify the frames you're averaging over
+bin_edges = -2:0.15:2; % adjust bins as needed
 all_trial_means_contexts = {};
 all_trial_means_datasets = [];
 for ctx = 1:2
@@ -151,29 +201,30 @@ for t = 1:size(possible_tests,1)
 data1, data2, 10000,'paired',1);
 end
 
-%%
+%% performance vs pre period across all trials
 % Parameters
 frame_range = 50:59; %60:90;
-num_bins = 8;
+num_bins = 10;
+
+% Bin engagement (trial_means) values
+edges = linspace(-1, 1.5, num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
+bin_centers = edges(1:end-1) + diff(edges)/2;
+binned_perf = zeros(num_bins, 1);
+binned_sem = zeros(num_bins, 1);
 
 all_proj = [];
 all_perf = [];
 
 % Collect data across datasets
 for dataset = 1:24
-    data = proj_ctrl{dataset, celltype, 1}.context; % choose one context for now
+    data = proj_ctrl{dataset, celltype, 1}.context; %proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.context; % choose one context for now
     trial_means = mean(data(:, frame_range), 2);
-    correct = correct_trials{dataset}; % binary vector
+    correct =percent_correct{dataset}; % binary vector
     
     all_proj = [all_proj, trial_means'];
     all_perf = [all_perf, correct];
 end
 
-% Bin engagement (trial_means) values
-edges = linspace(-1.5, 1.5, num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
-bin_centers = edges(1:end-1) + diff(edges)/2;
-binned_perf = zeros(num_bins, 1);
-binned_sem = zeros(num_bins, 1);
 
 for b = 1:num_bins
     bin_idx = all_proj >= edges(b) & all_proj < edges(b+1);
@@ -195,7 +246,35 @@ xlabel('Prestimulus "Engagement"');
 ylabel('Behavioral Performance (Fraction Correct)');
 ylim([0.5 1]);
 title('Mouse’s Task Performance');
+%
+% performance across datasets
+binned_perf_all = nan(num_bins, 24); % num_bins x num_datasets
 
+for dataset = 1:24
+    data = proj_norm_ctrl{dataset, celltype, 1}.context;
+    trial_means = mean(data(:, frame_range), 2);
+    correct = percent_correct{dataset};
+
+    for b = 1:num_bins
+        bin_idx = trial_means >= edges(b) & trial_means < edges(b+1);
+        trials_in_bin = correct(bin_idx);
+
+        if ~isempty(trials_in_bin)
+            binned_perf_all(b, dataset) = mean(trials_in_bin);
+        end
+    end
+end
+
+binned_perf = nanmean(binned_perf_all, 2);
+binned_sem = nanstd(binned_perf_all, 0, 2) ./ sqrt(sum(~isnan(binned_perf_all), 2));
+
+
+figure;
+errorbar(bin_centers, binned_perf, binned_sem, '-o', 'LineWidth', 2);
+xlabel('Prestimulus "Engagement"');
+ylabel('Behavioral Performance (Fraction Correct)');
+ylim([0.5 1]);
+title('Mouse’s Task Performance');
 %%
 
 % Parameters
@@ -208,7 +287,7 @@ all_response = [];
 
 % Aggregate across datasets (one context at a time)
 for dataset = 1:24
-    data = proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.sound; % context 1
+    data = proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.sound; %proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.sound; %proj{dataset,celltype,ctx}.stim; %proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, 1}.sound; % context 1
     pre_mean = mean(data(:, pre_range), 2);   % engagement
     resp_mean = mean(data(:, resp_range), 2); % response to stim/sound
 
