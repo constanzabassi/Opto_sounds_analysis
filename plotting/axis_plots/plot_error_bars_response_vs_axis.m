@@ -1,4 +1,4 @@
-function plot_error_bars_response_vs_axis(chosen_datasets,proj, axis_type,proj2, axis_type2, celltype,frame_range1,frame_range2,edge_values,num_bins,colorss,save_dir)
+function [binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis(chosen_datasets,proj, axis_type,proj2, axis_type2, celltype,frame_range1,frame_range2,edge_values,num_bins,colorss,save_dir)
 num_datasets = length(chosen_datasets);
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 
@@ -29,15 +29,43 @@ for ctx = 1:2
             end
         end
     end
-    
-    binned_perf = nanmean(binned_resp_all, 2);
+    binned_resp_all_ctx{ctx} = binned_resp_all;
+    binned_resp{ctx} = nanmean(binned_resp_all, 2);
     binned_sem = nanstd(binned_resp_all, 0, 2) ./ sqrt(sum(~isnan(binned_resp_all), 2));
     
     % Plot
-    errorbar(bin_centers, binned_perf, binned_sem, '-o','LineWidth', 1,'MarkerSize',2,'Color',colorss(ctx,:));
+    errorbar(bin_centers, binned_resp{ctx}, binned_sem, '-o','LineWidth', 1,'MarkerSize',2,'Color',colorss(ctx,:));
 end
 xlabel('Prestimulus "Engagement"');
 ylabel({strcat(axis_type2, ' Neural'); 'Response'});
+xli = xlim;
+xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
+
+%Do statistical comparisons across bins
+p_values = nan(num_bins, 1);
+for b = 1:(num_bins)
+    x = binned_resp_all_ctx{1}(b, :);
+    y = binned_resp_all_ctx{2}(b, :);
+    valid = ~isnan(x) & ~isnan(y);
+    errorbar_resp_stats.stats{b,1} = utils.get_basic_stats(x);
+    errorbar_resp_stats.stats{b,2} = utils.get_basic_stats(y);
+
+    errorbar_resp_stats.p_values(b) = permutationTest_updatedcb(x(valid), y(valid), 10000, 'paired', 1);
+end
+errorbar_resp_stats.test = 'paired permutation across bins';
+errorbar_resp_stats.significant = find(errorbar_resp_stats.p_values < 0.05/num_bins);
+
+%add significant stars
+ct = 0;
+if ~isempty(errorbar_resp_stats.significant)
+    for i = errorbar_resp_stats.significant
+        yli = ylim;
+        xli = xlim;
+        utils.plot_pval_star(0, yli(2)-(.025*length(errorbar_resp_stats.significant))+ct, errorbar_resp_stats.p_values(i),[bin_centers(i),bin_centers(i)],.05);
+        ct = ct+.07;
+    end
+end
+
 
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;

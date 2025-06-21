@@ -1,4 +1,4 @@
-function binned_perf_all = plot_error_bars_performance_vs_axis(chosen_datasets,proj, axis_type, celltype,percent_correct,frame_range,edges_values,num_bins,save_dir)
+function [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis(chosen_datasets,proj, axis_type, celltype,percent_correct,frame_range,edges_values,num_bins,save_dir)
 
 % Bin engagement (trial_means) values
 edges = linspace(edges_values(1), edges_values(2), num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
@@ -47,6 +47,35 @@ xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
 
+%Do statistical comparisons across bins
+combos = nchoosek(1:num_bins,2);
+p_values = nan(length(combos), 1);
+for b = 1:length(combos)
+    x = binned_perf_all(combos(b,1), :);
+    y = binned_perf_all(combos(b,2), :);
+    valid = ~isnan(x) & ~isnan(y);
+    errorbar_stats.stats{b} = utils.get_basic_stats(x);
+
+    errorbar_stats.p_values(b) = permutationTest_updatedcb(x(valid), y(valid), 10000, 'paired', 1);
+end
+errorbar_stats.test = 'paired permutation across bins';
+errorbar_stats.combos = combos;
+errorbar_stats.significant = find(errorbar_stats.p_values < 0.05/length(combos));
+
+%plot imagesc to compare % correct across datasets
+figure(804);clf; colormap gray; 
+imagesc(binned_perf_all); 
+c = colorbar;
+set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+utils.set_current_fig;
+c.Label.String = {'Fraction Correct'}; %'Prestimulus "Engagement"';
+c.Label.Rotation = 270; % Rotate the ylabel by 270 degrees'Rotation',270;
+c.Label.Position = [4.258666624943416,0.500000476837158,0];
+ylabel({'Prestimulus'; '"Engagement" Bin'});
+xlabel('Dataset ID')
+
+
+
 % Save results
 if ~isempty(save_dir)
     mkdir(save_dir)
@@ -54,4 +83,8 @@ if ~isempty(save_dir)
     saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.svg'));
     saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
     exportgraphics(figure(802),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+
+    saveas(804,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
+    exportgraphics(figure(804),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+
 end

@@ -5,6 +5,8 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
 [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
 
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = find_axis(context_data.dff, [1:24], all_celltypes,[]);
+
 % opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
 % opto_sig_cells = opto_sig_mod_boot_thr(:,3); %from spontaneous context
 % sound_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -20,19 +22,21 @@ plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'A
 
 %% plot histogram across contexts
 frames_to_avg = 50:59;
-hist_stats =  histogram_axis_across_contexts([1:24],proj_ctrl, 'context',celltype, [],frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+bin_edges = [-2:0.15:2];%
+hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
 
 %% performance vs context
-edges_values = [-1,1.5];
-num_bins = 10;
-binned_perf_all = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,[]);
+edges_values = [0,2];
+num_bins = 6;
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,[]);
 %% response vs engagement axis
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
-edges_values = [-2,2];
-num_bins = 10;
-plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj, 'sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
+edges_values = [-1.5,1.5];
+num_bins = 8;
+errorbar_resp_stats = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
 
+errorbar_resp_stats = plot_error_bars_response_vs_axis([1:24],proj_norm,  'context',proj_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
 %% TESTING BELOW
 current_dataset = 1;
 celltype = 4;

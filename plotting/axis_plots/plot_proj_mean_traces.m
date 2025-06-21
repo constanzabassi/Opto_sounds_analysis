@@ -52,7 +52,7 @@ xlim(xlimss );
 xticks([31 61 91]);
 xticklabels([-1 0 1]);
 
-xlabel('Time');
+xlabel('Time (s)');
 ylabel('Mean Projection');
 % legend({'Context 1', 'Context 2'});
 % title('Mean ± SEM of Sound Projection by Context');
