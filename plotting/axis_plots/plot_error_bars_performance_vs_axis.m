@@ -80,11 +80,13 @@ xlabel('Dataset ID')
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.svg'));
+    saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.svg'));
     saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(802),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+    exportgraphics(figure(802),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.pdf'), 'ContentType', 'vector');
 
-    saveas(804,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(804),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+    saveas(804,strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.fig'));
+    exportgraphics(figure(804),strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.pdf'), 'ContentType', 'vector');
+
+    save(strcat('errorbar_stats_n',num2str(length(chosen_datasets))),'errorbar_stats');
 
 end

@@ -2,11 +2,12 @@
 
 load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
+% [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
+% [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
 
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = find_axis(context_data.dff, [1:24], all_celltypes,[]);
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl] = find_axis(context_data.dff, [1:24], all_celltypes,[]);
 
+save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots';
 % opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
 % opto_sig_cells = opto_sig_mod_boot_thr(:,3); %from spontaneous context
 % sound_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -16,27 +17,47 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 %% plot mean projection traces across datasets
 celltype = 4; %4 = all
 
-plot_proj_mean_traces([1:24],proj_ctrl, 'sound',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
-plot_proj_mean_traces([1:24],proj_ctrl, 'context',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
-plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+plot_proj_mean_traces([1:24],proj_ctrl, 'sound',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
+plot_proj_mean_traces([1:24],proj_ctrl, 'context',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
+plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
 
 %% plot histogram across contexts
 frames_to_avg = 50:59;
 bin_edges = [-2:0.15:2];%
-hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
 
 %% performance vs context
-edges_values = [0,2];
-num_bins = 6;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,[]);
+edges_values = [-2,2];
+num_bins = 7;
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
 %% response vs engagement axis
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
-edges_values = [-1.5,1.5];
-num_bins = 8;
-errorbar_resp_stats = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
+edges_values = [-1,1];
+num_bins = 5;
+[binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 
-errorbar_resp_stats = plot_error_bars_response_vs_axis([1:24],proj_norm,  'context',proj_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,[]);
+[binned_resp_all_stim_ctx,errorbar_resp_stats_stim] = plot_error_bars_response_vs_axis([1:24],proj_norm,  'context',proj_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+%% response vs engagement axis divided by celltypes
+ctx = 1; %focus on active context
+colors_celltypes = [0.16, 0.40, 0.24 %dark green
+                    0.13, 0.24, 0.51 %dark blue
+                    0.50, 0.06, 0.10] %dark red
+[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,save_dir);
+
+[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
+[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',2,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
+% [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,[]);
+
+% % [0.16, 0.40, 0.24 %dark green
+% % 0.54, 0.82, 0.64 %0.30 0.58 0.40 %light green
+% % 0.54, 0.82, 0.64 %light green
+% % 0.13, 0.24, 0.51 %dark blue
+% % 0.55, 0.65, 0.89 % light blue 0.17 0.35 0.8  %blue
+% % 0.55, 0.65, 0.89 % light blue 
+% % 0.50, 0.06, 0.10 %dark red
+% % 0.92, 0.36, 0.41 % light red 0.82 0.04 0.04
+% % 0.92, 0.36, 0.41];% light red
 %% TESTING BELOW
 current_dataset = 1;
 celltype = 4;

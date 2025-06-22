@@ -7,7 +7,7 @@ edges = linspace(edge_values(1),edge_values(2), num_bins+1); %linspace(min(all_e
 bin_centers = edges(1:end-1) + diff(edges)/2;
 
 
-figure(802);clf;
+figure(803);clf;
 hold on;
 for ctx = 1:2
     % performance across datasets
@@ -34,7 +34,9 @@ for ctx = 1:2
     binned_sem = nanstd(binned_resp_all, 0, 2) ./ sqrt(sum(~isnan(binned_resp_all), 2));
     
     % Plot
-    errorbar(bin_centers, binned_resp{ctx}, binned_sem, '-o','LineWidth', 1,'MarkerSize',2,'Color',colorss(ctx,:));
+    e = errorbar(bin_centers, binned_resp{ctx}, binned_sem, '-o','LineWidth', 1,'MarkerSize',2,'Color',colorss(ctx,:));
+    set(e, 'CapSize', 2);   % Increase cap size (default is 6)
+
 end
 xlabel('Prestimulus "Engagement"');
 ylabel({strcat(axis_type2, ' Neural'); 'Response'});
@@ -74,7 +76,10 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(803,strcat('errorbar_response_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.svg'));
-    saveas(803,strcat('errorbar_response_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(803),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+    saveas(803,strcat('errorbar_response_vs_axis_',num2str(axis_type2),'_n_',num2str(length(chosen_datasets)),'.svg'));
+    saveas(803,strcat('errorbar_response_vs_axis_',num2str(axis_type2),'_n_',num2str(length(chosen_datasets)),'.fig'));
+    exportgraphics(figure(803),strcat('errorbar_response_vs_axis_',num2str(axis_type2),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+
+    save(strcat('errorbar_resp_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets))),'errorbar_resp_stats');
+
 end
