@@ -172,6 +172,10 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     else
         ylabel({'Modulation Index'})
     end
+
+    if nargin > 6
+        ylabel(varargin{1,3});
+    end
     
     % Set axis limits
     if nargin > 4

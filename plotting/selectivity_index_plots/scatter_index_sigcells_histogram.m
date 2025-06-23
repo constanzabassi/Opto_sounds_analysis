@@ -100,7 +100,7 @@ function modl_fit = scatter_index_sigcells_histogram(sig_mod_boot, all_celltypes
     rightAx.Visible = 'off';
 
     box(rightAx, 'off');
-    set(mainAx, 'FontSize', 12)
+    set(mainAx, 'FontSize', 8)
     set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
     
 

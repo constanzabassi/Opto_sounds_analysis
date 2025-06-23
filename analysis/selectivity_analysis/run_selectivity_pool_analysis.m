@@ -179,6 +179,23 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\stim_trials_context.ma
 
 frame_window = 50:59;%63:92;
 
+plot_info.colors_celltypes = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1]; %0.9/0.6/0.2 or 1,0.7,0
+opto_only_sig_cells = setdiff_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+sound_only_sig_cells = setdiff_sig_cells(sound_sig_cells(1,1:24),opto_sig_cells', opto_mod);
+opto_sound_sig_cells = intersect_sig_cells(opto_sig_cells', sound_sig_cells,opto_mod);
+all_cells =[cellfun(@(x) x.pyr_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.som_cells,all_celltypes,'UniformOutput',false);cellfun(@(x) x.pv_cells,all_celltypes,'UniformOutput',false)];
+num_cells = cellfun(@length, all_cells );
+
+pooled_cell_types = {};
+for dataset = 1:24
+    current_sig_cells = [sound_only_sig_cells{dataset}, opto_only_sig_cells{dataset}, opto_sound_sig_cells{dataset}];
+%     pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
+    pooled_cell_types{dataset}.sound = sound_only_sig_cells{dataset};
+    pooled_cell_types{dataset}.opto = opto_only_sig_cells{dataset};
+    pooled_cell_types{dataset}.both = opto_sound_sig_cells{dataset};
+
+end
+
 [deconv_response,~] = unpack_context_mouse_celltypes(context_data.deconv_interp,[],all_celltypes,[1:25]); %context_data.deconv_interp
 [spike_trial_cel_mouse,spike_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,frame_window,stim_trials_context, ctrl_trials_context);
 
@@ -189,10 +206,43 @@ mod_index_stats_datasets_pre = generate_mod_index_plots_datasets([1:24], spike_c
 
 frame_window = 50:59;%63:92;
 [dff_response,~] = unpack_context_mouse_celltypes(context_data.dff,[],all_celltypes,[1:25]); %context_data.deconv_interp
-[dff_trial_cel_mouse,dff_context_celltype] = calc_avg_rate_across_context_celltype_choosetrials(dff_response,frame_window,stim_trials_context, ctrl_trials_context);
+[dff_trial_cel_mouse_pre,dff_context_celltype] = calc_avg_rate_across_context_celltype_choosetrials(dff_response,frame_window,stim_trials_context, ctrl_trials_context);
 
-[dff_context_matrix,dff_context_matrix_ctrl] = into_mod_structure(dff_trial_cel_mouse,all_celltypes); %same as mod structure for easy plotting!
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{dff_context_matrix{:,1}}',{dff_context_matrix{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
-[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{dff_context_matrix{:,1}}',{dff_context_matrix{:,2}}'], plot_info, [], '|Active pre| - |Passive pre|',1,[-.5,.5]);
-mod_index_stats_datasets_pre = generate_mod_index_plots_datasets([1:24], dff_context_matrix, [], pooled_cell_types, params, [curr_savepath '\dff_pre\']);
+[dff_context_matrix_pre,dff_context_matrix_ctrl_pre] = into_mod_structure(dff_trial_cel_mouse_pre,all_celltypes); %same as mod structure for easy plotting!
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{dff_context_matrix_pre{:,1}}',{dff_context_matrix_pre{:,2}}'], plot_info, [], 'Active pre', 'Passive pre',[0,2]);
+[p_val_mod] = histogram_diff_index_sig_cells([], pooled_cell_types,  [{dff_context_matrix_pre{:,1}}',{dff_context_matrix_pre{:,2}}'], plot_info, [], '|Active pre| - |Passive pre|',1,[-.5,.5]);
+mod_index_stats_datasets_pre = generate_mod_index_plots_datasets([1:24], dff_context_matrix_pre, [], pooled_cell_types, params, [curr_savepath '\dff_pre\']);
 
+%% difference of post and pre
+plot_info.celltype_names = {'Sound','Opto','Both'};
+plot_info.y_lims = [-.2, .4];
+% Set labels for plots.
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+params.plot_info = plot_info;
+
+[dff_response,~] = unpack_context_mouse_celltypes(context_data.dff,[],all_celltypes,[1:25]); %context_data.deconv_interp
+[dff_trial_cel_mouse_pre,dff_context_celltype] = calc_avg_rate_across_context_celltype_choosetrials(dff_response,50:59,stim_trials_context, ctrl_trials_context);
+[dff_trial_cel_mouse_post,dff_context_celltype2] = calc_avg_rate_across_context_celltype_choosetrials(dff_response,63:92,stim_trials_context, ctrl_trials_context);
+
+% [dff_trial_cel_mouse_pre,dff_context_celltype] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,50:59,stim_trials_context, ctrl_trials_context);
+% [dff_trial_cel_mouse_post,dff_context_celltype2] = calc_spike_rate_across_context_celltype_choosetrials(deconv_response,63:92,stim_trials_context, ctrl_trials_context);
+
+
+
+[dff_context_matrix_pre,dff_context_matrix_ctrl_pre] = into_mod_structure(dff_trial_cel_mouse_pre,all_celltypes); %same as mod structure for easy plotting!
+[dff_context_matrix_post,dff_context_matrix_ctrl_post] = into_mod_structure(dff_trial_cel_mouse_post,all_celltypes); %same as mod structure for easy plotting!
+
+% define pre and post periods
+[diff_stim, diff_pre_stim, diff_pre_ctrl] = calculate_avg_differences(dff_context_matrix_pre,dff_context_matrix_ctrl_pre,dff_context_matrix_post,dff_context_matrix_ctrl_post);
+
+%make scatter plots and save them!
+current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (stim+sound - sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (stim+sound - sound)',[-.6,2]);
+
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{dff_context_matrix_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{dff_context_matrix_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',[-.6,2]);
+
+[preavg_index_by_dataset,~] = unpack_modindexm(dff_context_matrix_pre,[],pooled_cell_types,[1:24]);
+preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, preavg_index_by_dataset, [1:24],...
+          params.plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
