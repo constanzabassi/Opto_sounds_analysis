@@ -246,3 +246,11 @@ modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_ct
 [preavg_index_by_dataset,~] = unpack_modindexm(dff_context_matrix_pre,[],pooled_cell_types,[1:24]);
 preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, preavg_index_by_dataset, [1:24],...
           params.plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
+
+%across celltypes
+plot_info.colors_celltypes = [0.37 0.75 0.49 %light green
+                            0.17 0.35 0.8  %blue
+                            0.82 0.04 0.04]; % red  
+[preavg_index_by_dataset_ct,~] = unpack_modindexm(dff_context_matrix_pre,[],all_celltypes,[1:24]);
+preavg_stats_celltypes_dataset_ct = plot_connected_abs_mod_by_mouse([current_save_dir '/celltypes'], preavg_index_by_dataset_ct, [1:24],...
+          plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
