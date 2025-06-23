@@ -18,11 +18,19 @@ for celltype = 1:3
     binned_resp_all = nan(num_bins, num_datasets); % num_bins x num_datasets
     
     for dataset = chosen_datasets
-        data = proj{dataset, celltype, ctx}.(lower(axis_type));
-        trial_means = mean(data(:, frame_range1), 2);
+        if ~isempty(proj{dataset, celltype, ctx})
+            data = proj{dataset, celltype, ctx}.(lower(axis_type));
+            trial_means = mean(data(:, frame_range1), 2);
+        else
+            trial_means =nan;
+        end
         
-        data2 = proj2{dataset, celltype, ctx}.(lower(axis_type2));
-        trial_means2 = mean(data2(:, frame_range2), 2);
+        if ~isempty(proj2{dataset, celltype, ctx})
+            data2 = proj2{dataset, celltype, ctx}.(lower(axis_type2));
+            trial_means2 = mean(data2(:, frame_range2), 2);
+        else
+            trial_means2 =nan;
+        end
     
         for b = 1:num_bins
             bin_idx = trial_means >= edges(b) & trial_means < edges(b+1);

@@ -12,18 +12,26 @@ else
     string_context = 'Passive';
 end
 
-figure(803);clf;
+figure(805);clf;
 hold on;
 for celltype = 1:3
     % performance across datasets
     binned_resp_all = nan(num_bins, num_datasets); % num_bins x num_datasets
     
     for dataset = chosen_datasets
-        data = proj{dataset, celltype, ctx}.(lower(axis_type));
-        trial_means = mean(data(:, frame_range1), 2);
+        if ~isempty(proj{dataset, celltype, ctx})
+            data = proj{dataset, celltype, ctx}.(lower(axis_type));
+            trial_means = mean(data(:, frame_range1), 2);
+        else
+            trial_means =nan;
+        end
         
-        data2 = proj2{dataset, celltype, ctx}.(lower(axis_type2));
-        trial_means2 = mean(data2(:, frame_range2), 2);
+        if ~isempty(proj2{dataset, celltype, ctx})
+            data2 = proj2{dataset, celltype, ctx}.(lower(axis_type2));
+            trial_means2 = mean(data2(:, frame_range2), 2);
+        else
+            trial_means2 =nan;
+        end
     
         for b = 1:num_bins
             bin_idx = trial_means >= edges(b) & trial_means < edges(b+1);
@@ -105,9 +113,9 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(803,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.svg'));
-    saveas(803,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(803),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.svg'));
+    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.fig'));
+    exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
 
     save(strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets))),'errorbar_act_ct_stats');
 
