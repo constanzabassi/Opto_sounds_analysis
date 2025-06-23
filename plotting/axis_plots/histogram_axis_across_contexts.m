@@ -44,7 +44,7 @@ for ctx = 1:2
         % Calculate and plot the mean difference
     mean_diff(ctx) = mean(all_trial_means);
     y_limits = ylim;
-    plot(mean_diff(ctx), y_limits(2)+.01, 'v', 'MarkerSize', 6,  'MarkerEdgeColor',  colorss(ctx,:),'MarkerFaceColor',  colorss(ctx,:));
+    plot(mean_diff(ctx), y_limits(2)+.05, 'v', 'MarkerSize', 6,  'MarkerEdgeColor',  colorss(ctx,:),'MarkerFaceColor',  colorss(ctx,:));
 
 end
 

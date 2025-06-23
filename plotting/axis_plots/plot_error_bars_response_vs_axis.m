@@ -72,6 +72,24 @@ end
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
 
+legend_string = {'Active','Passive'};
+% Get current axis limits
+x_range = xlim;
+y_range = ylim;
+% Calculate base text position
+text_x = x_range(2) -.09 * diff(x_range);
+text_y = y_range(2) - .2 * diff(y_range);
+
+% Auto-calculate evenly spaced y-offsets
+num_labels = 2;
+y_offsets = linspace(0, 0.1 * (num_labels - 1), num_labels); % Adjusted scaling
+% Place text labels
+for i = 1:num_labels
+    text(text_x, text_y - y_offsets(i) * diff(y_range), legend_string{i}, ...
+         'Color',colorss(i,:), 'FontSize', 8);
+end
+
+
 % Save results
 if ~isempty(save_dir)
     mkdir(save_dir)
