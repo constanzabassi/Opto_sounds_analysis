@@ -35,24 +35,37 @@ num_bins = 5;
 %% response vs engagement axis
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
-edges_values = [-1,1];
+edges_values = [-2,2];
 num_bins = 5;
 [binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 
 [binned_resp_all_stim_ctx,errorbar_resp_stats_stim] = plot_error_bars_response_vs_axis([1:24],proj_norm,  'context',proj_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+
+for ctx = 1:2
+    heatmap_nan_datasets(binned_resp_all_ctx{1,ctx},['binned_resp_all_ctx' num2str(ctx) '_edges_' num2str(edges_values)],save_dir);
+    heatmap_nan_datasets(binned_resp_all_stim_ctx{1,ctx},['binned_resp_all_stim_ctx' num2str(ctx) '_edges_' num2str(edges_values)],save_dir);
+end
 %% response vs engagement axis divided by celltypes
-ctx = 1; %focus on active context
 colors_celltypes = [0.16, 0.40, 0.24 %dark green
                     0.13, 0.24, 0.51 %dark blue
-                    0.50, 0.06, 0.10] %dark red
-[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,save_dir);
-[binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,save_dir);
-% [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
+                    0.50, 0.06, 0.10%dark red
+                    0.54, 0.82, 0.64 %light green
+                    0.55, 0.65, 0.89%light blue
+                    0.92, 0.36, 0.41]%light red
+group_size = 3;
+for ctx = 1:2; %focus on active context
+    group = [(ctx-1)*group_size + (1:group_size)];
 
-[~,errorbar_activity_ct_stats_act] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
-[~,errorbar_activity_ct_stats_pass] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',2,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
-% [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,[]);
+    [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    [binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
+    
+%     edges_values = [0,2];
+%     num_bins = 5;
+    [~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,[]);
 
+end
 % % [0.16, 0.40, 0.24 %dark green
 % % 0.54, 0.82, 0.64 %0.30 0.58 0.40 %light green
 % % 0.54, 0.82, 0.64 %light green

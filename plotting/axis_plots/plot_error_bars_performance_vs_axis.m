@@ -87,6 +87,6 @@ if ~isempty(save_dir)
     saveas(804,strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.fig'));
     exportgraphics(figure(804),strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('errorbar_stats_n',num2str(length(chosen_datasets))),'errorbar_stats');
+    save(strcat('errorbar_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values)),'errorbar_stats');
 
 end
