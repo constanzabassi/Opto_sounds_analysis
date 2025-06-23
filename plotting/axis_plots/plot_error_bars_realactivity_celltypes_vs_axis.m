@@ -113,10 +113,10 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.svg'));
-    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
+%     saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.svg'));
+    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
+    exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets))),'errorbar_act_ct_stats');
+    save(strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_act_ct_stats');
 
 end
