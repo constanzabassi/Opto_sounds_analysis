@@ -6,7 +6,6 @@ for celtype = 1:size(deconv_response,3)
         ctrl_mean =[];
 
         for mouse = 1:size(deconv_response,2)
-            mouse
             mean_across_cells = [];
             mean_across_cells_ctrl =[];
             t = 0;

@@ -8,10 +8,14 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     
     figure(700);clf
     positions = utils.calculateFigurePositions(1, 5, .5, []);
-    num_contexts = 2;
+    if size( mod_index_by_dataset,2) > 2
+        num_contexts = 2;
+    else
+        num_contexts = size( mod_index_by_dataset,2);
+    end
     unique_mice = unique(mouseID);
     n_mice = length(unique_mice);
-    n_celltypes =  size( mod_index_by_dataset,3);;
+    n_celltypes =  size( mod_index_by_dataset,3);
     count = 0;
     x_lines = 0:num_contexts*n_celltypes+1;
     
@@ -207,9 +211,18 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     if ~isempty(save_dir)
         mkdir(save_dir)
         cd(save_dir)
-        saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
-        saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
-        exportgraphics(figure(700),strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
-        save(strcat('abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
+        if nargin > 6
+            save_string = varargin{1,3};
+            saveas(700,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
+            saveas(700,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
+            exportgraphics(figure(700),strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
+            save(strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
+
+        else
+            saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
+            saveas(700,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
+            exportgraphics(figure(700),strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
+            save(strcat('abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
+        end
     end
 end
