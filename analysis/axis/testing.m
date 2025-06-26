@@ -92,6 +92,16 @@ end
 % % 0.50, 0.06, 0.10 %dark red
 % % 0.92, 0.36, 0.41 % light red 0.82 0.04 0.04
 % % 0.92, 0.36, 0.41];% light red
+%% do the same but for concatenated contexts
+colors_celltypes = [0.3700    0.7500    0.4900;
+                    0.1700    0.3500    0.8000;
+                    0.8200    0.0400    0.0400];
+group = 1:3;
+ctx = 1; %only one context since active and passive are concatenated
+[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat,  'context_sound',proj_concat, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+[binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat,  'context_stim',proj_concat, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'context_sound',act_norm, 'context_sound',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'context_stim',act_norm, 'context_stim',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),save_dir);
 
 %% Plot weights vs axis
 colors_medium = [0.37 0.75 0.49 %green
@@ -103,6 +113,7 @@ num_bins_weights = 20;
 
 [weight_all_celltype_sound,weight_ct_stats_sound] = histogram_weights_celltypes_vs_axis([1:24],weights, 'Sound',all_celltypes , edges_values_weights,num_bins_weights,colors_medium,save_dir);
 [weight_all_celltype_stim,weight_ct_stats_stim] = histogram_weights_celltypes_vs_axis([1:24],weights, 'Stim',all_celltypes , edges_values_weights,num_bins_weights,colors_medium,save_dir);
+
 
 %% TESTING BELOW
 current_dataset = 1;

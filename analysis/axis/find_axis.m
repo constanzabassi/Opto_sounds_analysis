@@ -182,10 +182,16 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
 
             %projections
             %stim
+
+            %save data concatenating across contexts
             proj_concat{current_dataset,celltype,1}.sound = zscore(sound_proj_ctrl);
             proj_concat{current_dataset,celltype,1}.stim = zscore(stim_proj_stim);
             proj_concat{current_dataset,celltype,1}.context_stim = zscore(context_proj_stim);
             proj_concat{current_dataset,celltype,1}.context_sound = zscore(context_proj_ctrl);
+            real_activity_all{current_dataset,celltype,1}.context_sound = zscore(real_activity_ctrl,[],2);
+            real_activity_all{current_dataset,celltype,1}.context_stim = zscore(real_activity_stim,[],2);
+
+            %separate data into contexts
             for context = 1:2
                 proj{current_dataset,celltype,context}.sound = sound_proj_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
@@ -221,6 +227,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 real_activity_all_ctrl{current_dataset,celltype,context}.context = zscore(real_activity_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:),[],2);
                 real_activity_all{current_dataset,celltype,context}.stim = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
                 real_activity_all{current_dataset,celltype,context}.context = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
+                
 
 
             end

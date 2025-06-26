@@ -11,6 +11,9 @@ if ctx == 1
 else
     string_context = 'Passive';
 end
+if contains(lower(axis_type),"_") %_ means it is concatenated 
+    string_context = '';
+end
 figure(803);clf;
 hold on;
 for celltype = 1:3
@@ -112,10 +115,18 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-%     saveas(803,strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.svg'));
-    saveas(803,strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
-    exportgraphics(figure(803),strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    if contains(lower(axis_type),"_")
+        saveas(803,strcat('errorbar_response_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
+        exportgraphics(figure(803),strcat('errorbar_response_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    
+        save(strcat('errorbar_resp_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_resp_ct_stats');
 
-    save(strcat('errorbar_resp_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_resp_ct_stats');
+    else
+    %     saveas(803,strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.svg'));
+        saveas(803,strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
+        exportgraphics(figure(803),strcat('errorbar_response_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    
+        save(strcat('errorbar_resp_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_resp_ct_stats');
+    end
 
 end

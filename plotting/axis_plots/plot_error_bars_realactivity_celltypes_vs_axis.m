@@ -11,7 +11,9 @@ if ctx == 1
 else
     string_context = 'Passive';
 end
-
+if contains(lower(axis_type),"_") %_ means it is concatenated 
+    string_context = '';
+end
 figure(805);clf;
 hold on;
 for celltype = 1:3
@@ -113,10 +115,17 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-%     saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.svg'));
-    saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
-    exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    if contains(lower(axis_type),"_")
+        saveas(805,strcat('errorbar_activity_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
+        exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    
+        save(strcat('errorbar_activity_celltypes_vs_concat_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_act_ct_stats');
 
-    save(strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_act_ct_stats');
+    else
 
+        saveas(805,strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
+        exportgraphics(figure(805),strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
+    
+        save(strcat('errorbar_activity_celltypes_vs_axis_',num2str(axis_type2),'_ctx_',num2str(ctx),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_act_ct_stats');
+    end
 end
