@@ -1,4 +1,4 @@
-function [all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets] = compute_means_correlations_per_dataset(sig_mod_boot, all_celltypes, baseline_sound, delta_stim, stim_sound_response)
+function [all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_per_dataset(sig_mod_boot, all_celltypes, baseline_sound, delta_stim, stim_sound_response)
 
 
 celltype_fields = fields(all_celltypes{1});
@@ -40,8 +40,8 @@ for ctx = 1:n_context
             %compute correlation between baseline and delta opto
             if ~isempty(x) && std(x) > 0 && std(y) > 0
                 r = corr(x, y);
-%                 cv = cov(x, y);
-%                 r = cv(1,2)/var(y);
+%                 cv = cov(zscore(x), zscore(y));
+%                 r = cv(1,2)/var(zscore(y));
 %                 x_centered = x - mean(x);
 %                 y_centered = y - mean(y);
 %                 cv = mean(x_centered .* y_centered);     % manual covariance
@@ -66,6 +66,11 @@ for ctx = 1:n_context
             all_std_across_celltypes_datasets{dataset_index,ctx,cell_type,1} = std(x); % sound (baseline)
             all_std_across_celltypes_datasets{dataset_index,ctx,cell_type,2} = std(z); % stim+sound
             all_std_across_celltypes_datasets{dataset_index,ctx,cell_type,3} = std(y); % stim+sound - sound
+
+            all_data_celltypes_datasets{dataset_index,ctx,cell_type,1} = x; % sound (baseline)
+            all_data_celltypes_datasets{dataset_index,ctx,cell_type,2} = z; % stim+sound
+            all_data_celltypes_datasets{dataset_index,ctx,cell_type,3} = y; % stim+sound - sound
+
         end
         r2 = corr(all_x, all_y);
         sem = std(all_x) / sqrt(length(all_x));

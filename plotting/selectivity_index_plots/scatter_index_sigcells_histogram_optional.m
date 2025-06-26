@@ -1,6 +1,7 @@
 function [modl_fit, index_updated,index2_updated] = scatter_index_sigcells_histogram_optional(sig_mod_boot, all_celltypes, index, plot_info, save_path, string1, string2,historno,unity_line, varargin)
 index_updated = {};
 index2_updated = {};
+positions = utils.calculateFigurePositions(1, 5, .5, []);
 if nargin > 9
         minmax = varargin{1,1};
     else
@@ -62,7 +63,7 @@ if nargin > 9
 
             % Scatter plot
             scatter(mainAx, x, y, 'MarkerEdgeColor', plot_info.colors_celltypes(cell_type, :), ...
-                'MarkerEdgeAlpha', .7, 'LineWidth', 1.5, 'SizeData',20);
+                'MarkerEdgeAlpha', .7, 'LineWidth', 1, 'SizeData',10);
 
             % Collect data for fitting and histograms
             all_x = [all_x; x(:)];
@@ -115,7 +116,9 @@ if nargin > 9
 
     box(rightAx, 'off');
     set(mainAx, 'FontSize', 8)
-    set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
+%     set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
+    set(mainAx, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+
     
 
 
@@ -125,6 +128,8 @@ if nargin > 9
         if ~exist(save_path, 'dir')
             mkdir(save_path);
         end
+        string2 = strrep(string2, '\', '');
+        string1 = strrep(string1, '\', '');
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
         exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');

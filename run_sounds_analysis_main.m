@@ -61,6 +61,9 @@ generate_neural_heatmaps(dff_st_combined, stim_trials_context, ctrl_trials_conte
 context_num = [1,2];
 generate_neural_heatmaps_simple(dff_st_combined, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:25], params, 'sound',context_num);
 
+context_num = [1,2];
+generate_neural_heatmaps_simple(dff_st_combined, stim_trials_context, ctrl_trials_context,combined_sig_cells,[1:25], params, 'stim',context_num);
+
 % taking the differences
 difference_params.type = 'ctrl_sub_pre'; % options: 'stim_sub_ctrl_all','stim_sub_ctrl_post','stim_sub_pre','ctrl_sub_pre'
 difference_params.pre_frames = 1:60; %params.frames.before;
