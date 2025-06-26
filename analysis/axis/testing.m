@@ -5,7 +5,7 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
 
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]);
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]);
 
 save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\separate_trials';
 % opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -32,6 +32,16 @@ hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',ce
 edges_values = [0,2];
 num_bins = 5;
 [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
+
+edges_values = [-1,2];
+num_bins = 5;
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,[]);
+
+edges_values = [-1,2];
+num_bins = 5;
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_rolling_window([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,save_dir);
+
+
 %% response vs engagement axis
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
@@ -45,6 +55,10 @@ for ctx = 1:2
     heatmap_nan_datasets(binned_resp_all_ctx{1,ctx},['binned_resp_all_ctx' num2str(ctx) '_edges_' num2str(edges_values)],save_dir);
     heatmap_nan_datasets(binned_resp_all_stim_ctx{1,ctx},['binned_resp_all_stim_ctx' num2str(ctx) '_edges_' num2str(edges_values)],save_dir);
 end
+
+% repeat but without separated trials across contexts
+[binned_resp_all_ctx_together,errorbar_resp_stats_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_sound',proj_concat, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_stim_together,errorbar_resp_stats_stim_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_stim',proj_concat, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 %% response vs engagement axis divided by celltypes
 colors_celltypes = [0.16, 0.40, 0.24 %dark green
                     0.13, 0.24, 0.51 %dark blue

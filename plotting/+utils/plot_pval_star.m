@@ -21,10 +21,10 @@ text_height = yMax;
 % Plot significance symbol
 if ~isempty(sig_symbol)
     if nargin > 5 %include this for adding specific color
-        text(x_val+mean([xline_vars(1),xline_vars(2)]), text_height, sig_symbol,'HorizontalAlignment', 'center', 'Color', varargin{1},'FontSize',12);
+        text(x_val+mean([xline_vars(1),xline_vars(2)]), text_height, sig_symbol,'HorizontalAlignment', 'center', 'Color', varargin{1},'FontSize',8);
         line([x_val+xline_vars(1), x_val+xline_vars(2)], [y_val-y_val_line_diff, y_val-y_val_line_diff], 'Color', varargin{1}, 'LineWidth', 0.5);
     else
-        text(x_val+mean([xline_vars(1),xline_vars(2)]), text_height, sig_symbol,'HorizontalAlignment', 'center', 'Color', 'k','FontSize',12);
+        text(x_val+mean([xline_vars(1),xline_vars(2)]), text_height, sig_symbol,'HorizontalAlignment', 'center', 'Color', 'k','FontSize',8);
         line([x_val+xline_vars(1), x_val+xline_vars(2)], [y_val-y_val_line_diff, y_val-y_val_line_diff], 'Color', 'k', 'LineWidth', 0.5);
     end
 end

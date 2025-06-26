@@ -1,4 +1,4 @@
-function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl] = find_axis(dff_st, chosen_mice, all_celltypes,sig_mod_boot,sig_mod_boot2,sig_mod_boot3,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,percent_correct_concat,proj_concat] = find_axis(dff_st, chosen_mice, all_celltypes,sig_mod_boot,sig_mod_boot2,sig_mod_boot3,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -8,6 +8,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         rng(2025);
     % Loop through the selected mice datasets
     for current_dataset = chosen_mice
+        current_dataset
         % Example: Randomly split trials into train (80%) and test (20%)
         total_trials_stim = [size(dff_st{1, current_dataset}.stim,1),size(dff_st{2, current_dataset}.stim,1)]; %get total # trials across contexts
         total_trials_ctrl = [size(dff_st{1, current_dataset}.ctrl,1),size(dff_st{2, current_dataset}.ctrl,1)]; %get total # trials across contexts
@@ -132,6 +133,13 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             nanmean(ctrl_matrix3(trainB_ctrl_all(find(ismember( trainB_ctrl_all,trainB_ctrl{2}))), :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
             context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
             norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
+            % do pre of stim trials also (to increase number of trials for
+            % behavioral performance plots)
+            active_passive_sound_mean_stim = [
+            nanmean(stim_matrix3(trainB_stim_all(find(ismember( trainB_stim_all,trainB_stim{1}))), :, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+            nanmean(stim_matrix3(trainB_stim_all(find(ismember( trainB_stim_all,trainB_stim{2}))), :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+            context_axis_stim = active_passive_sound_mean_stim(1,:) - active_passive_sound_mean_stim(2,:); % active - passive
+            norm_context_diff_stim = context_axis_stim ./ sqrt(sum(context_axis_stim.^2)); % Normalize context axis
 
     
             %5) PROJECT THE DATA! onto test trials!!
@@ -164,7 +172,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             tr = 0;
             for trial = test_stim_all
                 tr = tr+1;
-                context_proj_stim(tr,:) = squeeze(stim_matrix3(trial,:,:))'*norm_context_diff';
+                context_proj_stim(tr,:) = squeeze(stim_matrix3(trial,:,:))'*norm_context_diff_stim';
             end
 
             %axis save into a structure?
@@ -174,17 +182,24 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
 
             %projections
             %stim
+            proj_concat{current_dataset,celltype,1}.sound = zscore(sound_proj_ctrl);
+            proj_concat{current_dataset,celltype,1}.stim = zscore(stim_proj_stim);
+            proj_concat{current_dataset,celltype,1}.context_stim = zscore(context_proj_stim);
+            proj_concat{current_dataset,celltype,1}.context_sound = zscore(context_proj_ctrl);
             for context = 1:2
                 proj{current_dataset,celltype,context}.sound = sound_proj_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
 %                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
-                
+               
                 %ctrl
                 proj_ctrl{current_dataset,celltype,context}.sound = sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.stim = stim_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+
+                %concat stim and ctrl for more trials
+                proj_concat{current_dataset,celltype,context}.context = zscore([proj{current_dataset,celltype,context}.context;proj_ctrl{current_dataset,celltype,context}.context]);
 
                 % find correlations before and after
                 trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),aframes),2),nanmean(context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),bframes),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
@@ -211,6 +226,11 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             %save correct trials
             all_correct_trials = [all_trial_info(current_dataset).ctrl(:).correct];
             percent_correct{current_dataset} = all_correct_trials(test_ctrl_all (find(ismember( test_ctrl_all ,test_ctrl{1}))));
+
+            %concatenate ctrl and stim to have more trials (performance
+            %only)
+            all_correct_trials_stim = [all_trial_info(current_dataset).opto(:).correct];
+            percent_correct_concat{current_dataset} = [all_correct_trials_stim(test_stim_all (find(ismember( test_stim_all ,test_stim{1})))),percent_correct{current_dataset}];
 %     
 
         end
