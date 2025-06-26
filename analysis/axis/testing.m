@@ -27,6 +27,9 @@ plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'A
 frames_to_avg = 50:59;
 bin_edges = [-2:0.4:2];%
 hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
+hist_stats =  histogram_axis_across_contexts([1:24],proj_norm, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+
+hist_stats2 =  histogram_axis_across_contexts([1:24],proj_concat, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
 
 %% performance vs context
 edges_values = [0,2];

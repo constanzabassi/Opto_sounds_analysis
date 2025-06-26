@@ -198,8 +198,6 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
 
-                %concat stim and ctrl for more trials
-                proj_concat{current_dataset,celltype,context}.context = zscore([proj{current_dataset,celltype,context}.context;proj_ctrl{current_dataset,celltype,context}.context]);
 
                 % find correlations before and after
                 trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),aframes),2),nanmean(context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),bframes),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
@@ -213,6 +211,10 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                     this_proj = proj{current_dataset,celltype,context}.(key);
                     proj_norm{current_dataset,celltype,context}.(key) = (this_proj - mean(this_proj,2)) ./ std(this_proj,[],2);
                 end
+
+                %concat stim and ctrl for more trials
+                proj_concat{current_dataset,celltype,context}.context = [proj_norm{current_dataset,celltype,context}.context;proj_ctrl_norm{current_dataset,celltype,context}.context];
+
 
                 %also save real actity
                 real_activity_all_ctrl{current_dataset,celltype,context}.sound = zscore(real_activity_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:),[],2);

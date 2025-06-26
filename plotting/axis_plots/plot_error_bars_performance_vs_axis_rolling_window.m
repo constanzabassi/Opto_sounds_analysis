@@ -3,7 +3,7 @@ function [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_
 % Bin engagement (trial_means) values
 % edges = linspace(edges_values(1), edges_values(2), num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
 % bin_centers = edges(1:end-1) + diff(edges)/2;
-step = 0.2;
+step = 0.25;
 window = 0.75;
 bins = edges_values(1):step:(edges_values(2)-window);
 bin_centers = bins + window/2;
