@@ -1,4 +1,4 @@
-function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index, sig_mod_boot_thr, all_celltypes, params, save_dir)
+function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index, sig_mod_boot_thr, all_celltypes, params, save_dir,varargin)
     % Generate all modulation index plots separated by dataset/mice
 %     if ~isempty(sig_mod_boot_thr) && size(sig_mod_boot,2) > 1
 %         % Here we assume union_sig_cells is a function that returns, for each dataset,
@@ -13,13 +13,19 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
     %save all stats
     all_stats = {};
 
+    if nargin > 6
+        heatmap_ylims = varargin{1,1};
+    else
+        heatmap_ylims = [-.4,.4];
+    end
+
     %unpack mod index across datasets
     [mod_index_by_dataset,~] = unpack_modindexm(mod_index,sig_mod_boot_thr,all_celltypes,chosen_dataset);
 
     [context_mod_all, ~, ~, ~, ~] = organize_sig_mod_index_contexts_celltypes(...
         chosen_dataset, mod_index, sig_mod_boot_thr', all_celltypes,params.plot_info.celltype_names);
     mod_index_heatmap(save_dir, context_mod_all, params.plot_info, ...
-        chosen_dataset, [-.4,.4]);
+        chosen_dataset, heatmap_ylims);
         
     %     % Violin and Box plots (non abs) - can result in values closer to
     %     zero because we are taking means across + and - mod indices

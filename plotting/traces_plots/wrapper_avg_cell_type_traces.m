@@ -1,10 +1,13 @@
-function wrapper_avg_cell_type_traces(context_data,all_celltypes,mod_indexm,sig_mod_boot,chosen_mice,savepath,data_type,plot_info)
+function wrapper_avg_cell_type_traces(context_data,all_celltypes,mod_indexm,sig_mod_boot,chosen_mice,savepath,data_type,plot_info,varargin)
 
-    % Define the parameter sets
-    param_sets = { 
-        struct('mod_threshold', 0.1, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated']),
-        struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated']),
-        struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
+%     % Define the parameter sets
+%     param_sets = { 
+%         struct('mod_threshold', 0.1, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated']),
+%         struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated']),
+%         struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
+%     };
+param_sets = { 
+        struct('mod_threshold', 0, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
     };
 
 for i = 1:length(param_sets)
@@ -19,9 +22,10 @@ for i = 1:length(param_sets)
             sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
         else
             mod_params.data_type = 'opto';
+            mod_indexm2 = varargin{1,1};
             %separate sig cells based on threshold (and single side or not)
-            [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
-            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'spont');
+            [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm2, sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
+            sig_cells = get_significant_neurons(current_sig_cells, mod_indexm2, 'spont');
         end 
 
         %get context,mouse,celltype responses (across all trials (not
