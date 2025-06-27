@@ -48,7 +48,7 @@ for ctx = 1:2
 
 end
 
-xlabel('Pre-stimulus Difference'); %Mean projection (frames 60–90)
+xlabel('Prestimulus "Engagement"'); %'Pre-stimulus Difference'); %Mean projection (frames 60–90)
 ylabel('Fraction of Trials');
 % legend(legend_string);
 % Get current axis limits

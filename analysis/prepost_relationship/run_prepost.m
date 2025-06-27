@@ -85,31 +85,41 @@ avg_prepost_params = struct(...
 
 [avg_trial_pre,avg_trial_ctrl_pre, avg_trial_post,avg_trial_ctrl_post,avg_trial_pre_left,avg_trial_ctrl_pre_left,avg_trial_post_left,avg_trial_ctrl_post_left,avg_trial_pre_right,avg_trial_ctrl_pre_right,avg_trial_post_right,avg_trial_ctrl_post_right,correct_trials_stim,correct_trials_ctrl]  = ...
     wrapper_prepost_averaging_trials(params.info, dff_response,stim_trials_context,ctrl_trials_context, all_celltypes, avg_prepost_params, []);
+%%
+current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
 
+%% plot performance vs pre stim rate
+% sound/opto/sound+opto/all
+num_bins = 5;
+pool_colors = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0,0,0];
+for cur_celltypes = 1:4
+    [all_bin_perf,errorbar_correct_stats] = plot_error_bars_response_vs_axis(1:24,avg_trial_ctrl_pre,correct_trials_ctrl,cur_celltypes,num_bins,0,current_save_dir,pool_colors(cur_celltypes,:));
+end
 %% find relevant differences
 
 % define pre and post periods (stim+sound - sound) and pre active - pre
 % passive
 [diff_stim, diff_pre_stim, diff_pre_ctrl] = calculate_avg_differences(avg_pre,avg_ctrl_pre,avg_post,avg_ctrl_post);
-
+save('diff_stim','diff_stim')
+save('diff_pre_stim','diff_pre_stim')
+save('avg_ctrl_post','avg_ctrl_post')
 %% Make plots
 %make scatter plots and save them!
-current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (stim+sound - sound)',[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (stim+sound - sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
 
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (sound)',[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (sound)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',0,1,[-.6,2]);
 
-[preavg_index_by_dataset,~] = unpack_modindexm(dff_context_matrix_pre,[],pooled_cell_types,[1:24]);
+[preavg_index_by_dataset,~] = unpack_modindexm(avg_pre,[],pooled_cell_types,[1:24]);
 preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, preavg_index_by_dataset, [1:24],...
-          params.plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
+          params.plot_info, [.1,.4],0,'Pre Mean (\DeltaF/F)');
 %% comparing pre vs post
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (stim+sound - sound)',[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (stim+sound - sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
 
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{avg_ctrl_pre{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (sound)',[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram([], pooled_cell_types, [{avg_ctrl_pre{:,2}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (sound)',[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (Sound)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,2}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (Sound)',0,1,[-.6,2]);
 
 %% comparing opto vs sound
 plot_info.colors_celltypes = [ 0.3,0.8,1; 1,0.7,0;0.3,0.2,0.6 ]; %0.9/0.6/0.2 or 1,0.7,0
@@ -189,13 +199,64 @@ bar(heatmap_info(sort_id,1),'stack','FaceColor',[0.3,0.2,0.6]);
 bar(heatmap_info(sort_id,2),'stack','FaceColor','black'); %[.6,.6,.6]); %[0.8 0 0.2]);
 % mod_index_heatmap([],heatmap_info,plot_info,[1:24],[-.5,.5])
 
+adjusted_std2 = squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[3])); %using all cell types (1 = sound,2 sound+3, 3 delta stim) %datasets, contexts, cell types, type of data
+adjusted_std = permute(adjusted_std2, [1 2 3]);
+plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5;0,0,0]; %0.9/0.6/0.2 or 1,0.7,0
+plot_info.celltype_names = {'Sound','Opto','Sound&Opto'};
+% Set labels for plots.
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+plot_info.y_lims = [-.2, .4];
+% Set labels for plots.
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+plot_info.colors_celltypes = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0.5,0.5,0.5]; %0.9/0.6/0.2 or 1,0.7,0
+params.plot_info = plot_info;
+st = plot_connected_abs_mod_by_mouse(current_save_dir, adjusted_std, [1:24],...
+          params.plot_info, [0,.7],0,'Std. Pop. Activity (Δ Stim)');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[2])), [1:24],...
+          params.plot_info, [0,.7],0,'Std. Pop. Activity (Stim + Sound)');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[1])), [1:24],...
+          params.plot_info, [0,.5],0,'Std. Pop. Activity (Sound)');
 %% cdf of delta stim across active and passive
 cdf_data = squeeze(all_data_celltypes_datasets(:,:,1:3,3));%using all cell types (4th # 1 = sound,2 sound+3, 3 delta stim)
 plot_info.lineStyles_contexts = {'-',':'};
 plot_info.colors = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0.5,0.5,0.5]; %0.9/0.6/0.2 or 1,0.7,0
 
-mod_stats = plot_cdf_celltypes([], cdf_data, 1:24, plot_info);
-%% plot var(delta stim) vs cell types
+mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'\Delta Stim');
+%% make plots but using PYR/SOM/PV as the celltypes
+current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\celltypes'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
+
+[all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_per_dataset([], all_celltypes, avg_ctrl_post, diff_stim, avg_post);
+
+plot_info.celltype_names = {'PYR','PV','SOM'};
+plot_info.y_lims = [-.2, .4];
+% Set labels for plots.
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+plot_info.colors_celltypes = [0.37 0.75 0.49 %green
+                            0.17 0.35 0.8  %blue
+                            0.82 0.04 0.04]; %red
+
+params.plot_info = plot_info;
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, all_corr_across_celltypes_datasets(:,:,1:3), [1:24],...
+          params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
+
+st = plot_connected_abs_mod_by_mouse([], all_corr_across_celltypes_datasets(:,:,4), [1:24],...
+          params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
+
+adjusted_std2 = squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[3])); %using all cell types (1 = sound,2 sound+3, 3 delta stim) %datasets, contexts, cell types, type of data
+adjusted_std = permute(adjusted_std2, [1 2 3]);
+params.plot_info = plot_info;
+st = plot_connected_abs_mod_by_mouse(current_save_dir, adjusted_std, [1:24],...
+          params.plot_info, [0,.3],0,'Std. Pop. Activity (Δ Stim)');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[2])), [1:24],...
+          params.plot_info, [0,.3],0,'Std. Pop. Activity (Stim + Sound)');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, squeeze(all_std_across_celltypes_datasets(:,:,[1:3],[1])), [1:24],...
+          params.plot_info, [0,.2],0,'Std. Pop. Activity (Sound)');
+
 
 %%
 ctx = 'act';

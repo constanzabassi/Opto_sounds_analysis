@@ -5,9 +5,9 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
 
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]);
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat] = find_axis(context_data.deconv, [1:24], all_celltypes,[],[],[]);
 
-save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\separate_trials';
+save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\deconv\separate_trials';
 % opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
 % opto_sig_cells = opto_sig_mod_boot_thr(:,3); %from spontaneous context
 % sound_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -27,9 +27,9 @@ plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'A
 frames_to_avg = 50:59;
 bin_edges = [-2:0.4:2];%
 hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
-hist_stats =  histogram_axis_across_contexts([1:24],proj_norm, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
-
-hist_stats2 =  histogram_axis_across_contexts([1:24],proj_concat, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+% hist_stats =  histogram_axis_across_contexts([1:24],proj_norm, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+% 
+% hist_stats2 =  histogram_axis_across_contexts([1:24],proj_concat, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
 
 %% performance vs context
 edges_values = [0,2];
@@ -40,7 +40,7 @@ edges_values = [-1,2];
 num_bins = 5;
 [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,[]);
 
-edges_values = [-1,2];
+edges_values = [-1,1];
 num_bins = 5;
 [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_rolling_window([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,save_dir);
 
@@ -48,6 +48,7 @@ num_bins = 5;
 %% response vs engagement axis
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
+colorss = [0,0,0;.5,.5,.5];
 edges_values = [-1,1];
 num_bins = 5;
 [binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);

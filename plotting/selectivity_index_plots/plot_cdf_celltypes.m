@@ -1,4 +1,4 @@
-function mod_stats = plot_cdf_celltypes(save_dir, index_to_plot, mouseID, plot_info, varargin)
+function mod_stats = plot_cdf_celltypes(save_dir, index_to_plot, mouseID, plot_info,save_string, varargin)
     % Plot modulation index with connected lines for each mouse
     % Inputs:
     %   save_dir - directory to save results
@@ -8,7 +8,7 @@ function mod_stats = plot_cdf_celltypes(save_dir, index_to_plot, mouseID, plot_i
     
     figure(750);clf
     hold on;
-    positions = utils.calculateFigurePositions(1, 5, .5, []);
+    positions = utils.calculateFigurePositions(1, 6, .3, []);
     if size( index_to_plot,2) > 2
         num_contexts = 2;
     else
@@ -20,7 +20,7 @@ function mod_stats = plot_cdf_celltypes(save_dir, index_to_plot, mouseID, plot_i
     count = 0;
     x_lines = 0:num_contexts*n_celltypes+1;
     
-    if nargin < 5
+    if nargin < 6
         binss = -.1:0.01:0.3;
     else
         bin = varargin{1};
@@ -100,11 +100,16 @@ for celltype = 1:n_celltypes
             ylabel({'CDF'})
         end
 
+        if celltype == 2
+            xlabel(save_string)
+        end
+
         % Set figure properties
 %     set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),170]);
     set(gca, 'FontSize', 8, 'FontName','Arial','Units', 'inches', 'Position', positions(celltype, :));
     utils.set_current_fig;
     box(gca, 'off');
+    grid on
     end
 
     
@@ -123,18 +128,12 @@ for celltype = 1:n_celltypes
     if ~isempty(save_dir)
         mkdir(save_dir)
         cd(save_dir)
-        if nargin > 6
-            save_string = varargin{1,3};
-            saveas(750,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
-            saveas(750,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
-            exportgraphics(figure(750),strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
-            save(strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
-
-        else
-            saveas(750,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
-            saveas(750,strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
-            exportgraphics(figure(750),strcat('abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
-            save(strcat('abs',num2str(abs_logic), '_mod_index_stats_connected_lines_n',num2str(n_mice)),'mod_stats');
-        end
+        save_string = strrep(save_string, '\', '');
+            save_string = strrep(save_string, '/', '');
+            save_string = strrep(save_string, '(', '');
+            save_string = strrep(save_string, ')', '');
+        saveas(750,strcat(save_string,'_cdf_n',num2str(n_mice),'.fig'));
+        exportgraphics(figure(750),strcat(save_string,'_cdf_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');
+        save(strcat(save_string,'_cdf_n',num2str(n_mice)),'mod_stats');
     end
 end
