@@ -5,7 +5,7 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.deconv_interp, [1:24], all_celltypes,[]);
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct] = get_neuron_weights(context_data.dff, [1:24], all_celltypes,[]);
 
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat] = find_axis(context_data.deconv, [1:24], all_celltypes,[],[],[]);
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]);
 
 save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\deconv\separate_trials';
 % opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
@@ -170,15 +170,53 @@ end
 end
 
 
-% temp = [];temp2 =[];
-% figure;
-% hold on;
-% for dataset = 1:size(trial_corr_context,1)
-%     scatter(trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim,'magenta'); % 
-%     scatter(trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound,'cyan'); % 
-%     temp = [temp;trial_corr_context{dataset,celltype,1}.sound,trial_corr_context{dataset,celltype,2}.sound];
-%     temp2 = [temp2;trial_corr_context{dataset,celltype,1}.stim,trial_corr_context{dataset,celltype,2}.stim];
-% end
+
+figure(6);clf;
+temp3 = [];
+temp4 = [];
+celltype = 4;
+hold on;
+for dataset = 1:size(trial_corr_context,1)
+    scatter(trial_corr_context{dataset,celltype,1}.stim_sound_post,trial_corr_context{dataset,celltype,2}.stim_sound_post,'magenta'); % 
+    temp3 = [temp3,trial_corr_context{dataset,celltype,1}.stim_sound_post];
+    temp4 = [temp4,trial_corr_context{dataset,celltype,2}.stim_sound_post];
+
+end
+
+figure(7);clf;
+temp = [];temp2 =[];
+celltype = 4;
+hold on;
+for dataset = 1:size(trial_corr_context,1)
+    scatter(trial_corr_context{dataset,celltype,1}.stim_sound,trial_corr_context{dataset,celltype,2}.stim_sound,'magenta'); % 
+    temp = [temp,trial_corr_context{dataset,celltype,1}.stim_sound];
+    temp2 = [temp2,trial_corr_context{dataset,celltype,2}.stim_sound];
+
+end
+
+figure(8);clf;
+celltype = 4;
+hold on;
+for dataset = 1:size(trial_corr_context,1)
+    scatter(weights{dataset,celltype}.stim,weights{dataset,celltype}.sound,'magenta'); % 
+end
+
+figure(9);clf;
+hold on
+a = Violin({temp},1,'ViolinColor',{[0,0,0]},'EdgeColor',[0,0,0],'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
+a = Violin({temp2},2,'ViolinColor',{[0.5,0.5,0.5]},'EdgeColor',[0.5,0.5,0.5],'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
+xticks([1:2])
+xticklabels({'Active','Passive'})
+
+
+figure(10);clf;
+hold on
+a = Violin({temp3},1,'ViolinColor',{[0,0,0]},'EdgeColor',[0,0,0],'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
+a = Violin({temp4},2,'ViolinColor',{[0.5,0.5,0.5]},'EdgeColor',[0.5,0.5,0.5],'QuartileStyle','boxplot'); %,'ViolinAlpha',{0.0, 0.8}
+xticks([1:2])
+xticklabels({'Active','Passive'})
+
+
 %% plot individual datasets
 figure;
 

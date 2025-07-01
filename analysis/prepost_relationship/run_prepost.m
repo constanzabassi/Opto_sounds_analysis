@@ -54,6 +54,7 @@ num_cells = cellfun(@length, all_cells );
 pooled_cell_types = {};
 for dataset = 1:24
     current_sig_cells = [sound_only_sig_cells{dataset}, opto_only_sig_cells{dataset}, opto_sound_sig_cells{dataset}];
+    unmodulated{dataset} = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
 %     pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
     pooled_cell_types{dataset}.sound = sound_only_sig_cells{dataset};
     pooled_cell_types{dataset}.opto = opto_only_sig_cells{dataset};
@@ -114,6 +115,14 @@ modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{di
 [preavg_index_by_dataset,~] = unpack_modindexm(avg_pre,[],pooled_cell_types,[1:24]);
 preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, preavg_index_by_dataset, [1:24],...
           params.plot_info, [.1,.4],0,'Pre Mean (\DeltaF/F)');
+
+[diff_stim_index_by_dataset,~] = unpack_modindexm(diff_stim,[],pooled_cell_types,[1:24]);
+diff_stim_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, diff_stim_index_by_dataset, [1:24],...
+          params.plot_info, [-.1,.5],0,'Mean Pop. Activity (\Delta Stim)'); %'\Delta Stim (\DeltaF/F)'
+
+[post_stim_index_by_dataset,~] = unpack_modindexm(avg_post,[],pooled_cell_types,[1:24]);
+post_stim_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, post_stim_index_by_dataset, [1:24],...
+          params.plot_info, [0,.8],0,'Mean Pop. Activity (Stim+Sound)'); %'\Delta Stim (\DeltaF/F)'
 %% comparing pre vs post
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
@@ -142,6 +151,37 @@ end
 
 [modl_fit,sound_post.act,delta_stim.act] = scatter_index_sigcells_histogram_optional([], pooled_cell_types_soundfirst, [{avg_ctrl_post{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Post (Sound)', 'Active Post (\Delta Stim)',0,0,[-1,2]);
 [modl_fit,sound_post.pass,delta_stim.pass] = scatter_index_sigcells_histogram_optional([], pooled_cell_types_soundfirst, [{avg_ctrl_post{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Post (Sound)', 'Passive Post (\Delta Stim)',0,0,[-1,2]);
+
+%% separate into modulated and unmodulated
+pooled_cell_types_modulated = {};
+for dataset = 1:24
+    current_sig_cells = [sound_only_sig_cells{dataset}, opto_only_sig_cells{dataset}, opto_sound_sig_cells{dataset}];
+%     pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
+    pooled_cell_types_modulated{dataset}.mod = current_sig_cells;
+    pooled_cell_types_modulated{dataset}.unmod = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
+    
+end
+[all_corr_across_celltypes_datasets2,all_corr_across_celltypes2,all_means_across_celltypes_datasets2,all_std_across_celltypes_datasets2,all_data_celltypes_datasets2] = compute_means_correlations_per_dataset([], pooled_cell_types_modulated, avg_ctrl_post, diff_stim, avg_post);
+
+current_save_dir2 ='V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\modulated';
+adjusted_means1 = squeeze(all_means_across_celltypes_datasets2(:,:,1,1:2)); %using all cell types (1 = sound,2 sound+3, 3 delta stim)
+adjusted_means = permute(adjusted_means1, [1 3 2]);
+
+adjusted_std1 = squeeze(all_std_across_celltypes_datasets2(:,:,1,1:2)); %using all cell types (1 = sound,2 sound+3, 3 delta stim)
+adjusted_std = permute(adjusted_std1, [1 3 2]);
+
+params.plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5];
+st = plot_connected_abs_mod_by_mouse(current_save_dir2, adjusted_means, [1:24],...
+          params.plot_info, [0.1,.3],0,'Mean Population Activity');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir2, adjusted_std, [1:24],...
+          params.plot_info, [0,.25],0,'Std. Population Activity');
+
+plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5];
+[modl_fit,sound_post.act,delta_stim.act] = scatter_index_sigcells_histogram_optional([], pooled_cell_types_modulated, [{avg_ctrl_post{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir2, 'Active Post (Sound)', 'Active Post (\Delta Stim)',0,0,[-1,2]);
+[modl_fit,sound_post.pass,delta_stim.pass] = scatter_index_sigcells_histogram_optional([], pooled_cell_types_modulated, [{avg_ctrl_post{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir2, 'Passive Post (Sound)', 'Passive Post (\Delta Stim)',0,0,[-1,2]);
+
+
 
 %% EXAMINATION OF COVARIANCE BETWEEN BASELINE SOUND VS SOUND+STIM-SOUND RESPONSE
 [all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_per_dataset([], pooled_cell_types, avg_ctrl_post, diff_stim, avg_post);

@@ -82,9 +82,13 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                                        nanmean(data_matrix(tr, :, bframes), [3])]; % [post, pre]
             end
             sound_diff = mean((squeeze(prepost_trial(:, 1,:))) -squeeze(prepost_trial(:, 2,:)),[1]);%mean((squeeze(prepost_trial(:, 1,:))));% -squeeze(prepost_trial(:, 2,:)),[1]); %difference size is neurons
-%             sound_diff = mean((squeeze(prepost_trial(:, 1,:))));% just taking post response
             norm_sound_diff = sound_diff ./ sqrt(sum(sound_diff.^2)); % Normalize sound axis
-    
+
+            %create axis with positive alone
+%             pos_neurons = find(norm_sound_diff>=0);
+%             norm_sound_post = norm_sound_diff(pos_neurons);
+            sound_post = mean(squeeze(prepost_trial(:, 1,:)),1); %post response alone
+            norm_sound_post = sound_post ./ sqrt(sum(sound_post.^2)); % Normalize sound axis    
 
             if celltype == 4
                 mod_cells2 = 1:size(dff_st{1, current_dataset}.stim,2);
@@ -150,6 +154,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 tr = tr+1;
                 sound_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_ctrl(tr,:) = squeeze(ctrl_matrix2(trial,:,:))'*norm_stim_diff';
+                sound_post_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_post';
 %                 context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_ctrl(tr,:) = squeeze(mean(ctrl_matrix3(trial,:,:),2))'; %find mean across cells
             end
@@ -159,6 +164,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 tr = tr+1;
                 sound_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_stim(tr,:) = squeeze(stim_matrix2(trial,:,:))'*norm_stim_diff';
+                sound_post_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_post'; %pos_neurons
 %                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_stim(tr,:) = squeeze(mean(stim_matrix3(trial,:,:),2))'; %find mean across cells
             end
@@ -179,6 +185,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             weights{current_dataset,celltype}.sound = norm_sound_diff;
             weights{current_dataset,celltype}.stim = norm_stim_diff;
             weights{current_dataset,celltype}.context = norm_context_diff;
+            weights{current_dataset,celltype}.sound_post = norm_sound_post;
 
             %projections
             %stim
@@ -194,6 +201,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             %separate data into contexts
             for context = 1:2
                 proj{current_dataset,celltype,context}.sound = sound_proj_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
+                proj{current_dataset,celltype,context}.sound_post = sound_post_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
+
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
 %                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
@@ -201,6 +210,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 %ctrl
                 proj_ctrl{current_dataset,celltype,context}.sound = sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.stim = stim_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.sound_post = sound_post_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
 
@@ -208,9 +219,11 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 % find correlations before and after
                 trial_corr_context{current_dataset,celltype,context}.sound =  corr(nanmean(sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),aframes),2),nanmean(context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),bframes),2),'Type','Pearson');% corr(nanmean(sound_proj_ctrl(total_trials{current_dataset, context, 2},:),2),nanmean(context_proj_ctrl(total_trials{current_dataset, context, 2},:),2),'Type','Pearson');
                 trial_corr_context{current_dataset,celltype,context}.stim = corr(nanmean(stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),aframes),2),nanmean(context_proj_stim(find(ismember( test_stim_all,test_stim{context})),bframes),2),'Type','Pearson');
+                trial_corr_context{current_dataset,celltype,context}.stim_sound = corr(nanmean(stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),aframes),2),nanmean(sound_proj_stim(find(ismember( test_stim_all,test_stim{context})),aframes),2),'Type','Pearson');
+                trial_corr_context{current_dataset,celltype,context}.stim_sound_post = corr(nanmean(stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),aframes),2),nanmean(sound_post_stim(find(ismember( test_stim_all,test_stim{context})),aframes),2),'Type','Pearson');
 
                  % Normalize (z-score) the projections per dataset/context
-                for key = ["sound", "stim", "context"]
+                for key = ["sound", "stim", "context", "sound_post"]
                     this_proj = proj_ctrl{current_dataset,celltype,context}.(key);
                     proj_ctrl_norm{current_dataset,celltype,context}.(key) = (this_proj - mean(this_proj,2)) ./ std(this_proj,[],2);
                 
