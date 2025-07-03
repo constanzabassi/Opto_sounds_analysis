@@ -1,4 +1,4 @@
-function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,percent_correct_concat,proj_concat] = find_axis(dff_st, chosen_mice, all_celltypes,sig_mod_boot,sig_mod_boot2,sig_mod_boot3,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(dff_st, chosen_mice, all_celltypes,sig_mod_boot,sig_mod_boot2,sig_mod_boot3,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -6,6 +6,14 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         all_trial_info = load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat').all_trial_info_sounds; %all_trial_info
 
         rng(2025);
+        % Define the frames for after and before stimulus
+        if nargin > 6
+            aframes = varargin{1,1}{2};  % After stimulus
+            bframes = varargin{1,1}{1};   % Before stimulus
+        else
+            aframes = 63:93;  % After stimulus
+            bframes = 50:59;   % Before stimulus
+        end
     % Loop through the selected mice datasets
     for current_dataset = chosen_mice
         current_dataset
@@ -67,10 +75,6 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             ctrl_matrix = [dff_st{1, current_dataset}.ctrl(:,mod_cells,:); dff_st{2, current_dataset}.ctrl(:,mod_cells,:)]; % sound only (active and passive)
             [~, n_neurons, frames] = size(stim_matrix);
 %             [trials_ctrl] = size(ctrl_matrix, 1);
-
-            % Define the frames for after and before stimulus
-            aframes = 63:93;  % After stimulus
-            bframes = 50:59;   % Before stimulus
     
             % --- 1) Calculate Sound Axis (pre-post sound) ---
             data_matrix = ctrl_matrix;  % Use the control matrix for the sound axis calculation
@@ -190,13 +194,26 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             %projections
             %stim
 
-            %save data concatenating across contexts
-            proj_concat{current_dataset,celltype,1}.sound = zscore(sound_proj_ctrl);
-            proj_concat{current_dataset,celltype,1}.stim = zscore(stim_proj_stim);
-            proj_concat{current_dataset,celltype,1}.context_stim = zscore(context_proj_stim);
-            proj_concat{current_dataset,celltype,1}.context_sound = zscore(context_proj_ctrl);
-            real_activity_all{current_dataset,celltype,1}.context_sound = zscore(real_activity_ctrl,[],2);
-            real_activity_all{current_dataset,celltype,1}.context_stim = zscore(real_activity_stim,[],2);
+%             %save data concatenating across contexts
+            proj_concat_norm{current_dataset,celltype,1}.sound = zscore(sound_proj_ctrl,[],2);
+            proj_concat_norm{current_dataset,celltype,1}.stim = zscore(stim_proj_stim,[],2);
+            proj_concat_norm{current_dataset,celltype,1}.context_stim = zscore(context_proj_stim,[],2);
+            proj_concat_norm{current_dataset,celltype,1}.context_sound = zscore(context_proj_ctrl,[],2);
+
+            real_activity_all_norm{current_dataset,celltype,1}.sound = zscore(real_activity_ctrl,[],2);
+            real_activity_all_norm{current_dataset,celltype,1}.stim = zscore(real_activity_stim,[],2);
+            real_activity_all_norm{current_dataset,celltype,1}.context_sound = zscore(real_activity_ctrl,[],2);
+            real_activity_all_norm{current_dataset,celltype,1}.context_stim = zscore(real_activity_stim,[],2);
+
+            proj_concat{current_dataset,celltype,1}.sound = sound_proj_ctrl;
+            proj_concat{current_dataset,celltype,1}.stim = stim_proj_stim;
+            proj_concat{current_dataset,celltype,1}.context_stim = context_proj_stim;
+            proj_concat{current_dataset,celltype,1}.context_sound = context_proj_ctrl;
+
+            real_activity_all{current_dataset,celltype,1}.sound = real_activity_ctrl;
+            real_activity_all{current_dataset,celltype,1}.stim = real_activity_stim;
+            real_activity_all{current_dataset,celltype,1}.context_sound = real_activity_ctrl;
+            real_activity_all{current_dataset,celltype,1}.context_stim = real_activity_stim;
 
             %separate data into contexts
             for context = 1:2
@@ -232,14 +249,15 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 end
 
                 %concat stim and ctrl for more trials
-                proj_concat{current_dataset,celltype,context}.context = [proj_norm{current_dataset,celltype,context}.context;proj_ctrl_norm{current_dataset,celltype,context}.context];
+                proj_concat_norm{current_dataset,celltype,context}.context = [proj_norm{current_dataset,celltype,context}.context;proj_ctrl_norm{current_dataset,celltype,context}.context];
+                proj_concat{current_dataset,celltype,context}.context = [proj{current_dataset,celltype,context}.context;proj_ctrl{current_dataset,celltype,context}.context];
 
 
                 %also save real actity
                 real_activity_all_ctrl{current_dataset,celltype,context}.sound = zscore(real_activity_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:),[],2);
                 real_activity_all_ctrl{current_dataset,celltype,context}.context = zscore(real_activity_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:),[],2);
-                real_activity_all{current_dataset,celltype,context}.stim = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
-                real_activity_all{current_dataset,celltype,context}.context = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
+                real_activity_all_norm{current_dataset,celltype,context}.stim = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
+                real_activity_all_norm{current_dataset,celltype,context}.context = zscore(real_activity_stim(find(ismember( test_stim_all,test_stim{context})),:),[],2);
                 
 
 

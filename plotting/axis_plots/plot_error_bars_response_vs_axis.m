@@ -43,7 +43,8 @@ end
 xlabel('Prestimulus "Engagement"');
 ylabel({strcat(axis_type2, ' Neural'); 'Response'});
 xli = xlim;
-xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
+xlim([xli(1)- xli(2)*.625,xli(2) + xli(2)*.625]); %adjust axis
+
 
 %Do statistical comparisons across bins
 if n_contexts > 1
@@ -106,16 +107,23 @@ if n_contexts > 1
 
         ct = 0;
         yli = ylim;
+        if y(2) < .1
+            offset = 0.005;
+            offset2 = 0.02;
+        else
+            offset = 0.05; % vertical spacing between stars
+            offset2 = 0.2;
+        end
         for k = 1:length(bin_i)
             i = bin_i(k);
             j = bin_j(k);
         
             % Position stars slightly above the max y value
             
-            y_star = yli(2) + 0.05 + ct * 0.2;
+            y_star = yli(2) + offset + ct * offset2;
                 
             % Star in the center
-            utils.plot_pval_star(0, y_star, errorbar_resp_stats.p_values(errorbar_resp_stats.significant(k)),[bin_centers(i), bin_centers(j)],.02);
+            utils.plot_pval_star(0, y_star, errorbar_resp_stats.p_values(errorbar_resp_stats.significant(k)),[bin_centers(i), bin_centers(j)],offset2*.1);
         
             ct = ct + 0.5;
         end

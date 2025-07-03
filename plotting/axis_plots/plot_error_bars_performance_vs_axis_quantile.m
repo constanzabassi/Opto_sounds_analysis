@@ -1,8 +1,4 @@
-function [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis(chosen_datasets,proj, axis_type, celltype,percent_correct,frame_range,edges_values,num_bins,save_dir)
-
-% Bin engagement (trial_means) values
-edges = linspace(edges_values(1), edges_values(2), num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
-bin_centers = edges(1:end-1) + diff(edges)/2;
+function [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_quantile(chosen_datasets,proj, axis_type, celltype,percent_correct,frame_range,num_bins,save_dir,plot_datasets )
 
 % Plot
 positions = utils.calculateFigurePositions(1, 5, .5, []);
@@ -22,6 +18,9 @@ for dataset = chosen_datasets
     data = proj{dataset, celltype, ctx}.(axis_type);
     trial_means = mean(data(:, frame_range), 2);
     correct = percent_correct{dataset};
+    % Bin engagement (trial_means) values
+    edges = quantile(trial_means, linspace(0,1,num_bins+1));%linspace(edges_values(1), edges_values(2), num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
+    bin_centers = edges(1:end-1) + diff(edges)/2;
 
     for b = 1:num_bins
         bin_idx = trial_means >= edges(b) & trial_means < edges(b+1);
@@ -36,6 +35,11 @@ end
 binned_perf = nanmean(binned_perf_all, 2);
 binned_sem = nanstd(binned_perf_all, 0, 2) ./ sqrt(sum(~isnan(binned_perf_all), 2));
 
+% Individual session curves (optional, faded)
+if plot_datasets == 1
+    plot(bin_centers', binned_perf_all', '-', 'Color', [0.8 0.8 0.8]); hold on;
+end
+
 e = errorbar(bin_centers, binned_perf, binned_sem, '-o', 'LineWidth', 1,'MarkerSize',2,'Color','k');
 set(e, 'CapSize', 2);   % Increase cap size (default is 6)
 xlabel('Prestimulus "Engagement"');
@@ -43,7 +47,7 @@ ylabel({'Behavioral Performance';'(Fraction Correct)'});
 ylim([0.5 1]);
 xli = xlim;
 % xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
-xlim([xli(1)- xli(2)*.625,xli(2) + xli(2)*.625]); %adjust axis
+xlim([xli(1)- xli(2)*.5,xli(2) + xli(2)*.5]); %adjust axis
 
 
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
@@ -82,13 +86,13 @@ xlabel('Dataset ID')
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.svg'));
-    saveas(802,strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
-    exportgraphics(figure(802),strcat('errorbar_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.pdf'), 'ContentType', 'vector');
+    saveas(802,strcat('errorbar_quant_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.svg'));
+    saveas(802,strcat('errorbar_quant_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
+    exportgraphics(figure(802),strcat('errorbar_quant_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
 
-    saveas(804,strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.fig'));
-    exportgraphics(figure(804),strcat('heatmap_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values),'.pdf'), 'ContentType', 'vector');
+    saveas(804,strcat('heatmap_quant_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
+    exportgraphics(figure(804),strcat('heatmap_quant_correct_vs_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('errorbar_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edges_values)),'errorbar_stats');
+    save(strcat('errorbar_quant_stats_n',num2str(length(chosen_datasets))),'errorbar_stats');
 
 end

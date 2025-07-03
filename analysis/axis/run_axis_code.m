@@ -3,17 +3,10 @@
 load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 keep context_data all_celltypes
-%%
-% [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.deconv, [1:24], all_celltypes,[],[],[]);
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]);
-save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\dff';
-% opto_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
-% opto_sig_cells = opto_sig_mod_boot_thr(:,3); %from spontaneous context
-% sound_sig_mod_boot_thr = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat').sig_mod_boot_thr;
-% sound_mod = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat').mod_indexm;
-% [sound_sig_cells, ~] = union_sig_cells(sound_sig_mod_boot_thr(:,1)', sound_sig_mod_boot_thr(:,2)', sound_mod);
-% 
-% [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act_norm,act_norm_ctrl] = find_axis(context_data.dff, [1:24], all_celltypes,sound_sig_cells,opto_sig_cells,sound_sig_cells);
+%% define axis
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.deconv_interp, [1:24], all_celltypes,[],[],[]); %,{50:59,63:73}
+
+save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\deconv_raw';
 
 %% plot mean projection traces across datasets
 celltype = 4; %4 = all
@@ -25,32 +18,35 @@ plot_proj_mean_traces([1:24],proj, 'stim',celltype, [61:62],[0,0,0;.5,.5,.5],{'A
 %% plot histogram across contexts
 frames_to_avg = 50:59;
 bin_edges = [-2:0.4:2];%
-hist_stats =  histogram_axis_across_contexts([1:24],proj_norm_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
-% hist_stats =  histogram_axis_across_contexts([1:24],proj_norm, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
-% 
-% hist_stats2 =  histogram_axis_across_contexts([1:24],proj_concat, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},[]);
+hist_stats =  histogram_axis_across_contexts([1:24],proj_ctrl, 'context',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
 
 %% performance vs context
 edges_values = [0,2];
 num_bins = 5;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
+heatmap_nan_datasets(binned_perf_all,['binned_resp_all_ctx' num2str(1) '_edges_' num2str(edges_values)],[]);
+
+edges_values = [0.5,1.5];
+num_bins = 5;
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
+heatmap_nan_datasets(binned_perf_all,['binned_resp_all_ctx' num2str(1) '_edges_' num2str(edges_values)],[]);
 
 edges_values = [-1,1];
 num_bins = 5;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_norm_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
-
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_ctrl,  'context', celltype,percent_correct,frames_to_avg, edges_values,num_bins,save_dir);
 
 edges_values = [-1,2];
 num_bins = 5;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_concat_norm,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,[]);
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,[]);
 
 edges_values = [-1,1];
 num_bins = 5;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_rolling_window([1:24],proj_concat_norm,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,save_dir);
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_rolling_window([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg, edges_values,num_bins,save_dir);
 
 edges_values = [-1,1];
 num_bins = 5;
-[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_quantile([1:24],proj_concat_norm,  'context', celltype,percent_correct_concat,frames_to_avg,num_bins,save_dir);
+[binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_quantile([1:24],proj_concat,  'context', celltype,percent_correct_concat,frames_to_avg,num_bins,save_dir,0);
+heatmap_nan_datasets(binned_perf_all,['binned_resp_all_ctx' num2str(1) '_edges_' num2str(edges_values)],[]);
 
 
 %% response vs engagement axis
@@ -59,9 +55,9 @@ frame_range2 = 63:93; %post period
 colorss = [0,0,0;.5,.5,.5];
 edges_values = [-1,1];
 num_bins = 5;
-[binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_ctrl,  'context',proj_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 
-[binned_resp_all_stim_ctx,errorbar_resp_stats_stim] = plot_error_bars_response_vs_axis([1:24],proj_norm,  'context',proj_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_stim_ctx,errorbar_resp_stats_stim] = plot_error_bars_response_vs_axis([1:24],proj,  'context',proj, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 
 for ctx = 1:2
     heatmap_nan_datasets(binned_resp_all_ctx{1,ctx},['binned_resp_all_ctx' num2str(ctx) '_edges_' num2str(edges_values)],save_dir);
@@ -69,8 +65,8 @@ for ctx = 1:2
 end
 
 % repeat but without separated trials across contexts
-[binned_resp_all_ctx_together,errorbar_resp_stats_together] = plot_error_bars_response_vs_axis([1:24],proj_concat_norm,  'context_sound',proj_concat_norm, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
-[binned_resp_all_stim_together,errorbar_resp_stats_stim_together] = plot_error_bars_response_vs_axis([1:24],proj_concat_norm,  'context_stim',proj_concat_norm, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_ctx_together,errorbar_resp_stats_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_sound',proj_concat, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_stim_together,errorbar_resp_stats_stim_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_stim',proj_concat, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 %% response vs engagement axis divided by celltypes
 colors_celltypes = [0.16, 0.40, 0.24 %dark green
                     0.13, 0.24, 0.51 %dark blue
@@ -82,14 +78,14 @@ group_size = 3;
 for ctx = 1:2; %focus on active context
     group = [(ctx-1)*group_size + (1:group_size)];
 
-    [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
-    [binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
-    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',proj_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
+    [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_ctrl,  'context',proj_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    [binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_ctrl,  'context',proj, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_ctrl,  'context',proj_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes,[]);
     
 %     edges_values = [0,2];
 %     num_bins = 5;
-    [~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),save_dir);
-    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_norm_ctrl,  'context',act_norm_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,[]);
+    [~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_ctrl,  'context',act_ctrl, 'Context',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+    % [binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_ctrl,  'context',act_ctrl, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes,[]);
 
 end
 % % [0.16, 0.40, 0.24 %dark green
@@ -107,13 +103,13 @@ colors_celltypes = [0.3700    0.7500    0.4900;
                     0.8200    0.0400    0.0400];
 group = 1:3;
 ctx = 1; %only one context since active and passive are concatenated
-[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat_norm,  'context_sound',proj_concat_norm, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
-[binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat_norm,  'context_stim',proj_concat_norm, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
-[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat_norm,  'context_sound',act_norm, 'context_sound',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),[]);
-[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat_norm,  'context_stim',act_norm, 'context_stim',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),[]);
+[binned_resp_all_ct,errorbar_resp_ct_stats] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat,  'context_sound',proj_concat, 'Sound',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+[binned_resp_all_ct_stim,errorbar_resp_ct_stats_stim] = plot_error_bars_response_celltypes_vs_axis([1:24],proj_concat,  'context_stim',proj_concat, 'Stim',ctx,frame_range1,frame_range2,edges_values,num_bins,colors_celltypes(group,:),save_dir);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'context_sound',act, 'context_sound',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),[]);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'context_stim',act, 'context_stim',ctx,frame_range1,frame_range1,edges_values,num_bins,colors_celltypes(group,:),[]);
 
-[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat_norm,  'sound',act_norm, 'sound',ctx,frame_range2,frame_range2,edges_values,num_bins,colors_celltypes(group,:),[]);
-[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat_norm,  'stim',act_norm, 'stim',ctx,frame_range2,frame_range2,edges_values,num_bins,colors_celltypes(group,:),[]);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'sound',act, 'sound',ctx,frame_range2,frame_range2,edges_values,num_bins,colors_celltypes(group,:),[]);
+[~,errorbar_activity_ct_stats.ctx] = plot_error_bars_realactivity_celltypes_vs_axis([1:24],proj_concat,  'stim',act, 'stim',ctx,frame_range2,frame_range2,edges_values,num_bins,colors_celltypes(group,:),[]);
 %% Plot weights vs axis
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue
@@ -217,6 +213,13 @@ celltype = 4;
 hold on;
 for dataset = 1:size(trial_corr_context,1)
     scatter(weights{dataset,celltype}.stim,weights{dataset,celltype}.sound,'magenta'); % 
+end
+
+figure(8);clf;
+celltype = 4;
+hold on;
+for dataset = 1:size(trial_corr_context,1)
+    scatter(weights{dataset,celltype}.context,weights{dataset,celltype}.sound,'magenta'); % 
 end
 
 figure(9);clf;

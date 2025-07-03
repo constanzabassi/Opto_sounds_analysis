@@ -3,8 +3,13 @@ function [binned_perf_all,errorbar_stats] = plot_error_bars_performance_vs_axis_
 % Bin engagement (trial_means) values
 % edges = linspace(edges_values(1), edges_values(2), num_bins+1); %linspace(min(all_proj), max(all_proj), num_bins+1);
 % bin_centers = edges(1:end-1) + diff(edges)/2;
-step = 0.25;
-window = 0.75;
+if edges_values(2) <=.2
+    step = 0.025;
+    window = 0.075;
+else
+    step = 0.25;
+    window = 0.75;
+end
 bins = edges_values(1):step:(edges_values(2)-window);
 bin_centers = bins + window/2;
 num_bins = length(bins);
@@ -52,7 +57,8 @@ xlabel('Prestimulus "Engagement"');
 ylabel({'Behavioral Performance';'(Fraction Correct)'});
 ylim([0.5 1]);
 xli = xlim;
-xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
+xlim([xli(1)- xli(2)*.625,xli(2) + xli(2)*.625]); %adjust axis
+
 
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
@@ -60,6 +66,7 @@ utils.set_current_fig;
 %Do statistical comparisons across bins
 combos = nchoosek(1:num_bins,2);
 p_values = nan(length(combos), 1);
+errorbar_stats.p_values = [];
 for b = 1:length(combos)
     x = binned_perf_all(combos(b,1), :);
     y = binned_perf_all(combos(b,2), :);

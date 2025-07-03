@@ -56,7 +56,7 @@ end
 xlabel('Prestimulus "Engagement"');
 ylabel({[string_context, ' ', axis_type2]; 'Mean Activity'});
 xli = xlim;
-xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
+xlim([xli(1)- xli(2)*.625,xli(2) + xli(2)*.625]); %adjust axis
 
 %Do statistical comparisons across bins
 celltype_combos = nchoosek(1:3, 2); % All 3 pairwise combinations
@@ -91,21 +91,26 @@ errorbar_act_ct_stats.significant = find(p_values < 0.05 / (num_bins * num_combo
 if isfield(errorbar_act_ct_stats, 'p_values') && ~isempty(errorbar_act_ct_stats.p_values)
     num_bins = size(errorbar_act_ct_stats.p_values, 1);
     ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
-    offset = 0.05; % vertical spacing between stars
+    y = ylim;
+    if y(2) < .1
+        offset = 0.005;
+    else
+        offset = 0.05; % vertical spacing between stars
+    end
 
     for b = 1:num_bins
         for c = 1:size(ct_combos, 1)
             p = errorbar_act_ct_stats.p_values(b, c);
             if p < 0.05 / num_bins  % Bonferroni correction
                 y = ylim;
-                star_y = y(2) - 0.05 + (c * offset);
+                star_y = y(2) - offset + (c * offset);
                 x_pos = bin_centers(b);
-                utils.plot_pval_star(0, star_y, p, [x_pos, x_pos], 0.05);
+                utils.plot_pval_star(0, star_y, p, [x_pos, x_pos], offset);
             end
         end
     end
 end
-
+ylim([0,y(2)]);
 
 
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));

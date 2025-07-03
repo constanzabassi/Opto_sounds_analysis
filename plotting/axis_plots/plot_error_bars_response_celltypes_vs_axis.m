@@ -56,7 +56,7 @@ end
 xlabel('Prestimulus "Engagement"');
 ylabel({[string_context, ' ', axis_type2]; 'Neural Response'});
 xli = xlim;
-xlim([xli(1) - .5,xli(2) + .5]); %adjust axis
+xlim([xli(1)- xli(2)*.625,xli(2) + xli(2)*.625]); %adjust axis
 
 %Do statistical comparisons across bins
 celltype_combos = nchoosek(1:3, 2); % All 3 pairwise combinations
@@ -91,6 +91,12 @@ errorbar_resp_ct_stats.significant = find(p_values < 0.05 / (num_bins * num_comb
 if isfield(errorbar_resp_ct_stats, 'p_values') && ~isempty(errorbar_resp_ct_stats.p_values)
     num_bins = size(errorbar_resp_ct_stats.p_values, 1);
     ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
+    y = ylim;
+    if y(2) < .1
+        offset = 0.005;
+    else
+        offset = 0.05; % vertical spacing between stars
+    end
     offset = 0.05; % vertical spacing between stars
 
     for b = 1:num_bins
@@ -98,9 +104,9 @@ if isfield(errorbar_resp_ct_stats, 'p_values') && ~isempty(errorbar_resp_ct_stat
             p = errorbar_resp_ct_stats.p_values(b, c);
             if p < 0.05 / num_bins  % Bonferroni correction
                 y = ylim;
-                star_y = y(2) - 0.05 + (c * offset);
+                star_y = y(2) - offset + (c * offset);
                 x_pos = bin_centers(b);
-                utils.plot_pval_star(0, star_y, p, [x_pos, x_pos], 0.05);
+                utils.plot_pval_star(0, star_y, p, [x_pos, x_pos], offset);
             end
         end
     end
