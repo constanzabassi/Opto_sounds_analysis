@@ -193,7 +193,7 @@ plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to 
 plot_info.colors_celltypes = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0.5,0.5,0.5]; %0.9/0.6/0.2 or 1,0.7,0
 
 params.plot_info = plot_info;
-
+params.plot_info.zero_star = 1;
 st = plot_connected_abs_mod_by_mouse(current_save_dir, all_corr_across_celltypes_datasets(:,:,1:3), [1:24],...
           params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
 

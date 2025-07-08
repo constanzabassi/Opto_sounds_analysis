@@ -98,8 +98,31 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 'LineWidth', 1, 'MarkerSize', 2,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
             
             mean_cell_all = [mean_cell_all, mean_cel];
+
+            % One-sample permutation test vs zero
+            n_perm = 10000;
+            observed_mean = mean(valid_data);
+            null_distribution = zeros(1, n_perm);
+            for p = 1:n_perm
+                signs = randi([0 1], size(valid_data)) * 2 - 1;  % random +1/-1
+                null_distribution(p) = mean(valid_data .* signs);
+            end
+            p_val_vs_zero = mean(abs(null_distribution) >= abs(observed_mean));
+            if p_val_vs_zero == 0
+                p_val_vs_zero = 1/n_perm;
+            end
+            mod_stats.stats(celltype,context).p_val_vs_zero = p_val_vs_zero;
+
+            if isfield(plot_info,'zero_star') %only plot if requested
+                if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
+%                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
+%                         'Color', plot_info.colors_celltypes(celltype,:), ...
+%                         'FontSize', 8, 'HorizontalAlignment', 'center');
+                            utils.plot_pval_star(x_pos(context),mean_cel + err + 0.02,p_val_vs_zero,[0,0],0,[0,0,0]);%plot_info.colors_celltypes(celltype,:)
+                end
+            end
         end
-        
+
         % Statistical testing for this cell type
         ct = 0;
         possible_tests = nchoosek(1:num_contexts,2);
