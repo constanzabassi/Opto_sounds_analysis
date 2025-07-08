@@ -4,9 +4,9 @@ load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
 keep context_data all_celltypes
 %% define axis
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.deconv_interp, [1:24], all_celltypes,[],[],[]); %,{50:59,63:73}
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]); %,{50:59,63:73}
 
-save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\deconv_raw';
+save_dir = 'V:\Connie\results\opto_sound_2025\context\axis_plots\dff_raw';
 
 %% plot mean projection traces across datasets
 celltype = 4; %4 = all
@@ -53,7 +53,7 @@ heatmap_nan_datasets(binned_perf_all,['binned_resp_all_ctx' num2str(1) '_edges_'
 frame_range1 = 50:59; %pre period
 frame_range2 = 63:93; %post period
 colorss = [0,0,0;.5,.5,.5];
-edges_values = [-1,1];
+edges_values = [-1,3];
 num_bins = 5;
 [binned_resp_all_ctx,errorbar_resp_stats] = plot_error_bars_response_vs_axis([1:24],proj_ctrl,  'context',proj_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 
@@ -67,6 +67,11 @@ end
 % repeat but without separated trials across contexts
 [binned_resp_all_ctx_together,errorbar_resp_stats_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_sound',proj_concat, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
 [binned_resp_all_stim_together,errorbar_resp_stats_stim_together] = plot_error_bars_response_vs_axis([1:24],proj_concat,  'context_stim',proj_concat, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+
+num_bins = 4;
+[binned_resp_all_ctx_together_quant,errorbar_resp_stats_quant] = plot_error_bars_response_vs_axis_quantiles([1:24],proj_ctrl,  'context',proj_ctrl, 'Sound', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+[binned_resp_all_stim_ctx_together_quant,errorbar_resp_stats_stim_quant] = plot_error_bars_response_vs_axis_quantiles([1:24],proj,  'context',proj, 'Stim', celltype,frame_range1,frame_range2,edges_values,num_bins,colorss,save_dir);
+
 %% response vs engagement axis divided by celltypes
 colors_celltypes = [0.16, 0.40, 0.24 %dark green
                     0.13, 0.24, 0.51 %dark blue

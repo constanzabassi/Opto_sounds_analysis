@@ -1,11 +1,15 @@
-function [mouse_corr_stats, trial_indices_right_all, trial_indices_left_all] = neural_paircorr_acrossmice(chosen_mice, mouse_date, server, dff_st,combined_thres, frames_before, frames_after, stim_trials_context, ctrl_trials_context, function_params, save_data_directory)
+function [mouse_corr_stats, trial_indices_right_all, trial_indices_left_all] = neural_paircorr_acrossmice(chosen_mice, mouse_date, server, dff_st,combined_thres, frames_before, frames_after, stim_trials_context, ctrl_trials_context, function_params, save_data_directory,varargin)
     % Initialize output variables
     mouse_corr_stats = struct(); %cell(length(chosen_mice), 4);
     trial_indices_right_all = cell(length(chosen_mice), 1);
     trial_indices_left_all = cell(length(chosen_mice), 1);
     
     % Load cell type IDs if needed
-    load('V:\Connie\results\opto_2024\context\data_info\all_celltypes.mat');
+    if nargin > 11
+        all_celltypes = varargin{1,1};
+    else
+        load('V:\Connie\results\opto_2024\context\data_info\all_celltypes.mat');
+    end
 
     %load trial info
     load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat');
@@ -87,6 +91,19 @@ function [mouse_corr_stats, trial_indices_right_all, trial_indices_left_all] = n
                     mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 1} = corr_left;
                     mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 2} = corr_right;
                 end
+            elseif strcmp(function_params.calc_type,'noise')
+                for celltype = 1:3 
+                    celltype_field = celtype_fields{celltype};
+                    % Process correlations
+                    [corr_left, corr_right] = process_trials_neural_noisecorr(...
+                        chosen_mice, current_dataset_index, mouse_date, dff_st, ...
+                        frames_before, frames_after, trials_left, trials_right, combined_thres, celltype_field , function_params, save_data_directory);
+                    
+    
+                    mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 1} = corr_left;
+                    mouse_corr_stats.(celltype_field){current_dataset_index, context_idx, 2} = corr_right;
+                end
+
             else
                   [corr_left, corr_right] = process_trials_neural_snr(...
                         chosen_mice, current_dataset_index, mouse_date, dff_st, ...

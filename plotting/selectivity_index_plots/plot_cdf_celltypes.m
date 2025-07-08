@@ -46,8 +46,9 @@ for celltype = 1:n_celltypes
                 all_cell_data = [all_cell_data;curr_data];
             end
             
-
+            if nargin <7
             subplot(n_celltypes,1,celltype);
+            end
             hold on
 
             % Plot cdf across all neurons

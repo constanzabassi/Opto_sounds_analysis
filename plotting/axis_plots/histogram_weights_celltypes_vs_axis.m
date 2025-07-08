@@ -132,7 +132,12 @@ end
 xticks(1:3);
 clean_labels = cellfun(@(s) strrep(s, '_cells', ''), possible_celltypes(1:3), 'UniformOutput', false);
 xticklabels(upper(clean_labels));
-ylabel(['|' axis_type2 ' Weight|']);
+if axis_type2 == 'Context'
+    ylabel(['|Engagement Weight|']);
+else
+    ylabel(['|' axis_type2 ' Weight|']);
+end
+
 xli = xlim;
 xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
@@ -167,7 +172,7 @@ errorbar_weight_ct_stats.significant = find(p_values < 0.05 / (num_combos)); % B
 %add significant stars
 if isfield(errorbar_weight_ct_stats, 'p_values') && ~isempty(errorbar_weight_ct_stats.p_values)
     ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
-    offset = 0.002; % vertical spacing between stars
+    offset = 0.001; % vertical spacing between stars
     ct_count = 0;
     for c = 1:size(ct_combos, 1)
         p = errorbar_weight_ct_stats.p_values(c);
@@ -206,7 +211,11 @@ end
 xticks(1:3);
 clean_labels = cellfun(@(s) strrep(s, '_cells', ''), possible_celltypes(1:3), 'UniformOutput', false);
 xticklabels(upper(clean_labels));
-ylabel(['|' axis_type2 ' Weight|']);
+if axis_type2 == 'Context'
+    ylabel(['|Engagement Weight|']);
+else
+    ylabel(['|' axis_type2 ' Weight|']);
+end
 xli = xlim;
 xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
@@ -241,7 +250,7 @@ errorbar_weight_datasets_ct_stats.significant = find(p_values < 0.05 / (num_comb
 %add significant stars
 if isfield(errorbar_weight_datasets_ct_stats, 'p_values') && ~isempty(errorbar_weight_datasets_ct_stats.p_values)
     ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
-    offset = 0.002; % vertical spacing between stars
+    offset = 0.0005; % vertical spacing between stars
     ct_count = 0;
     for c = 1:size(ct_combos, 1)
         p = errorbar_weight_datasets_ct_stats.p_values(c);
@@ -250,7 +259,7 @@ if isfield(errorbar_weight_datasets_ct_stats, 'p_values') && ~isempty(errorbar_w
             y = ylim;
             star_y = y(2) + (ct * offset);
             utils.plot_pval_star(0, star_y, p, [ct_combos(c,1), ct_combos(c,2)], offset/2);
-            ct = ct+1;
+            ct = ct+1*.2;
         end
     end
 end

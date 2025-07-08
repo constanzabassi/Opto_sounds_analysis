@@ -263,7 +263,7 @@ cdf_data = squeeze(all_data_celltypes_datasets(:,:,1:3,3));%using all cell types
 plot_info.lineStyles_contexts = {'-',':'};
 plot_info.colors = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0.5,0.5,0.5]; %0.9/0.6/0.2 or 1,0.7,0
 
-mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'\Delta Stim');
+mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'\Delta Stim',[-.1,0.3],0);
 %% make plots but using PYR/SOM/PV as the celltypes
 current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\celltypes'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
 

@@ -28,6 +28,7 @@ for dataset = chosen_datasets
 
         if ~isempty(trials_in_bin)
             binned_perf_all(b, dataset) = mean(trials_in_bin);
+            all_bin_centers(b, dataset) = mean(trial_means(bin_idx));
         end
     end
 end
@@ -40,7 +41,9 @@ if plot_datasets == 1
     plot(bin_centers', binned_perf_all', '-', 'Color', [0.8 0.8 0.8]); hold on;
 end
 
-e = errorbar(bin_centers, binned_perf, binned_sem, '-o', 'LineWidth', 1,'MarkerSize',2,'Color','k');
+mean_centers = nanmean(all_bin_centers,2);
+
+e = errorbar(mean_centers, binned_perf, binned_sem, '-o', 'LineWidth', 1,'MarkerSize',2,'Color','k');
 set(e, 'CapSize', 2);   % Increase cap size (default is 6)
 xlabel('Prestimulus "Engagement"');
 ylabel({'Behavioral Performance';'(Fraction Correct)'});
