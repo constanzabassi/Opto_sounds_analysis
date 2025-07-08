@@ -55,8 +55,10 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
             
             % Plot connected line for this mouse
-            plot([x_pos(1)+.2,x_pos(2)-.2], mouse_means, '-', 'Color', ...
-                [plot_info.colors_celltypes(celltype,:), 0.3], 'LineWidth', 1)
+            if num_contexts > 1
+                plot([x_pos(1)+.2,x_pos(2)-.2], mouse_means, '-', 'Color', ...
+                    [plot_info.colors_celltypes(celltype,:), 0.3], 'LineWidth', 1)
+            end
             hold on
             
             % Store mouse means for statistics
@@ -113,7 +115,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
             mod_stats.stats(celltype,context).p_val_vs_zero = p_val_vs_zero;
 
-            if isfield(plot_info,'zero_star') %only plot if requested
+            if isfield(plot_info,'zero_star') && plot_info.zero_star == 1%only plot if requested
                 if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
 %                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
 %                         'Color', plot_info.colors_celltypes(celltype,:), ...
@@ -124,68 +126,71 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         end
 
         % Statistical testing for this cell type
-        ct = 0;
-        possible_tests = nchoosek(1:num_contexts,2);
-        if max(mean_cell_all) > 0.1
-            y_val = max(mean_cell_all) + 0.03;
-        else
-            y_val = max(mean_cell_all);
-        end
-        
-        for t = 1:size(possible_tests,1)
-            ctx1 = possible_tests(t,1);
-                ctx2 = possible_tests(t,2);
-
-                % Get data for statistical test
-                % Skip if this celltype has no data for either context
-                if isempty(mod_stats.stats) || ...
-                   celltype > size(mod_stats.stats,1) || ...
-                   isempty(mod_stats.stats(celltype,ctx1).valid_means) || ...
-                   isempty(mod_stats.stats(celltype,ctx2).valid_means)
-                    continue;
-                end
-
-                % Extract data
-                data1 = mod_stats.stats(celltype,ctx1).valid_means;
-                data2 = mod_stats.stats(celltype,ctx2).valid_means;
-
-                % Align datasets if lengths differ (use intersection of valid datasets if available)
-                if length(data1) ~= length(data2)
-                    if isfield(mod_stats.stats(celltype,ctx1), 'valid_datasets') && ...
-                       isfield(mod_stats.stats(celltype,ctx2), 'valid_datasets')
-                       
-                       % Intersect dataset indices from both contexts
-                       common_datasets = intersect(mod_stats.stats(celltype,ctx1).valid_datasets, ...
-                                                   mod_stats.stats(celltype,ctx2).valid_datasets);
-            
-                       [~, idx1] = ismember(common_datasets, mod_stats.stats(celltype,ctx1).valid_datasets);
-                       [~, idx2] = ismember(common_datasets, mod_stats.stats(celltype,ctx2).valid_datasets);
-            
-                       data1 = data1(idx1);
-                       data2 = data2(idx2);
-                    else
-                       % Skip if we can't align data
-                       continue;
-                    end
-                end
-            
-            if ~isempty(data1)
-            [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
-                data1, data2, 10000, 'paired', 1);
+        if num_contexts > 1
+            ct = 0;
+            possible_tests = nchoosek(1:num_contexts,2);
+            if max(mean_cell_all) > 0.1
+                y_val = max(mean_cell_all) + 0.03;
             else
-                p_val_mod(t,celltype) = 1;
+                y_val = max(mean_cell_all);
+            end
+        
+            for t = 1:size(possible_tests,1)
+                ctx1 = possible_tests(t,1);
+                    ctx2 = possible_tests(t,2);
+    
+                    % Get data for statistical test
+                    % Skip if this celltype has no data for either context
+                    if isempty(mod_stats.stats) || ...
+                       celltype > size(mod_stats.stats,1) || ...
+                       isempty(mod_stats.stats(celltype,ctx1).valid_means) || ...
+                       isempty(mod_stats.stats(celltype,ctx2).valid_means)
+                        continue;
+                    end
+    
+                    % Extract data
+                    data1 = mod_stats.stats(celltype,ctx1).valid_means;
+                    data2 = mod_stats.stats(celltype,ctx2).valid_means;
+    
+                    % Align datasets if lengths differ (use intersection of valid datasets if available)
+                    if length(data1) ~= length(data2)
+                        if isfield(mod_stats.stats(celltype,ctx1), 'valid_datasets') && ...
+                           isfield(mod_stats.stats(celltype,ctx2), 'valid_datasets')
+                           
+                           % Intersect dataset indices from both contexts
+                           common_datasets = intersect(mod_stats.stats(celltype,ctx1).valid_datasets, ...
+                                                       mod_stats.stats(celltype,ctx2).valid_datasets);
+                
+                           [~, idx1] = ismember(common_datasets, mod_stats.stats(celltype,ctx1).valid_datasets);
+                           [~, idx2] = ismember(common_datasets, mod_stats.stats(celltype,ctx2).valid_datasets);
+                
+                           data1 = data1(idx1);
+                           data2 = data2(idx2);
+                        else
+                           % Skip if we can't align data
+                           continue;
+                        end
+                    end
+                
+                if ~isempty(data1)
+                [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
+                    data1, data2, 10000, 'paired', 1);
+                else
+                    p_val_mod(t,celltype) = 1;
+                end
+    
+                if size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 && celltype > 1%assume only pyr has valid stuff
+                        p_val_mod(t,celltype) = 1;
+                end
+                
+                if p_val_mod(t,celltype) < 0.05/n_celltypes
+                    xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
+                    ct = ct + 0.03;
+                    utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, ...
+                        0.01, plot_info.colors_celltypes(celltype,:))
+                end
             end
 
-            if size(possible_tests,1) == 1 && size(mod_stats.stats,1) == 1 && celltype > 1%assume only pyr has valid stuff
-                    p_val_mod(t,celltype) = 1;
-            end
-            
-            if p_val_mod(t,celltype) < 0.05/n_celltypes
-                xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
-                ct = ct + 0.03;
-                utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, ...
-                    0.01, plot_info.colors_celltypes(celltype,:))
-            end
         end
     end
     
@@ -224,11 +229,13 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     utils.set_current_fig;
     
     % Store statistics
-    mod_stats.tests = possible_tests;
-    mod_stats.p_test = 'paired permutation across mice';
-    mod_stats.p_val_mod = p_val_mod;
-    mod_stats.effectsize = effectsize;
-    mod_stats.n_mice = n_mice;
+    if num_contexts > 1
+        mod_stats.tests = possible_tests;
+        mod_stats.p_test = 'paired permutation across mice';
+        mod_stats.p_val_mod = p_val_mod;
+        mod_stats.effectsize = effectsize;
+        mod_stats.n_mice = n_mice;
+    end
     
     % Save results
     if ~isempty(save_dir)

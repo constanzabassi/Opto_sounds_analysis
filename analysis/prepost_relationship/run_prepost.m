@@ -200,6 +200,14 @@ st = plot_connected_abs_mod_by_mouse(current_save_dir, all_corr_across_celltypes
 st = plot_connected_abs_mod_by_mouse([], all_corr_across_celltypes_datasets(:,:,4), [1:24],...
           params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
 
+%look at recruitment vs gain modulation
+[cos_similarity,rho] = calculate_cosine_sim_rank_corr(diff_stim,[],pooled_cell_types);
+[cos_similarity_sound,rho_sound] = calculate_cosine_sim_rank_corr(avg_ctrl_post,[],pooled_cell_types);
+params.plot_info.zero_star = 0;
+st = plot_connected_abs_mod_by_mouse([], rho, [1:24],...
+          params.plot_info, [-1,1],0,'Corr Δ Stim (contexts)');
+% sts = scatter_abs_mean_mod_by_dataset([], permute(rho, [1 2 3]), params.plot_info, 2)
+
 
 plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5;0,0,0]; %0.9/0.6/0.2 or 1,0.7,0
 plot_info.celltype_names = {'Sound','Stim + Sound','Δ Stim'};
