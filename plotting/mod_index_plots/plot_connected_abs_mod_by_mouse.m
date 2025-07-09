@@ -248,6 +248,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             save_string = strrep(save_string, '/', '');
             save_string = strrep(save_string, '(', '');
             save_string = strrep(save_string, ')', '');
+            save_string = strjoin(save_string);
             saveas(700,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));
             saveas(700,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.fig'));
             exportgraphics(figure(700),strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'_datasets.pdf'), 'ContentType', 'vector');

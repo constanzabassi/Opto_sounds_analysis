@@ -204,8 +204,17 @@ st = plot_connected_abs_mod_by_mouse([], all_corr_across_celltypes_datasets(:,:,
 [cos_similarity,rho] = calculate_cosine_sim_rank_corr(diff_stim,[],pooled_cell_types);
 [cos_similarity_sound,rho_sound] = calculate_cosine_sim_rank_corr(avg_ctrl_post,[],pooled_cell_types);
 params.plot_info.zero_star = 0;
-st = plot_connected_abs_mod_by_mouse([], rho, [1:24],...
-          params.plot_info, [-1,1],0,'Corr Δ Stim (contexts)');
+params.plot_info.behavioral_contexts = {'Sound','Opto','Both'};
+save_dir_corr = [current_save_dir '/correlations/'];
+st = plot_connected_abs_mod_by_mouse(save_dir_corr, rho, [1:24],...
+          params.plot_info, [0,1],0,'Corr Δ Stim (contexts)');
+st = plot_connected_abs_mod_by_mouse(save_dir_corr, cos_similarity, [1:24],...
+          params.plot_info, [0,1],0,{'Cosine Sim. Δ Stim';'across contexts'});
+
+st = plot_connected_abs_mod_by_mouse(save_dir_corr, rho_sound, [1:24],...
+          params.plot_info, [0,1],0,'Corr Sound (contexts)');
+st = plot_connected_abs_mod_by_mouse(save_dir_corr, cos_similarity_sound, [1:24],...
+          params.plot_info, [0,1],0,'Cosine Sim. Sound (contexts)');
 % sts = scatter_abs_mean_mod_by_dataset([], permute(rho, [1 2 3]), params.plot_info, 2)
 
 

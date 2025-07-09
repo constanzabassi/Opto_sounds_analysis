@@ -1,4 +1,4 @@
-function plot_fixed_effects(lme, lme2, save_dir, colors, labels)
+function plot_fixed_effects(lme, lme2, save_dir, colors, labels, varargin)
 
 % Extract fixed effects from both models
 fe1 = lme.Coefficients;
@@ -27,6 +27,9 @@ else
     bar_width = 0.5;
     offset = 0;
     save_string = 'double';
+end
+if nargin > 5
+    save_string = varargin{1,1};
 end
 
 

@@ -2,6 +2,8 @@
 
 load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 load('V:\Connie\results\opto_sound_2025\context\data_info\context_data.mat');
+plot_info = plotting_config(); %plotting params
+
 keep context_data all_celltypes
 %% define axis
 [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]); %,{50:59,63:73}
@@ -24,21 +26,37 @@ celltype = 4;
 frame_range_pre= 50:59;
 frame_range_post = 63:93;
 
-%sounds
+%sounds(predicted) vs context
 [lme_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound] = mixed_linear_model(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post);
 [lme_sound_pass,tbl_sound_pass,~,~,~] = mixed_linear_model(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,'Context',1);
 
-%stim
+%stim(predicted) vs context
 [lme_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim] = mixed_linear_model(proj, 'Stim',celltype,frame_range_pre,frame_range_post);
 [lme_stim_pass,tbl_stim_pass,~,~,~] = mixed_linear_model(proj, 'Stim',celltype,frame_range_pre,frame_range_post,'Context',1);
 
-%stim vs sound
+%stim(predicted) vs sound
 [lme_stim_sound,tbl_stim_sound,proj_all_stim_sound,engagement_proj_all_stim_sound,context_all_stim_sound] = mixed_linear_model(proj, 'Stim',celltype,frame_range_post,frame_range_post,'Sound');
 [lme_stim_sound_pass,tbl_stim_sound_pass,~,~,~] = mixed_linear_model(proj, 'Stim',celltype,frame_range_post,frame_range_post,'Sound',1);
 
-%sound vs stim
+%sound(predicted) vs stim
 [lme_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim] = mixed_linear_model(proj,'Sound' ,celltype,frame_range_post,frame_range_post,'Stim');
 [lme_sound_stim_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Sound' ,celltype,frame_range_post,frame_range_post,'Stim',1);
+
+%sound(predicted) vs inhibitory neurons
+[lme_sound_pv,tbl_sound_stim,proj_all_sound_pv,engagement_proj_all_sound_pv,context_all_sound_pv] = mixed_linear_model(proj,'Sound' ,[1,3],frame_range_pre,frame_range_post,'Sound');
+[lme_sound_pv_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Sound' ,[1,3],frame_range_pre,frame_range_post,'Sound',1);
+[lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Sound' ,[1,2],frame_range_pre,frame_range_post,'Sound');
+[lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Sound' ,[1,2],frame_range_pre,frame_range_post,'Sound',1);
+
+[lme_sound_pv,tbl_sound_stim,proj_all_sound_pv,engagement_proj_all_sound_pv,context_all_sound_pv] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_pre,frame_range_post,'Stim');
+[lme_sound_pv_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_pre,frame_range_post,'Stim',1);
+[lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_pre,frame_range_post,'Stim');
+[lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_pre,frame_range_post,'Stim',1);
+
+[lme_sound_pv,tbl_sound_stim,proj_all_sound_pv,engagement_proj_all_sound_pv,context_all_sound_pv] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_post,frame_range_post,'Stim');
+[lme_sound_pv_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_post,frame_range_post,'Stim',1);
+[lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim');
+[lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim',1);
 
 %% make plots
 coeffs_stim = extract_and_rename_coefficients(lme_stim, lme_stim_pass, 'passive', ...
@@ -53,9 +71,29 @@ coeffs_stim_sound = extract_and_rename_coefficients(lme_stim_sound, lme_stim_sou
 coeffs_sound_stim = extract_and_rename_coefficients(lme_sound_stim, lme_sound_stim_pass, 'passive', ...
     {'Stim Slope (A)', 'Stim Slope (P)', 'Context Diff. (A - P)', 'Slope Diff. (A - P)'});
 
+coeffs_sound_ih = extract_and_rename_coefficients(lme_sound_pv, lme_sound_pv_pass, 'passive', ...
+    {'IH Slope (A)', 'IH Slope (P)', 'Context Diff. (A - P)', 'Slope Diff. (A - P)'});
+coeffs_sound_som = extract_and_rename_coefficients(lme_sound_som, lme_sound_som_pass, 'passive', ...
+    {'IH Slope (A)', 'IH Slope (P)', 'Context Diff. (A - P)', 'Slope Diff. (A - P)'});
+
 plot_fixed_effects(coeffs_sound,coeffs_stim,  save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
 plot_fixed_effects(coeffs_stim_sound, coeffs_stim_sound, save_dir, [0,0,0],[]);
 plot_fixed_effects(coeffs_sound_stim, coeffs_sound_stim, save_dir, [0,0,0],[]);
+
+%inhibitory effects
+plot_fixed_effects(coeffs_sound_som, coeffs_sound_ih, save_dir, plot_info.colors_celltypes(2:3,:),[],'sound_vs_preIH');
+plot_me_regression_lines(lme_sound_pv,engagement_proj_all_sound_pv,proj_all_sound_pv,context_all_sound_pv,'Sound Projection',save_dir,'PV');
+plot_me_regression_lines(lme_sound_som,engagement_proj_all_sound_som,proj_all_sound_som,context_all_sound_som,'Sound Projection',save_dir,'SOM');
+
+plot_fixed_effects(coeffs_sound_som, coeffs_sound_ih, save_dir, plot_info.colors_celltypes(2:3,:),[],'stim_vs_preIH');
+plot_me_regression_lines(lme_sound_pv,engagement_proj_all_sound_pv,proj_all_sound_pv,context_all_sound_pv,'Stim Projection',save_dir,'PV');
+plot_me_regression_lines(lme_sound_som,engagement_proj_all_sound_som,proj_all_sound_som,context_all_sound_som,'Stim Projection',save_dir,'SOM');
+
+plot_fixed_effects(coeffs_sound_som, coeffs_sound_ih, save_dir, plot_info.colors_celltypes(2:3,:),[],'stim_vs_postIH');
+plot_me_regression_lines(lme_sound_pv,engagement_proj_all_sound_pv,proj_all_sound_pv,context_all_sound_pv,'Stim Projection',save_dir,'PV (post)');
+plot_me_regression_lines(lme_sound_som,engagement_proj_all_sound_som,proj_all_sound_som,context_all_sound_som,'Stim Projection',save_dir,'SOM (post)');
+
+
 
 % plot_fixed_effects(lme_stim, lme_sound, save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
 % plot_fixed_effects(lme_stim_sound, lme_stim_sound, save_dir, [0,0,0],[]);
