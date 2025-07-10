@@ -93,6 +93,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
 %             norm_sound_post = norm_sound_diff(pos_neurons);
             sound_post = mean(squeeze(prepost_trial(:, 1,:)),1); %post response alone
             norm_sound_post = sound_post ./ sqrt(sum(sound_post.^2)); % Normalize sound axis    
+            sound_pre = mean(squeeze(prepost_trial(:, 2,:)),1); %post response alone
+            norm_sound_pre = sound_pre ./ sqrt(sum(sound_pre.^2)); % Normalize sound axis   
 
             if celltype == 4
                 mod_cells2 = 1:size(dff_st{1, current_dataset}.stim,2);
@@ -117,6 +119,23 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             sound_mean = mean(ctrl_matrix2(trainA_ctrl_all, :, aframes), [1, 3]);
             stim_axis = stim_sound_mean - sound_mean; % Difference between stim + sound and sound
             norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
+
+            %get just pre and post axis
+            stim_post =  mean(stim_matrix2(trainA_stim_all,:, aframes), [1, 3]); %post response alone
+            norm_stim_post = stim_post ./ sqrt(sum(stim_post.^2)); % Normalize sound axis
+            stim_pre =  mean(stim_matrix2(trainA_stim_all,:, bframes), [1, 3]); %pre response alone
+            norm_stim_pre = stim_pre ./ sqrt(sum(stim_pre.^2)); % Normalize sound axis
+            % Orthogonalize stim_post with respect to stim_axis(to remove
+            % any stimulus component)
+            proj_component = norm_stim_diff * (norm_stim_diff' * norm_stim_post);  % projection of stim_post onto stim_axis
+            orth_stim_post = norm_stim_post - proj_component;                      % remove shared component
+            % Renormalize orthogonalized axis
+            norm_stim_post = orth_stim_post ./ sqrt(sum(orth_stim_post.^2));
+            %repeat for pre
+            proj_component = norm_stim_diff * (norm_stim_diff' * norm_stim_pre);  % projection of stim_post onto stim_axis
+            orth_stim_pre = norm_stim_pre - proj_component;                      % remove shared component
+            % Renormalize orthogonalized axis
+            norm_stim_pre = orth_stim_pre ./ sqrt(sum(orth_stim_pre.^2));
   
     
             % --- 3) Calculate Active-Passive Axis (active - passive) ---
@@ -159,6 +178,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 sound_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_ctrl(tr,:) = squeeze(ctrl_matrix2(trial,:,:))'*norm_stim_diff';
                 sound_post_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_post';
+                sound_pre_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_pre';
+                stim_post_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_stim_post';
+                stim_pre_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_stim_pre';
 %                 context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_ctrl(tr,:) = squeeze(mean(ctrl_matrix3(trial,:,:),2))'; %find mean across cells
             end
@@ -169,6 +191,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 sound_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_diff';
                 stim_proj_stim(tr,:) = squeeze(stim_matrix2(trial,:,:))'*norm_stim_diff';
                 sound_post_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_post'; %pos_neurons
+                sound_pre_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_pre'; %pos_neurons
+                stim_post_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_stim_post';
+                stim_pre_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_stim_pre';
 %                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_stim(tr,:) = squeeze(mean(stim_matrix3(trial,:,:),2))'; %find mean across cells
             end
@@ -190,6 +215,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             weights{current_dataset,celltype}.stim = norm_stim_diff;
             weights{current_dataset,celltype}.context = norm_context_diff;
             weights{current_dataset,celltype}.sound_post = norm_sound_post;
+            weights{current_dataset,celltype}.sound_pre = norm_sound_pre;
 
             %projections
             %stim
@@ -219,6 +245,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             for context = 1:2
                 proj{current_dataset,celltype,context}.sound = sound_proj_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
                 proj{current_dataset,celltype,context}.sound_post = sound_post_stim(find(ismember( test_stim_all,test_stim{context})),:); %total_trials{current_dataset, context, 1}
+                proj{current_dataset,celltype,context}.sound_pre = sound_pre_stim(find(ismember( test_stim_all,test_stim{context})),:);
+                proj{current_dataset,celltype,context}.stim_pre = stim_pre_stim(find(ismember( test_stim_all,test_stim{context})),:);
+                proj{current_dataset,celltype,context}.stim_post = stim_post_stim(find(ismember( test_stim_all,test_stim{context})),:);
 
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
 %                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
@@ -228,6 +257,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 proj_ctrl{current_dataset,celltype,context}.sound = sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.stim = stim_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.sound_post = sound_post_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.sound_pre = sound_pre_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.stim_pre = stim_pre_stim(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.stim_post = stim_post_stim(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
 
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);

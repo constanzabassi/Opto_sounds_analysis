@@ -58,6 +58,16 @@ frame_range_post = 63:93;
 [lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim');
 [lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim',1);
 
+[lme_sound_pv,tbl_sound_stim,proj_all_sound_pv,engagement_proj_all_sound_pv,context_all_sound_pv] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_post,frame_range_post,'Stim_post');
+[lme_sound_pv_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_post,frame_range_post,'Stim_post',1);
+[lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim_post');
+[lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_post,frame_range_post,'Stim_post',1);
+
+[lme_sound_pv,tbl_sound_stim,proj_all_sound_pv,engagement_proj_all_sound_pv,context_all_sound_pv] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_pre,frame_range_post,'Stim_pre');
+[lme_sound_pv_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,3],frame_range_pre,frame_range_post,'Stim_pre',1);
+[lme_sound_som,tbl_sound_stim,proj_all_sound_som,engagement_proj_all_sound_som,context_all_sound_som] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_pre,frame_range_post,'Stim_pre');
+[lme_sound_som_pass,tbl_sound_stim_pass,~,~,~] = mixed_linear_model(proj,'Stim' ,[1,2],frame_range_pre,frame_range_post,'Stim_pre',1);
+
 %% make plots
 coeffs_stim = extract_and_rename_coefficients(lme_stim, lme_stim_pass, 'passive', ...
     {'Engagement Slope (A)', 'Engagement Slope (P)', 'Context Diff. (A - P)', 'Slope Diff. (A - P)'});
@@ -91,8 +101,7 @@ plot_me_regression_lines(lme_sound_som,engagement_proj_all_sound_som,proj_all_so
 
 plot_fixed_effects(coeffs_sound_som, coeffs_sound_ih, save_dir, plot_info.colors_celltypes(2:3,:),[],'stim_vs_postIH');
 plot_me_regression_lines(lme_sound_pv,engagement_proj_all_sound_pv,proj_all_sound_pv,context_all_sound_pv,'Stim Projection',save_dir,'PV (post)');
-plot_me_regression_lines(lme_sound_som,engagement_proj_all_sound_som,proj_all_sound_som,context_all_sound_som,'Stim Projection',save_dir,'SOM (post)');
-
+ 
 
 
 % plot_fixed_effects(lme_stim, lme_sound, save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
