@@ -87,7 +87,7 @@ avg_prepost_params = struct(...
 [avg_trial_pre,avg_trial_ctrl_pre, avg_trial_post,avg_trial_ctrl_post,avg_trial_pre_left,avg_trial_ctrl_pre_left,avg_trial_post_left,avg_trial_ctrl_post_left,avg_trial_pre_right,avg_trial_ctrl_pre_right,avg_trial_post_right,avg_trial_ctrl_post_right,correct_trials_stim,correct_trials_ctrl]  = ...
     wrapper_prepost_averaging_trials(params.info, dff_response,stim_trials_context,ctrl_trials_context, all_celltypes, avg_prepost_params, []);
 %%
-current_save_dir = 'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
+current_save_dir = 'W:\Connie\results\Bassi2025\fig5'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff'; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
 
 %% plot performance vs pre stim rate
 % sound/opto/sound+opto/all
@@ -245,7 +245,7 @@ plot_info.celltype_names = {'Sound','Δ Stim'};
 plot_info.behavioral_contexts = {'Sound','Δ Stim'}; %decide which contexts to plot
 params.plot_info = plot_info;
 st = plot_connected_abs_mod_by_mouse(current_save_dir, adjusted_std, [1:24],...
-          params.plot_info, [0,.25],0,'Std. Population Activity ');
+          params.plot_info, [0,.25],0,'Std. Population Activity');
 
 ctx = 1;
 heatmap_info = cell2mat(squeeze(all_data_celltypes_datasets(:,ctx,1,[1,3])));
