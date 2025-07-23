@@ -136,7 +136,7 @@ end
 for celltypes = 1:3
     %update directory
     save_dir_celltype = strcat(save_dir,upper(plot_info.celltype_names{celltypes}));
-    celltype = [2,2,celltypes];
+    celltype = [3,3,celltypes];
     [lme_sound_stim_ih,tbl_sound_stim_ih,proj_all_sound_stim_ih,engagement_proj_all_sound_stim_ih,context_all_sound_stim_ih] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim');
     [lme_sound_stim_pass_ih,tbl_sound_stim_pass_ih,~,~,~] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim',1);
     
@@ -152,17 +152,17 @@ for celltypes = 1:3
             strcat(plot_info.celltype_names{celltypes},' x Context')});
     
     
-    plot_fixed_effects(coeffs_sound_stim_ih, coeffs_sound_stim_ih,save_dir_celltype, [0,0,0],[],strcat(plot_info.celltype_names{celltypes},'_stim_sound_orthogonal'));
+    plot_fixed_effects(coeffs_sound_stim_ih, coeffs_sound_stim_ih,save_dir_celltype, [0,0,0],[],strcat(plot_info.celltype_names{celltypes},'_stim_sound_orthogonal',num2str(celltype(1))));
 end
 
 
-%run model that is stim_proj = ~ Sound Proj * Context + Celltype Proj * Context + (1|AnimalID)' 
-for celltypes = 1:3
+%run model that is Sound Proj = ~ stim_proj * Context + Celltype Proj * Context + (1|AnimalID)' 
+for celltypes = 2:3
     %update directory
     save_dir_celltype = strcat(save_dir,upper(plot_info.celltype_names{celltypes}));
-    celltype = [1,1,celltypes];
-    [lme_sound_stim_ih,tbl_sound_stim_ih,proj_all_sound_stim_ih,engagement_proj_all_sound_stim_ih,context_all_sound_stim_ih] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim',0,'Stim');
-    [lme_sound_stim_pass_ih,tbl_sound_stim_pass_ih,~,~,~] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim',1,'Stim');
+    celltype = [4,4,celltypes];
+    [lme_sound_stim_ih,tbl_sound_stim_ih,proj_all_sound_stim_ih,engagement_proj_all_sound_stim_ih,context_all_sound_stim_ih] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim',0,'Stim_post');
+    [lme_sound_stim_pass_ih,tbl_sound_stim_pass_ih,~,~,~] = mixed_linear_model_with_inhib(proj,'Sound' ,celltype,frame_range_post,frame_range_post,proj,'Stim',1,'Stim_post');
     
     
     coeffs_sound_stim_ih = extract_and_rename_coefficients_updated(lme_sound_stim_ih, lme_sound_stim_pass_ih, 'passive', ...
@@ -176,7 +176,7 @@ for celltypes = 1:3
             strcat(plot_info.celltype_names{celltypes},' x Context')});
     
     
-    plot_fixed_effects(coeffs_sound_stim_ih, coeffs_sound_stim_ih,save_dir_celltype, [0,0,0],[],strcat(plot_info.celltype_names{celltypes},'_stim_sound_stim'));
+    plot_fixed_effects(coeffs_sound_stim_ih, coeffs_sound_stim_ih,save_dir_celltype, [0,0,0],[],strcat(plot_info.celltype_names{celltypes},'_stim_sound_poststimmean',num2str(celltype(1))));
 end
 %% look at inhibitory neurons (decide which one to use)
 %sound(predicted-PYR) vs inhibitory neurons (using same axis just pre vs post)
