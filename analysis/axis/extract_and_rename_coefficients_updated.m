@@ -21,6 +21,8 @@ function coeff_struct_final = extract_and_rename_coefficients_updated(lme_active
         fe_source = lme_active.Coefficients;
     elseif strcmpi(source_model, 'passive')
         fe_source = lme_passive.Coefficients;
+    elseif isempty(source_model)
+        fe_source = lme_active.Coefficients;
     else
         error('source_model must be either "active" or "passive"');
     end
@@ -123,4 +125,34 @@ function coeff_struct_final = extract_and_rename_coefficients_updated(lme_active
         pval_inter_inhib];
 
     coeff_struct_final.Coefficients = coeff_struct;
+
+    if isempty(source_model)
+        % Package
+        coeff_struct.Name = names;
+        coeff_struct.Estimate = [
+            slope_eng_a, ...
+            
+            slope_inhib_a, ...
+            
+            context_coef, ...
+            inter_eng_coef, ...
+            inter_inhib_coef];
+        coeff_struct.SE = [
+            se_eng_a, ...
+            
+            se_inhib_a, ...
+            
+            se_ctx, ...
+            se_inter_eng, ...
+            se_inter_inhib];
+        coeff_struct.pValue = [
+            p_eng_a, ...
+            
+            p_inhib_a, ...
+            
+            pval_ctx, ...
+            pval_inter_eng, ...
+            pval_inter_inhib];
+        coeff_struct_final.Coefficients = coeff_struct;
+    end
 end

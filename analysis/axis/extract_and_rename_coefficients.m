@@ -21,8 +21,10 @@ function coeff_struct_final = extract_and_rename_coefficients(lme_active, lme_pa
         fe_source = lme_active.Coefficients;
     elseif strcmpi(source_model, 'passive')
         fe_source = lme_passive.Coefficients;
+    elseif isempty(source_model)
+        fe_source = lme_active.Coefficients;
     else
-        error('source_model must be either "active" or "passive"');
+        error('source_model must be either "active" or "passive" or empty');
     end
 
     % Get slope from both models
@@ -67,5 +69,15 @@ function coeff_struct_final = extract_and_rename_coefficients(lme_active, lme_pa
     coeff_struct.pValue     = [pval_active, pval_passive, pval_ctx, pval_inter];
 
     coeff_struct_final.Coefficients = coeff_struct;
+
+    if isempty(source_model)
+        % Package
+        coeff_struct.Name     = names;
+        coeff_struct.Estimate = [slope_active, context_coef, inter_coef];
+        coeff_struct.SE       = [se_active, se_ctx, se_inter];
+        coeff_struct.pValue     = [pval_active, pval_ctx, pval_inter];
+    
+        coeff_struct_final.Coefficients = coeff_struct;
+    end
 
 end

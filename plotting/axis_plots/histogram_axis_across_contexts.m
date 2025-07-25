@@ -19,7 +19,7 @@ for ctx = 1:2
 
     for dataset = chosen_datasets
 %         data = proj_ctrl{dataset, celltype, ctx}.context; %proj{dataset,celltype,ctx}.stim; %proj_ctrl{dataset, celltype, ctx}.sound;
-        data = proj{dataset, celltype, ctx}.(axis_type);
+        data = proj{dataset, celltype, ctx}.(lower(axis_type));
         trial_means = mean(data(:, frame_range), 2); % mean per trial in specified frames
         all_trial_means = [all_trial_means; trial_means];
         all_trial_means_datasets(ctx,dataset) = mean(trial_means);
@@ -47,8 +47,11 @@ for ctx = 1:2
     plot(mean_diff(ctx), y_limits(2)+.05, 'v', 'MarkerSize', 6,  'MarkerEdgeColor',  colorss(ctx,:),'MarkerFaceColor',  colorss(ctx,:));
 
 end
-
-xlabel('Engagement Projection'); %'Pre-stimulus Difference'); %Mean projection (frames 60–90)
+if strcmp((lower(axis_type)),'context')
+    xlabel('Engagement Projection'); %'Pre-stimulus Difference'); %Mean projection (frames 60–90)
+else
+    xlabel([axis_type ' Projection'])
+end
 ylabel('Fraction of Trials');
 % legend(legend_string);
 % Get current axis limits
@@ -79,12 +82,12 @@ hist_stats.tests = [1,2];
 hist_stats.p_test = 'unpaired permutation across contexts (trials)';
 hist_stats.p_val = p_val;
 hist_stats.n_trials = [length(all_trial_means_contexts{1}),length(all_trial_means_contexts{2})];
-
+offset = 0.02;
 %add significant stars
 if p_val < 0.05
     yli = ylim;
     xli = xlim;
-    utils.plot_pval_star(0, yli(2), p_val,[mean(mean_diff),mean(mean_diff)],.05);
+    utils.plot_pval_star(0, yli(2) + offset, p_val,[mean(mean_diff),mean(mean_diff)],.05);
 end
 % Save results
 if ~isempty(save_dir)

@@ -6,7 +6,7 @@ fe2 = lme2.Coefficients;
 
 % Ensure they have the same fixed effect names
 fe_names = fe1.Name;
-assert(isequal(fe_names, fe2.Name), 'Fixed effect names do not match between models.')
+% assert(isequal(fe_names, fe2.Name), 'Fixed effect names do not match between models.')
 if ~isempty(labels)
     fe_names = labels;
 end
@@ -98,14 +98,22 @@ end
 
 % Formatting
 set(gca, 'XTick', x, 'XTickLabel', fe_names, 'XTickLabelRotation', 45)
-ylabel('Coefficient Estimate')
+ylabel('Beta Coefficients')
 yline(0, '--k')
 % legend([b1 b2], {'Model 1', 'Model 2'}, 'Location', 'Best')
 
 % Layout
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
-utils.set_current_fig;
+if n_bars == 1 %if only two bars make it half width
+    % Keep center constant
+    old_center = positions(1,1) + positions(1,3)/2;
+    positions(1,3) = positions(1,3) * 0.5;
+    positions(1,1) = old_center - positions(1,3)/2;
+    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+else
+    utils.set_current_fig;
+end
 
 % Save
 if ~isempty(save_dir)
