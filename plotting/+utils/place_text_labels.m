@@ -1,4 +1,4 @@
-function place_text_labels(labels, colors, y_offset_base, fontSize)
+function place_text_labels(labels, colors, y_offset_base, fontSize,varargin)
     % Get current axis limits
     x_range = xlim;
     y_range = ylim;
@@ -6,8 +6,36 @@ function place_text_labels(labels, colors, y_offset_base, fontSize)
     text_x = x_range(2) - y_offset_base * diff(x_range);
     text_y = y_range(1) + y_offset_base * diff(y_range);
     % Default font size if not provided
-    if nargin < 4
+    if nargin < 4 || isempty(fontSize)
         fontSize = 12;
+    end
+
+    % Default location
+    location = 'bottomright';
+    if ~isempty(varargin)
+        location = lower(varargin{1});
+    end
+
+    % Calculate base text position depending on location
+    switch location
+        case 'bottomright'
+            text_x = x_range(2) - y_offset_base * diff(x_range);
+            text_y = y_range(1) + y_offset_base * diff(y_range);
+            y_direction = -1;
+        case 'bottomleft'
+            text_x = x_range(1) + y_offset_base * diff(x_range);
+            text_y = y_range(1) + y_offset_base * diff(y_range);
+            y_direction = -1;
+        case 'topright'
+            text_x = x_range(2) - y_offset_base * diff(x_range);
+            text_y = y_range(2) - y_offset_base * diff(y_range);
+            y_direction = 1;
+        case 'topleft'
+            text_x = x_range(1) + y_offset_base * diff(x_range);
+            text_y = y_range(2) - y_offset_base * diff(y_range);
+            y_direction = 1;
+        otherwise
+            error('Invalid location option. Choose from: bottomright, bottomleft, topright, topleft.');
     end
 %     % Ensure labels and colors match
 %     if length(labels) ~= size(colors,1)
