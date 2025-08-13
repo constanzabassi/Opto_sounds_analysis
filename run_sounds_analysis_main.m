@@ -135,6 +135,7 @@ save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepat
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
 
 

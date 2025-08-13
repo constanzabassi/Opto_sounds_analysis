@@ -142,7 +142,7 @@ params.plot_info = plot_info;
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params, save_dir);
-save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats');
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
 %% look at pre stimulus period?
 % find the mean of the significant cells (in sig_mod_boot) during the

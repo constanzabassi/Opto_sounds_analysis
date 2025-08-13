@@ -271,17 +271,17 @@ if ~isempty(save_dir)
     saveas(806,strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.fig'));
     exportgraphics(figure(806),strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_n_',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('hist_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'hist_weight_ct_stats');
+    save(strcat('hist_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.mat'),'hist_weight_ct_stats');
 
     saveas(807,strcat('barplot_weights_celltypes_',axis_type2,'.fig'));
     exportgraphics(figure(807),strcat('barplot_weights_celltypes_',axis_type2,'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_weight_ct_stats');
+    save(strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.mat'),'errorbar_weight_ct_stats');
 
     saveas(808,strcat('barplot_weights_datasets_celltypes_',axis_type2,'.fig'));
     exportgraphics(figure(808),strcat('barplot_weights_datasets_celltypes_',axis_type2,'.pdf'), 'ContentType', 'vector');
 
-    save(strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values)),'errorbar_weight_datasets_ct_stats');
+    save(strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.mat'),'errorbar_weight_datasets_ct_stats');
 
 
 end

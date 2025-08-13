@@ -121,21 +121,47 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             norm_stim_diff = stim_axis ./ sqrt(sum(stim_axis.^2)); % Normalize stimulus axis
 
             %get just pre and post axis
-            stim_post =  mean(stim_matrix2(trainA_stim_all,:, aframes), [1, 3]); %post response alone
+            stim_post =  mean(stim_matrix2(trainA_stim_all,:, aframes), [1, 3]) - mean(ctrl_matrix2(trainA_ctrl_all, :, aframes), [1, 3]); %post response alone
             norm_stim_post = stim_post ./ sqrt(sum(stim_post.^2)); % Normalize sound axis
-            stim_pre =  mean(stim_matrix2(trainA_stim_all,:, bframes), [1, 3]); %pre response alone
+            stim_pre =  mean(stim_matrix2(trainA_stim_all,:, bframes), [1, 3]) - mean(ctrl_matrix2(trainA_ctrl_all, :, bframes), [1, 3]); %pre response alone
             norm_stim_pre = stim_pre ./ sqrt(sum(stim_pre.^2)); % Normalize sound axis
+
+
             % Orthogonalize stim_post with respect to stim_axis(to remove
             % any stimulus component)
-            proj_component = norm_stim_diff * (norm_stim_diff' * norm_stim_post);  % projection of stim_post onto stim_axis
-            orth_stim_post = norm_stim_post - proj_component;                      % remove shared component
-            % Renormalize orthogonalized axis
-            norm_stim_post = orth_stim_post ./ sqrt(sum(orth_stim_post.^2));
+%             proj_component = norm_stim_diff * (norm_stim_diff' * norm_stim_post);  % projection of stim_post onto stim_axis
+%             orth_stim_post = norm_stim_post - proj_component;                      % remove shared component
+%             % Renormalize orthogonalized axis
+%             norm_stim_post = orth_stim_post ./ sqrt(sum(orth_stim_post.^2));
             %repeat for pre
             proj_component = norm_stim_diff * (norm_stim_diff' * norm_stim_pre);  % projection of stim_post onto stim_axis
             orth_stim_pre = norm_stim_pre - proj_component;                      % remove shared component
             % Renormalize orthogonalized axis
             norm_stim_pre = orth_stim_pre ./ sqrt(sum(orth_stim_pre.^2));
+
+            %orthogonalize with respect to stim_axis that contains all
+            %neurons!!
+            neurons_to_use = 1:size(dff_st{1, current_dataset}.stim,2);%all_celltypes{1,current_dataset}.pyr_cells;
+            stim_matrix2_new = [dff_st{1, current_dataset}.stim(:,neurons_to_use,:); dff_st{2, current_dataset}.stim(:,neurons_to_use,:)]; % stim + sound (active and passive)
+            ctrl_matrix2_new = [dff_st{1, current_dataset}.ctrl(:,neurons_to_use,:); dff_st{2, current_dataset}.ctrl(:,neurons_to_use,:)]; % sound only (active and passive)
+            
+            % --- 2) Calculate Stimulus + Sound Axis (stim + sound - sound) USING ALL NEURONS ---
+            stim_sound_mean_new = mean(stim_matrix2_new(trainA_stim_all,:, aframes), [1, 3]);
+            sound_mean_new = mean(ctrl_matrix2_new(trainA_ctrl_all, :, aframes), [1, 3]);
+            stim_axis_new = stim_sound_mean_new - sound_mean_new; % Difference between stim + sound and sound
+            norm_stim_diff_new = stim_axis_new ./ sqrt(sum(stim_axis_new.^2)); % Normalize stimulus axis
+
+            % Step 2: Create a full-length vector for all neurons (fill zeros)
+            orth_vector_full = zeros(1, size(dff_st{1, current_dataset}.stim,2)); % total n_neurons in dataset
+            % Fill in the current celltype neurons
+            orth_vector_full(mod_cells2) = stim_post;
+            % Step 3: Normalize the full-space vector
+            orth_vector_full = orth_vector_full / norm(orth_vector_full);
+            % Step 4: Orthogonalize with respect to norm_stim_diff (already full-space)
+            proj_component = norm_stim_diff_new * (norm_stim_diff_new' * orth_vector_full);
+            orth_stim_post = orth_vector_full - proj_component;
+            % Final: Normalize orthogonalized axis
+            norm_stim_post = orth_stim_post / norm(orth_stim_post);
   
     
             % --- 3) Calculate Active-Passive Axis (active - passive) ---
@@ -179,8 +205,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 stim_proj_ctrl(tr,:) = squeeze(ctrl_matrix2(trial,:,:))'*norm_stim_diff';
                 sound_post_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_post';
                 sound_pre_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_sound_pre';
-                stim_post_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_stim_post';
-                stim_pre_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_stim_pre';
+                stim_post_ctrl(tr,:) = squeeze(ctrl_matrix2_new(trial,:,:))'*norm_stim_post';
+                stim_pre_ctrl(tr,:) = squeeze(ctrl_matrix2(trial,:,:))'*norm_stim_pre';
 %                 context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_ctrl(tr,:) = squeeze(mean(ctrl_matrix3(trial,:,:),2))'; %find mean across cells
             end
@@ -192,8 +218,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 stim_proj_stim(tr,:) = squeeze(stim_matrix2(trial,:,:))'*norm_stim_diff';
                 sound_post_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_post'; %pos_neurons
                 sound_pre_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_sound_pre'; %pos_neurons
-                stim_post_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_stim_post';
-                stim_pre_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_stim_pre';
+                stim_post_stim(tr,:) = squeeze(stim_matrix2_new(trial,:,:))'*norm_stim_post';
+                stim_pre_stim(tr,:) = squeeze(stim_matrix2(trial,:,:))'*norm_stim_pre';
 %                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_stim(tr,:) = squeeze(mean(stim_matrix3(trial,:,:),2))'; %find mean across cells
             end

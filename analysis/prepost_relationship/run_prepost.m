@@ -59,7 +59,7 @@ for dataset = 1:24
     pooled_cell_types{dataset}.sound = sound_only_sig_cells{dataset};
     pooled_cell_types{dataset}.opto = opto_only_sig_cells{dataset};
     pooled_cell_types{dataset}.both = opto_sound_sig_cells{dataset};
-
+    pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
 end
 
 %% set up plotting labels
@@ -185,6 +185,7 @@ plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5];
 
 %% EXAMINATION OF COVARIANCE BETWEEN BASELINE SOUND VS SOUND+STIM-SOUND RESPONSE
 [all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_per_dataset([], pooled_cell_types, avg_ctrl_post, diff_stim, avg_post);
+[fraction_suppressed, fraction_activated] = compute_fraction_suppressed_per_dataset([], pooled_cell_types, diff_stim);
 
 plot_info.celltype_names = {'Sound','Opto','Both','Unmodulated'};
 plot_info.y_lims = [-.2, .4];
@@ -194,8 +195,15 @@ plot_info.colors_celltypes = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0.5,0.5,0.5]; %0
 
 params.plot_info = plot_info;
 params.plot_info.zero_star = 1;
-st = plot_connected_abs_mod_by_mouse(current_save_dir, all_corr_across_celltypes_datasets(:,:,1:3), [1:24],...
-          params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
+st = plot_connected_abs_mod_by_mouse(current_save_dir, all_corr_across_celltypes_datasets(:,:,1:4), [1:24],...
+          params.plot_info, [-1,1],0,'Corr all (Sound vs Δ Stim)');
+
+params.plot_info.zero_star = 0;
+st = plot_connected_abs_mod_by_mouse(current_save_dir, fraction_suppressed(:,:,1:4), [1:24],...
+          params.plot_info, [0, 1],0,'Fraction Suppressed all (Δ Stim)');
+
+st = plot_connected_abs_mod_by_mouse(current_save_dir, fraction_activated(:,:,1:3), [1:24],...
+          params.plot_info, [0, 1],0,'Fraction Activated (Δ Stim)');
 
 st = plot_connected_abs_mod_by_mouse([], all_corr_across_celltypes_datasets(:,:,4), [1:24],...
           params.plot_info, [-1,1],0,'Corr (Sound vs Δ Stim)');
