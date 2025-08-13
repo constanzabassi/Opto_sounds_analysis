@@ -81,9 +81,12 @@ for context = 1:size(sig_mod_boot,2)
             else
             sig_mod_boot_thr{dataset_index, context} = [current_sig_single_dataset( current_mod_index_single_dataset(current_sig_single_dataset) < (mod_params.mod_threshold) )];
             end
+        elseif  mod_params.mod_threshold  == 0
+            sig_mod_boot_thr{dataset_index, context} = current_sig_single_dataset;
         else
                     sig_mod_boot_thr{dataset_index, context} = [current_sig_single_dataset( current_mod_index_single_dataset(current_sig_single_dataset) > mod_params.mod_threshold ),...
             current_sig_single_dataset( current_mod_index_single_dataset(current_sig_single_dataset) < (mod_params.mod_threshold*-1) )];
+           
 
         end
     end
