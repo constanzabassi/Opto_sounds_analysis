@@ -84,7 +84,7 @@ for fig_idx = 1:4
 
 %             %place legends (plot too small to do this consistently)
 %             if context == size(deconv_response,1)
-%                 utils.place_text_labels(plot_info.behavioral_contexts, colors((celtype-1)*3+1:(celtype-1)*3+2,:), 0.75, 8); %.4
+%                 utils.place_text_labels(plot_info.behavioral_contexts, colors((celtype-1)*3+1:(celtype-1)*3+2,:), 0.75, 7); %.4
 %             end
                 hold off;
         end
@@ -98,11 +98,11 @@ for fig_idx = 1:4
 %         xticks(xticks_in);
 %         xticklabels(xticks_lab);
 
-        title(celltypes_ids{celtype}, 'FontSize', 8, 'FontName', 'arial','FontWeight','normal');
+        title(celltypes_ids{celtype}, 'FontSize', 7, 'FontName', 'arial','FontWeight','normal');
 
 
         
-        set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(celtype, :));
+        set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(celtype, :));
         
         yli = ylim;
         for f = 1:size(stim_frame,1)
@@ -194,7 +194,7 @@ end
 %         xticks(xticks_in);
 %         xticklabels(xticks_lab);
 % 
-%         title(celltypes_ids{celtype}, 'FontSize', 8, 'FontName', 'arial','FontWeight','normal');
+%         title(celltypes_ids{celtype}, 'FontSize', 7, 'FontName', 'arial','FontWeight','normal');
 % 
 %         yli = ylim;
 %         for f = 1:size(stim_frame,1)
@@ -203,7 +203,7 @@ end
 %         end
 %         xline(stim_frame(1), '--k', 'LineWidth', 1);
 %         hold off;
-%         set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(celtype, :));
+%         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(celtype, :));
 %     end
 %     
 % 

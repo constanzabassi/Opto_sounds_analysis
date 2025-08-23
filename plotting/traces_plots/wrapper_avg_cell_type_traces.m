@@ -1,14 +1,14 @@
 function wrapper_avg_cell_type_traces(context_data,all_celltypes,mod_indexm,sig_mod_boot,chosen_mice,savepath,data_type,plot_info,varargin)
 
-%     % Define the parameter sets
-%     param_sets = { 
-%         struct('mod_threshold', 0.1, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated']),
-%         struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated']),
-%         struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
-%     };
-param_sets = { 
-        struct('mod_threshold', 0, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
+    % Define the parameter sets
+    param_sets = { 
+        struct('mod_threshold', 0.1, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated']),
+        struct('mod_threshold', -0.1, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated']),
+        struct('mod_threshold', 0.1, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
     };
+% param_sets = { 
+%         struct('mod_threshold', 0, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
+%     };
 
 for i = 1:length(param_sets)
         mod_params = param_sets{i};

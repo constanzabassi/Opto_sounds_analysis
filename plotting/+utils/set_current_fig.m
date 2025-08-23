@@ -4,7 +4,7 @@ set(gca,'FontName','Arial');
 if nargin > 0
     set(gca,'FontSize',varargin{1,1});
 else
-    set(gca,'FontSize',8);
+    set(gca,'FontSize',7);
 end
 set(gcf,'Color','w')
 set(gca,'FontName','Arial')

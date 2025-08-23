@@ -1,4 +1,4 @@
-function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_index, sig_neurons, time_vector, dataset_index, left_trials_total, save_dir, plot_mode, plot_avg)
+function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_index, sig_neurons, time_vector, dataset_index, left_trials_total, save_dir, plot_mode, plot_avg,plot_info)
 % PLOT_INDIVIDUAL_MOD_NEURONS generates plots of neural activity for selected neurons.
 %
 %   Inputs:
@@ -80,20 +80,20 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
                 imagesc([neuron_data; neuron_data_ctrl]); % stack trials vertically
                 colormap('viridis');  % Change colormap as desired.
                 % Add dividing lines to delineate stim vs. control.
-                xline(61, '-w', 'LineWidth', 2);
-                yline(left_trials_total(1), '-w', 'LineWidth', 2);
-                yline(size(neuron_data, 1), '--w', 'LineWidth', 2);
-                yline(size(neuron_data, 1) + left_trials_total(2), '-w', 'LineWidth', 2);
+                xline(61, '-w', 'LineWidth', 1);
+                yline(left_trials_total(1), '-w', 'LineWidth', 1);
+                yline(size(neuron_data, 1), '--w', 'LineWidth', 1);
+                yline(size(neuron_data, 1) + left_trials_total(2), '-w', 'LineWidth', 1);
             case 'stim'
                 imagesc(neuron_data);
                 colormap('viridis');
-                xline(61, '-w', 'LineWidth', 2);
-                yline(left_trials_total(1), '-w', 'LineWidth', 2);
+                xline(61, '-w', 'LineWidth', 1);
+                yline(left_trials_total(1), '-w', 'LineWidth', 1);
             case 'ctrl'
                 imagesc(neuron_data_ctrl);
                 colormap('viridis');
-                xline(61, '-w', 'LineWidth', 2);
-                yline(left_trials_total(2), '-w', 'LineWidth', 2);
+                xline(61, '-w', 'LineWidth', 1);
+                yline(left_trials_total(2), '-w', 'LineWidth', 1);
         end
 
         xlabel('Time');
@@ -102,9 +102,11 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
         xticks(xticks_in);
         xticklabels(xticks_lab);
         caxis([-.3 1]);
-        set_current_fig;
-        set(gca, 'FontSize', 12);
-        title(sprintf('Neuron %d Mod Index: %.3f', neuron_id, mod_index(neuron_id)), 'FontWeight', 'normal');
+        
+        utils.set_current_fig;
+        set(gca, 'FontSize', 6);
+%         title(sprintf('Neuron %d\nMod Index: %.2f', neuron_id, mod_index(neuron_id)), 'FontWeight', 'normal');
+        title(sprintf('Neuron %d MI: %.2f', neuron_id, mod_index(neuron_id)), 'FontWeight', 'normal');
 
         % If average plot is requested, create the mean response subplot.
         if plot_avg
@@ -112,12 +114,12 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
             hold on;
             switch plot_mode
                 case 'both'
-                    plot(time_vector, mean_response, 'k', 'LineWidth', 1.5);
-                    plot(time_vector, mean_response_ctrl, 'LineWidth', 1.5, 'Color', [0.5 0.5 0.5]);
+                    plot(time_vector, mean_response, 'k', 'LineWidth', 1);
+                    plot(time_vector, mean_response_ctrl, 'LineWidth', 1, 'Color', [0.5 0.5 0.5]);
                 case 'stim'
-                    plot(time_vector, mean_response, 'k', 'LineWidth', 1.5);
+                    plot(time_vector, mean_response, 'k', 'LineWidth', 1);
                 case 'ctrl'
-                    plot(time_vector, mean_response_ctrl, 'LineWidth', 1.5, 'Color', [0.5 0.5 0.5]);
+                    plot(time_vector, mean_response_ctrl, 'LineWidth', 1, 'Color', [0.5 0.5 0.5]);
             end
             xlabel('Time');
             ylabel('Mean Response');
@@ -126,13 +128,16 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
             [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(61, 122, 1);
             xticks(xticks_in);
             xticklabels(xticks_lab);
-            set_current_fig;
-            set(gca, 'FontSize', 12);
+            utils.set_current_fig;
+            set(gca, 'FontSize', 6);
             hold off;
+        end
+        if plot_info.caxis == 1;
+            colorbar('position',[0.789936246481369,0.316666666666667,0.044444444444444,0.488888888888889])%;'eastoutside'
         end
 
         % Adjust figure size (optional).
-        set(gcf, 'Position', [100, 100, 300, 350]);
+        set(gcf, 'Position', [100, 100, 100, 80]);
 
         % Save the figure if a save directory is provided.
         if ~isempty(save_dir)
@@ -140,7 +145,8 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
                 mkdir(save_dir);
             end
             saveas(gcf, fullfile(save_dir, sprintf('Neuron_%d_dataset_%i_context_%c.fig', neuron_id, dataset_index(1), num2str(dataset_index(2)))));
-            saveas(gcf, fullfile(save_dir, sprintf('Neuron_%d_dataset_%i_context_%c.png', neuron_id, dataset_index(1), num2str(dataset_index(2)))));
+            exportgraphics(gcf, fullfile(save_dir, sprintf('Neuron_%d_dataset_%i_context_%c.pdf', neuron_id, dataset_index(1), num2str(dataset_index(2)))), 'ContentType', 'vector');
+%             saveas(gcf, fullfile(save_dir, sprintf('Neuron_%d_dataset_%i_context_%c.pdf', neuron_id, dataset_index(1), num2str(dataset_index(2)))));
         end
     end
 end
@@ -210,15 +216,15 @@ end
 %         xticklabels(xticks_lab);
 % 
 %         caxis([-.3 1]);
-%         set_current_fig;
-%         set(gca,'FontSize',12);
+%         utils.set_current_fig;
+%         set(gca,'FontSize',6);
 %         title(sprintf('Neuron %d Mod Index: %.3f', neuron_id, mod_index(neuron_id)),'FontWeight','normal');
 % 
 %         % Subplot 2: line plot of the mean response.
 %         subplot(2,1,2);
 %         hold on
-%         plot(time_vector, mean_response,'k', 'LineWidth', 1.5);
-%         plot(time_vector, mean_response_ctrl, 'LineWidth', 1.5,'Color', [0.5 0.5 0.5]);
+%         plot(time_vector, mean_response,'k', 'LineWidth', 1);
+%         plot(time_vector, mean_response_ctrl, 'LineWidth', 1,'Color', [0.5 0.5 0.5]);
 %         xlabel('Time');
 %         ylabel('Mean Response');
 % %         title('Mean Across Trials','FontWeight','normal');
@@ -227,8 +233,8 @@ end
 %         [xticks_in,xticks_lab]  = utils.x_axis_sec_aligned(61,122,1);
 %         xticks(xticks_in);
 %         xticklabels(xticks_lab);
-%         set_current_fig;
-%         set(gca,'FontSize',12);
+%         utils.set_current_fig;
+%         set(gca,'FontSize',6);
 %         hold off
 %         % Adjust figure size (optional).
 %         set(gcf, 'Position', [100, 100, 300, 400]);

@@ -132,7 +132,7 @@ end
 xticks(1:3);
 clean_labels = cellfun(@(s) strrep(s, '_cells', ''), possible_celltypes(1:3), 'UniformOutput', false);
 xticklabels(upper(clean_labels));
-if axis_type2 == 'Context'
+if strcmpi(axis_type2,'Context')
     ylabel(['|Engagement Weight|']);
 else
     ylabel(['|' axis_type2 ' Weight|']);
@@ -211,7 +211,7 @@ end
 xticks(1:3);
 clean_labels = cellfun(@(s) strrep(s, '_cells', ''), possible_celltypes(1:3), 'UniformOutput', false);
 xticklabels(upper(clean_labels));
-if axis_type2 == 'Context'
+if strcmpi(axis_type2,'Context')
     ylabel(['|Engagement Weight|']);
 else
     ylabel(['|' axis_type2 ' Weight|']);

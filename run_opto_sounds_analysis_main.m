@@ -53,13 +53,13 @@ mod_params.savepath = fullfile(params.info.savepath, 'mod', mod_params.mod_type,
     wrapper_mod_index_calculation(params.info, dff_st, mod_params.response_range, mod_params.mod_type, mod_params.mode, stim_trials_context, ctrl_trials_context,mod_params.nShuffles, mod_params.savepath);
 %% Generate single cell plots
 dataset_to_plot = 9;
-context_to_plot = [1];
+context_to_plot = [1:2];
 sig_neurons_to_plot = [];
 modulation_type = 1; %positive or negative
  plot_info = params.plot_info;
- plot_info.plot_mode = 'ctrl';% stim ctrl or both
- plot_info.plot_avg = 1;
-
+ plot_info.plot_mode = 'both';% stim ctrl or both
+ plot_info.plot_avg = 0;
+ plot_info.caxis = 0;
 
  wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
@@ -82,9 +82,9 @@ context_num = 3;
 %heatmap of mean
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
-savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
-wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_dff',plot_info);
+savepath = 'W:\Connie\results\Bassi2025\fig3\dynamics';
+wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_deconv',plot_info,mod_indexm);
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params.chosen_mice,savepath,'opto_dff',plot_info,mod_indexm);
 
 % taking the differences
 context_num = [1,2];
@@ -108,6 +108,21 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
+%% Make plots of modulation index across contexts/cell types (separating into datasets or mice) 
+%USING ALL CELLS
+% Set y-axis limits for the plots.
+params.info.chosen_mice = mod_params.chosen_mice;
+% Set labels for plots.
+plot_info.plot_labels = {'Stim','Ctrl'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
+plot_info.y_lims = [-.2, .25];
+params.plot_info = plot_info;
+save_dir = 'W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate';
+
+%generates heatmaps, cdf, box plots, scatter of abs(mod _index)
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  [], all_celltypes, params, save_dir);
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
 %% Make plots of modulation index across contexts/cell types
 %load significant neurosn from prepost index

@@ -119,7 +119,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
 %                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
 %                         'Color', plot_info.colors_celltypes(celltype,:), ...
-%                         'FontSize', 8, 'HorizontalAlignment', 'center');
+%                         'FontSize', 7, 'HorizontalAlignment', 'center');
                             utils.plot_pval_star(x_pos(context),mean_cel + err + 0.02,p_val_vs_zero,[0,0],0,[0,0,0]);%plot_info.colors_celltypes(celltype,:)
                 end
             end
@@ -225,7 +225,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     box off
     xtickangle(45)
 %     set(gcf,'units','points','position',[10,100,(400/n_celltypes*num_contexts),170]);
-    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+    set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
     utils.set_current_fig;
     
     % Store statistics
