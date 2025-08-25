@@ -63,6 +63,19 @@ modulation_type = 1; %positive or negative
 
  wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
+ %single trial plots
+ dataset_to_plot = 9;
+context_to_plot = [3];
+modulation_type = 1; %positive or negative
+plot_info = params.plot_info;
+plot_info.plot_mode = 'stim';% stim ctrl or both
+plot_info.avg_traces = 1;
+
+ wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
+ modulation_type = -1;
+  wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
 
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
@@ -78,11 +91,11 @@ sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm
 
 %PLOT MODULATED NEURONS in the spontaneous context
 context_num = 3;
-[percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, [], 'horizontal',all_celltypes);
+[percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, 'W:\Connie\results\Bassi2025\fig3\mod\', 'horizontal',all_celltypes);
 %heatmap of mean
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
-savepath = 'W:\Connie\results\Bassi2025\fig3\dynamics';
+savepath = 'W:\Connie\results\Bassi2025\fig3\';
 wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_deconv',plot_info,mod_indexm);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
 
@@ -137,7 +150,7 @@ overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % 
 params.plot_info = plot_info;
 
 %save directory
-save_dir = ['V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate'];%[mod_params.savepath]; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = ['W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate\sig_neurons'];%[mod_params.savepath]; %[mod_params.savepath '/prepost_spont_sig_cells'];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr(:,3), all_celltypes, params,save_dir);

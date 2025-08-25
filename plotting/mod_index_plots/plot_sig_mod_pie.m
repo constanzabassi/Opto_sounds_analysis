@@ -212,12 +212,14 @@ if ~isempty(savepath)
     end
     
     % Build the base filename using the modulation threshold.
-    filenameBase = fullfile(modDir, ['sig_mod_pie_thr_', num2str(mod_params.mod_threshold), '_context_', num2str(context),'_datasets_', num2str(length(sig_mod_boot))]);
+    filenameBase = fullfile(modDir, ['percent_pie_sig_mod_thr_', num2str(mod_params.mod_threshold), '_context_', num2str(context),'_datasets_', num2str(length(sig_mod_boot))]);
     
     % Save the current figure in several formats.
     saveas(f, [filenameBase, '.fig']);
-    saveas(f, [filenameBase, '.svg']);
+%     saveas(f, [filenameBase, '.svg']);
     exportgraphics(f,[filenameBase, '.pdf'], 'ContentType', 'vector');
+
+    save(fullfile(modDir,'percent_pie_stats'),'percentage_stats')
 end
 
 end

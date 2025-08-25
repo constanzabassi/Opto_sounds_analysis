@@ -95,6 +95,16 @@ for current_dataset = dataset_to_plot
                                         ctrl_data(pooled_ctrl_indices, :, :), ...
                                         mod_index, sig_neurons, time_vector, [current_dataset, context], [length(left_stim_all), length(left_ctrl_all)], ...
                                         fullfile(info.savepath,'individual_neuron_plots', save_string),plot_params.plot_mode,plot_params.plot_avg,plot_params);
+
+            if isfield(plot_params,'avg_traces') && plot_params.avg_traces == 1
+                %plot avg trace and trials in gray per neuron
+                if strcmp(plot_params.plot_mode,'ctrl')
+                    plot_avg_trial_traces_simple(ctrl_data(pooled_ctrl_indices, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params.plot_mode,fullfile(info.savepath,'individual_neuron_plots_avg', save_string));
+                else
+                    plot_avg_trial_traces_simple(stim_data(pooled_stim_indices, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params.plot_mode,fullfile(info.savepath,'individual_neuron_plots_avg', save_string));
+                end
+            end
+
         end
     end
 end
