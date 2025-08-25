@@ -23,11 +23,11 @@ end
 colorbar
 xticks([1:size(mod_to_plot,2)]);
 xticklabels(plot_info.behavioral_contexts);
-ylabel('Neurons')
+ylabel('Neurons','FontSize',7)
 set(heatmap_plot,'AlphaData',~isnan(mod_to_plot(id,:))); %,~isnan(stim_mod(chosen_cels(id),:)))
-set(gca,'color',[.7 .7 .7],'fontsize',8);
+set(gca,'color',[.7 .7 .7],'fontsize',7);
 % set(gcf,'position',[100,100,200,200])
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 movegui(gcf, 'center')
 
 % axis square

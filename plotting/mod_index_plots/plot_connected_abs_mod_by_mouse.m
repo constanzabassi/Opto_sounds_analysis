@@ -200,9 +200,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     xticklabels(repmat(plot_info.behavioral_contexts, 1, n_celltypes))
 
     if abs_logic == 1;
-        ylabel({'Absolute Modulation';'Index'})
+        ylabel({'Absolute Modulation';'Index'},'FontSize',7)
     else
-        ylabel({'Modulation Index'})
+        ylabel({'Modulation Index'},'FontSize',7)
     end
 
     if nargin > 6
@@ -218,7 +218,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     end
     
     % Set figure properties
-    set(gca,'FontSize',8);
+    set(gca,'FontSize',7);
     set(gcf,'Color','w')
     set(gca,'FontName','Arial')
 %     set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
