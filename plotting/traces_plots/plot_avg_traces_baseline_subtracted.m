@@ -6,10 +6,10 @@ end
 
 positions = utils.calculateFigurePositions(1, 6, .4, []);
 contexts = {'active', 'passive'};
-data_modes = {'raw', 'bs'}; % raw and baseline subtracted
+data_modes = plot_info.trace_modes;%{'raw', 'bs'}; % raw and baseline subtracted
 stim_ctrl_idx = [1, 0, 1, 0];
 
-for fig_idx = 1:4
+for fig_idx = 1:length(data_modes)*2
     figure(fig_idx); clf;
 
     for celtype = 1:size(deconv_response,3)
