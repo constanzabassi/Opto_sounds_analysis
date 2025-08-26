@@ -95,7 +95,7 @@ context_num = 3;
 %heatmap of mean
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
-savepath = 'W:\Connie\results\Bassi2025\fig3\';
+savepath = 'W:\Connie\results\Bassi2025\fig3\celltype_traces\';
 wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_deconv',plot_info,mod_indexm);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
 

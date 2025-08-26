@@ -185,7 +185,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 
                 if p_val_mod(t,celltype) < 0.05/n_celltypes
                     xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
-                    ct = ct + 0.03;
+                    ct = ct + y_val*0.4;
                     utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, ...
                         0.01, plot_info.colors_celltypes(celltype,:))
                 end

@@ -99,10 +99,27 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
     organize_sig_mod_index_contexts_celltypes([1:25], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
 
 %average traces
-savepath = 'V:\Connie\results\opto_sound_2025\context\dynamics';
+savepath = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\';
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
-wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params.chosen_mice,savepath,'sound_dff',plot_info);
+wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_deconv',plot_info);
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
+%% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
+%make plots using all cells
+% Set y-axis limits for the plots.
+plot_info.y_lims = [-.2, .25];
+% Set labels for plots.
+plot_info.plot_labels = {'Sounds','Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
+plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
+overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
+params.plot_info = plot_info;
+params.info.chosen_mice = [1:25];
+
+%save directory
+save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+
+%generates heatmaps, cdf, box plots, scatter of abs(mod _index)
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, [], all_celltypes, params, save_dir);
+save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
 %% Make plots of modulation index across contexts/cell types (pooling all cells across all mice)
 % Set y-axis limits for the plots.
@@ -115,7 +132,7 @@ params.plot_info = plot_info;
 params.info.chosen_mice = [1:25];
 
 %save directory
-save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\sig_neurons';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr, all_celltypes, params, save_dir);
