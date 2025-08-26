@@ -34,12 +34,12 @@ celltype = 4;
 frame_range_pre= 50:59;
 frame_range_post = 63:93;
 %sound (predicted) vs engagement axis
-[lme_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post);
-[lme_sound_pass,tbl_sound_pass,~,~,~] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,'Context',1);
+[lme_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
+[lme_sound_pass,tbl_sound_pass,~,~,~] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2],'Context',1);
 
 %stim(predicted) vs engagement axis
-[lme_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post);
-[lme_stim_pass,tbl_stim_pass,~,~,~] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post,'Context',1);
+[lme_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
+[lme_stim_pass,tbl_stim_pass,~,~,~] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2],'Context',1);
 
 %sound(predicted) vs stim
 [lme_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim] = mixed_linear_model(proj,'Sound' ,celltype,frame_range_post,frame_range_post,'Stim');
@@ -72,12 +72,42 @@ plot_me_regression_lines(lme_stim,tbl_stim,context_all_stim,'Stim Projection',sa
 
 plot_me_regression_lines(lme_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir,'Stim');
 
-plot_predictor_variance(lme_sound);
-plot_predictor_variance(lme_stim);
+% plot_predictor_variance(lme_sound);
+% plot_predictor_variance(lme_stim);
 save(strcat('coeffs_sound_all_all'),'coeffs_sound');
 save(strcat('coeffs_stim_all_all'),'coeffs_stim');
 save(strcat('coeffs_sound_stim_all_all'),'coeffs_sound_stim');
+%% simple model done separately per context
+celltype = 4;
+frame_range_pre= 50:59;
+frame_range_post = 63:93;
+%sound (predicted) vs engagement axis
+[lme_sound_separate_ctx,tbl_sound_separate_ctx,~,~,context_all_sound_separate_ctx] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1]); %active trials only
+[lme_sound_pass_separate_ctx,tbl_sound_pass_separate_ctx,~,~,~] = mixed_linear_model_nocontext(proj_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[2],'Context',1); %passive trials only
 
+%stim(predicted) vs engagement axis
+[lme_stim_separate_ctx,tbl_stim_separate_ctx,~,~,context_all_stim_separate_ctx] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post,[1]); %active trials only
+[lme_stim_pass_separate_ctx,tbl_stim_pass_separate_ctx,~,~,~] = mixed_linear_model_nocontext(proj, 'Stim',celltype,frame_range_pre,frame_range_post,[2],'Context',1); %passive trials only
+
+% make plots
+coeffs_stim_separate_ctx = extract_and_rename_coefficients_updated(lme_stim_separate_ctx, lme_stim_pass_separate_ctx, 'passive', ...
+    {'Slope (A)', 'Slope (P)'});
+
+coeffs_sound_separate_ctx = extract_and_rename_coefficients(lme_sound_separate_ctx, lme_sound_pass_separate_ctx, 'passive', ...
+    {'Slope (A)', 'Slope (P)'});
+
+
+plot_fixed_effects(coeffs_sound_separate_ctx,coeffs_stim_separate_ctx,  save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
+
+
+plot_me_regression_lines_separate_ctx(lme_sound_separate_ctx,tbl_sound_separate_ctx,1,'Sound Projection',save_dir);
+plot_me_regression_lines_separate_ctx(lme_sound_separate_ctx,tbl_sound_separate_ctx,2,'Sound Projection',save_dir);
+
+plot_me_regression_lines_separate_ctx(lme_stim_separate_ctx,tbl_stim_separate_ctx,1,'Stim Projection',save_dir);
+plot_me_regression_lines_separate_ctx(lme_stim_separate_ctx,tbl_stim_separate_ctx,2,'Stim Projection',save_dir);
+
+save(strcat('coeffs_sound_separate_ctx'),'coeffs_sound_separate_ctx');
+save(strcat('coeffs_stim_separate_ctx'),'coeffs_stim_separate_ctx');
 %% performance
 lme_perf = plot_errorbar_performance_lme(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,save_dir);
 save(strcat('lme_perf'),'lme_perf');

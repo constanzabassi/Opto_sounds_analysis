@@ -194,10 +194,74 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             context_axis_stim = active_passive_sound_mean_stim(1,:) - active_passive_sound_mean_stim(2,:); % active - passive
             norm_context_diff_stim = context_axis_stim ./ sqrt(sum(context_axis_stim.^2)); % Normalize context axis
 
-    
+            % --- 4) Calculate NOISE Axis ---
+            if celltype == 4
+                mod_cells4 = 1:size(dff_st{1, current_dataset}.stim,2);
+            else
+                mod_cells4 = all_celltypes{1,current_dataset}.(possible_celltypes{celltype});
+            end
+            stim_matrix4 = [dff_st{1, current_dataset}.stim(:,mod_cells4,:); dff_st{2, current_dataset}.stim(:,mod_cells4,:)]; % stim + sound (active and passive)
+            ctrl_matrix4 = [dff_st{1, current_dataset}.ctrl(:,mod_cells4,:); dff_st{2, current_dataset}.ctrl(:,mod_cells4,:)]; % sound only (active and passive)
+            % (a) extract time window and reshape into trials x neurons
+            stim_trial_neurons = squeeze(mean(stim_matrix4(trainB_stim_all,:,aframes),3)); %mean across time
+            ctrl_trial_neurons = squeeze(mean(ctrl_matrix4(trainB_ctrl_all,:,aframes),3)); %mean across time
+            % (b) subtract mean to center the data
+            stim_demeaned = stim_trial_neurons - mean(stim_trial_neurons,1);
+            ctrl_demeaned = ctrl_trial_neurons - mean(ctrl_trial_neurons,1);
+            % (c) compute noise axis using PCA?
+            [coeff_stim,~,~] = pca(stim_demeaned);
+            [coeff_ctrl,~,~] = pca(ctrl_demeaned);
+            %repeat for test
+            stim_trial_neurons_test = squeeze(mean(stim_matrix4(test_stim_all,:,aframes),3)); %mean across time
+            ctrl_trial_neurons_test = squeeze(mean(ctrl_matrix4(test_ctrl_all,:,aframes),3)); %mean across time
+            stim_demeaned_test = stim_trial_neurons_test - mean(stim_trial_neurons,1);
+            ctrl_demeaned_test = ctrl_trial_neurons_test - mean(ctrl_trial_neurons,1);
+
             %5) PROJECT THE DATA! onto test trials!!
             %also save real activity in case we want to look at it
             
+            % --- Compute noise axis using training data (already done above) ---
+            % coeff_ctrl(:,1) is your noise axis from PCA on ctrl_demeaned
+            % --- Preallocate time-resolved projection arrays ---
+            n_test_trials = length(test_ctrl_all);
+            n_timepoints = size(ctrl_matrix4, 3);
+            noise_proj_ctrl_timeseries = zeros(n_test_trials, n_timepoints);
+            % --- Compute training set means per neuron per time ---
+            ctrl_train_mean = squeeze(mean(ctrl_matrix4(trainB_ctrl_all, :, :), 1));  % [neurons x time]
+            stim_train_mean = squeeze(mean(stim_matrix4(trainB_stim_all, :, :), 1));  % [neurons x time]
+            % --- Loop through test trials and project each timepoint ---
+            %CTRL TRIALS
+            for tr = 1:n_test_trials
+                ctrl_trial = test_ctrl_all(tr);
+                for t = 1:n_timepoints
+                    % Get trial activity at this timepoint (1 x neurons)
+                    ctrl_vec = squeeze(ctrl_matrix4(ctrl_trial,:,t));  % [1 x neurons]
+                    % Demean using training set mean at that timepoint
+                    ctrl_vec_demeaned = ctrl_vec - ctrl_train_mean(:,t)';
+                    % Project onto noise axis
+                    noise_proj_ctrl_timeseries(tr, t) = ctrl_vec_demeaned * coeff_ctrl(:,1);
+                end
+            end
+            %STIM TRIALS
+            n_test_trials = length(test_stim_all);
+            n_timepoints = size(stim_matrix4, 3);
+            noise_proj_stim_timeseries = zeros(n_test_trials, n_timepoints);
+            % --- Compute training set means per neuron per time ---
+            stim_train_mean = squeeze(mean(stim_matrix4(trainB_stim_all, :, :), 1));  % [neurons x time]
+            % --- Loop through test trials and project each timepoint ---
+            %CTRL TRIALS
+            for tr = 1:n_test_trials
+                stim_trial = test_stim_all(tr);
+                for t = 1:n_timepoints
+                    % Get trial activity at this timepoint (1 x neurons)
+                    stim_vec = squeeze(stim_matrix4(stim_trial,:,t));  % [1 x neurons]
+                    % Demean using training set mean at that timepoint
+                    stim_vec_demeaned = stim_vec - stim_train_mean(:,t)';
+                    % Project onto noise axis
+                    noise_proj_stim_timeseries(tr, t) = stim_vec_demeaned * coeff_stim(:,1);
+                end
+            end
+
             tr = 0;
             for trial = test_ctrl_all 
                 tr = tr+1;
@@ -209,6 +273,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 stim_pre_ctrl(tr,:) = squeeze(ctrl_matrix2(trial,:,:))'*norm_stim_pre';
 %                 context_proj_ctrl(tr,:) = squeeze(ctrl_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_ctrl(tr,:) = squeeze(mean(ctrl_matrix3(trial,:,:),2))'; %find mean across cells
+                noise_proj_ctrl(tr,:) = ctrl_demeaned_test(tr,:)*coeff_ctrl(:,1);
             end
 
             tr = 0;
@@ -222,6 +287,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 stim_pre_stim(tr,:) = squeeze(stim_matrix2(trial,:,:))'*norm_stim_pre';
 %                 context_proj_stim(tr,:) = squeeze(stim_matrix(trial,:,:))'*norm_context_diff';
                 real_activity_stim(tr,:) = squeeze(mean(stim_matrix3(trial,:,:),2))'; %find mean across cells
+                noise_proj_stim(tr,:) = stim_demeaned_test(tr,:)*coeff_stim(:,1);
+
             end
 
             tr = 0;
@@ -242,6 +309,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             weights{current_dataset,celltype}.context = norm_context_diff;
             weights{current_dataset,celltype}.sound_post = norm_sound_post;
             weights{current_dataset,celltype}.sound_pre = norm_sound_pre;
+            weights{current_dataset,celltype}.noise_ctrl = coeff_ctrl(:,1)';
+            weights{current_dataset,celltype}.noise_stim = coeff_stim(:,1)';
 
             %projections
             %stim
@@ -261,6 +330,10 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             proj_concat{current_dataset,celltype,1}.stim = stim_proj_stim;
             proj_concat{current_dataset,celltype,1}.context_stim = context_proj_stim;
             proj_concat{current_dataset,celltype,1}.context_sound = context_proj_ctrl;
+            proj_concat{current_dataset,celltype,1}.noise_ctrl = noise_proj_ctrl;
+            proj_concat{current_dataset,celltype,1}.noise_stim = noise_proj_stim;
+            proj_concat{current_dataset,celltype,1}.noise_ctrl_timeseries = noise_proj_ctrl_timeseries;
+            proj_concat{current_dataset,celltype,1}.noise_stim_timeseries = noise_proj_stim_timeseries;
 
             real_activity_all{current_dataset,celltype,1}.sound = real_activity_ctrl;
             real_activity_all{current_dataset,celltype,1}.stim = real_activity_stim;
@@ -278,6 +351,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 proj{current_dataset,celltype,context}.stim = stim_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
 %                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_trials,test_stim_trials_idx{context})),:);
                 proj{current_dataset,celltype,context}.context = context_proj_stim(find(ismember( test_stim_all,test_stim{context})),:);
+                proj{current_dataset,celltype,context}.noise_timeseries = noise_proj_stim_timeseries(find(ismember( test_stim_all,test_stim{context})),:);
+                proj{current_dataset,celltype,context}.noise = noise_proj_stim(find(ismember( test_stim_all,test_stim{context})));
                
                 %ctrl
                 proj_ctrl{current_dataset,celltype,context}.sound = sound_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
@@ -289,6 +364,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
 
 %                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl_trials_idx{context})),:);
                 proj_ctrl{current_dataset,celltype,context}.context = context_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.noise_timeseries = noise_proj_ctrl_timeseries(find(ismember( test_ctrl_all ,test_ctrl{context})),:);
+                proj_ctrl{current_dataset,celltype,context}.noise = noise_proj_ctrl(find(ismember( test_ctrl_all ,test_ctrl{context})));
 
 
                 % find correlations before and after
