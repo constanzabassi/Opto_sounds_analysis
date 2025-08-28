@@ -29,8 +29,8 @@ if length(lme.Coefficients) > 2
                    (lme.Coefficients.Estimate(2) + lme.Coefficients.Estimate(4)) * xvals;
 end
 figure(103); clf; hold on;
-scatter(tbl{context_all==0,var_names{2}}, tbl{context_all==0,var_names{1}}, 5,[0.2 0.2 0.2], 'filled', 'MarkerFaceAlpha',1)
-scatter(tbl{context_all==1,var_names{2}}, tbl{context_all==1,var_names{1}}, 5,[0.8 0.8 0.8], 'filled', 'MarkerFaceAlpha',1)
+scatter(tbl{context_all==0,var_names{2}}, tbl{context_all==0,var_names{1}}, 5,'MarkerEdgeColor',[0.2 0.2 0.2], 'MarkerEdgeAlpha',.8)%[0.2 0.2 0.2], 'filled', 'MarkerFaceAlpha',1)
+scatter(tbl{context_all==1,var_names{2}}, tbl{context_all==1,var_names{1}}, 5,'MarkerEdgeColor',[0.8 0.8 0.8], 'MarkerEdgeAlpha',.8)%[0.8 0.8 0.8], 'filled', 'MarkerFaceAlpha',1)
 
 plot(xvals, pred_active, 'k', 'LineWidth', 2.2)
 if length(lme.Coefficients) > 2

@@ -62,6 +62,11 @@ for dataset = 1:24
     pooled_cell_types{dataset}.unmodulated = setdiff(1:sum(num_cells(:,dataset)),current_sig_cells);
 end
 
+pooled_all = {};
+for dataset = 1:24
+    pooled_all{dataset}.all = 1:sum(num_cells(:,dataset));
+end
+
 %% set up plotting labels
 plot_info.celltype_names = {'Sound','Opto','Both','Unmodulated'};
 plot_info.y_lims = [-.2, .4];
@@ -96,6 +101,9 @@ pool_colors = [0.3,0.2,0.6 ; 1,0.7,0; 0.3,0.8,1; 0,0,0];
 for cur_celltypes = 1:4
     [all_bin_perf,errorbar_correct_stats] = plot_error_bars_response_vs_axis(1:24,avg_trial_ctrl_pre,correct_trials_ctrl,cur_celltypes,num_bins,0,current_save_dir,pool_colors(cur_celltypes,:));
 end
+
+[all_bin_perf,errorbar_correct_stats] = plot_error_bars_response_vs_axis(1:24,avg_trial_ctrl_pre,correct_trials_ctrl,1,num_bins,0,current_save_dir,[0.5,0.5,0.5]);
+
 %% find relevant differences
 
 % define pre and post periods (stim+sound - sound) and pre active - pre
@@ -185,6 +193,7 @@ plot_info.colors_celltypes = [0,0,0;0.5,0.5,0.5];
 
 %% EXAMINATION OF COVARIANCE BETWEEN BASELINE SOUND VS SOUND+STIM-SOUND RESPONSE
 [all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_per_dataset([], pooled_cell_types, avg_ctrl_post, diff_stim, avg_post);
+[all_corr_across_celltypes_datasets,all_corr_across_celltypes,all_means_across_celltypes_datasets,all_std_across_celltypes_datasets,all_data_celltypes_datasets] = compute_means_correlations_signseparated_per_dataset([], pooled_cell_types, avg_ctrl_post, diff_stim, avg_post);
 [fraction_suppressed, fraction_activated] = compute_fraction_suppressed_per_dataset([], pooled_cell_types, diff_stim);
 
 plot_info.celltype_names = {'Sound','Opto','Both','Unmodulated'};

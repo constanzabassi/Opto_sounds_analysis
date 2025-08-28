@@ -405,7 +405,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             %concatenate ctrl and stim to have more trials (performance
             %only)
             all_correct_trials_stim = [all_trial_info(current_dataset).opto(:).correct];
-            percent_correct_concat{current_dataset} = [all_correct_trials_stim(test_stim_all (find(ismember( test_stim_all ,test_stim{1})))),percent_correct{current_dataset}];
+            percent_correct_concat{current_dataset} = [percent_correct{current_dataset},all_correct_trials_stim(test_stim_all (find(ismember( test_stim_all ,test_stim{1}))))];
+            real_activity_all{current_dataset,celltype,1} = [real_activity_ctrl(find(ismember( test_ctrl_all ,test_ctrl{1})),:);real_activity_stim(find(ismember( test_stim_all,test_stim{1})),:)];
 %     
 
         end

@@ -22,7 +22,7 @@ pred_active = lme.Coefficients.Estimate(1) + ...
                lme.Coefficients.Estimate(2) * xvals;
 
 figure(103); clf; hold on;
-scatter(tbl{:,var_names{2}}, tbl{:,var_names{1}}, 5,colors_context(1,:), 'filled', 'MarkerFaceAlpha',1)
+scatter(tbl{:,var_names{2}}, tbl{:,var_names{1}}, 5,'MarkerEdgeColor',colors_context(1,:), 'MarkerFaceAlpha',.8)%colors_context(1,:), 'filled', 'MarkerFaceAlpha',1) 
 %plot slope
 plot(xvals, pred_active, 'Color',colors_context(2,:), 'LineWidth', 2.2)
 ylabel(ylabel_string)

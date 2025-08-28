@@ -97,14 +97,14 @@ coeffs_sound_separate_ctx = extract_and_rename_coefficients(lme_sound_separate_c
     {'Slope (A)', 'Slope (P)'});
 
 
-plot_fixed_effects(coeffs_sound_separate_ctx,coeffs_stim_separate_ctx,  save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
+plot_fixed_effects(coeffs_sound_separate_ctx,coeffs_stim_separate_ctx,  save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[],'Sound_stim_separate_ctx'); %"Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
 
 
 plot_me_regression_lines_separate_ctx(lme_sound_separate_ctx,tbl_sound_separate_ctx,1,'Sound Projection',save_dir);
-plot_me_regression_lines_separate_ctx(lme_sound_separate_ctx,tbl_sound_separate_ctx,2,'Sound Projection',save_dir);
+plot_me_regression_lines_separate_ctx(lme_sound_pass_separate_ctx,tbl_sound_pass_separate_ctx,2,'Sound Projection',save_dir);
 
 plot_me_regression_lines_separate_ctx(lme_stim_separate_ctx,tbl_stim_separate_ctx,1,'Stim Projection',save_dir);
-plot_me_regression_lines_separate_ctx(lme_stim_separate_ctx,tbl_stim_separate_ctx,2,'Stim Projection',save_dir);
+plot_me_regression_lines_separate_ctx(lme_stim_pass_separate_ctx,tbl_stim_pass_separate_ctx,2,'Stim Projection',save_dir);
 
 save(strcat('coeffs_sound_separate_ctx'),'coeffs_sound_separate_ctx');
 save(strcat('coeffs_stim_separate_ctx'),'coeffs_stim_separate_ctx');

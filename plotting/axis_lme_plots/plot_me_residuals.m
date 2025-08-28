@@ -20,7 +20,7 @@ proj_resid = mdl_snd.Residuals.Raw;
 
 
 figure(101); clf; hold on;
-scatter(eng_resid, proj_resid, 10, tbl.Context, 'filled')
+scatter(eng_resid, proj_resid, 10, tbl.Context)
 xlabel(['Residual ' y_string])
 ylabel(['Residual ' proj_type ]) %' Projection'
 colormap([0.6 0.6 0.6; 0 0 0])
@@ -31,10 +31,10 @@ colormap([0.6 0.6 0.6; 0 0 0])
 % if pval < 0.05
 rho_text = sprintf('\\rho = %.2f, p = %.3g', rho, pval);
 text(0.05, 1.2, rho_text, 'Units', 'normalized', ...
-    'FontSize', 8, 'VerticalAlignment', 'top', 'FontWeight', 'normal');
+    'FontSize', 7, 'VerticalAlignment', 'top', 'FontWeight', 'normal');
 % end
 %set figure
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
 
 % Save results

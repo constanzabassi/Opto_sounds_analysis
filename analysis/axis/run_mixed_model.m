@@ -68,8 +68,8 @@ plot_fixed_effects(coeffs_sound_stim, coeffs_sound_stim, save_dir, [0,0,0],[]);
 p_val_sound = plot_me_residuals(tbl_sound,'Sound',save_dir);
 p_val_stim = plot_me_residuals(tbl_stim,'Stim',save_dir);
 
-plot_me_regression_lines(lme_sound,engagement_proj_all_sound,proj_all_sound,context_all_sound,'Sound Projection',save_dir);
-plot_me_regression_lines(lme_stim,engagement_proj_all_stim,proj_all_stim,context_all_stim,'Stim Projection',save_dir);
+plot_me_regression_lines(lme_sound,tbl_sound,context_all_sound,'Sound Projection',[save_dir '/complex/']);
+plot_me_regression_lines(lme_stim,tbl_stim,context_all_stim,'Stim Projection',[save_dir '/complex/']);
 
 % plot_me_regression_lines(lme_stim_sound,engagement_proj_all_stim_sound,proj_all_stim_sound,context_all_stim_sound,'Stim Projection',save_dir,'Sound');
 plot_me_regression_lines(lme_sound_stim,engagement_proj_all_sound_stim,proj_all_sound_stim,context_all_sound_stim,'Sound Projection',save_dir,'Stim');

@@ -104,13 +104,13 @@ yline(0, '--k')
 
 % Layout
 positions = utils.calculateFigurePositions(1, 5, .5, []);
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 if n_bars == 1 %if only two bars make it half width
     % Keep center constant
     old_center = positions(1,1) + positions(1,3)/2;
     positions(1,3) = positions(1,3) * 0.5;
     positions(1,1) = old_center - positions(1,3)/2;
-    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+    set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 else
     utils.set_current_fig;
 end
