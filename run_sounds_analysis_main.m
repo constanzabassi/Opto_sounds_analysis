@@ -103,6 +103,8 @@ savepath = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\';
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_deconv',plot_info);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
+load('V:\Connie\results\passive\data_info\pooled_cell_types.mat');
+wrapper_avg_pooled_type_traces(context_data.dff,pooled_cell_types,[1:24],savepath,'sound_dff_functional_types_-2to0_',plot_info,[1:10]);
 
 mod_index_results_ctrl = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_index_results.mat').results;
 plot_info.plot_mode = 'ctrl';% stim ctrl or both

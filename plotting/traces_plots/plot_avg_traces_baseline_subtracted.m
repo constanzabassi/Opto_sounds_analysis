@@ -1,10 +1,13 @@
-function plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info)
+function plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info,varargin)
 
 if nargin < 9
     average_over_neurons = false;
 end
 
 positions = utils.calculateFigurePositions(1, 6, .4, []);
+if size(deconv_response,3) > 3
+    positions = utils.calculateFigurePositions(1, 7, .3, []);
+end
 contexts = {'active', 'passive'};
 data_modes = plot_info.trace_modes;%{'raw', 'bs'}; % raw and baseline subtracted
 stim_ctrl_idx = [1, 0, 1, 0];
@@ -59,6 +62,9 @@ for fig_idx = 1:length(data_modes)*2
 
                 if strcmp(data_modes{ceil(fig_idx/2)}, 'bs')
                     baseline = mean(dat(:, 31:60), 2);
+                    if nargin > 10
+                        baseline = mean(dat(:, varargin{1,1}), 2);
+                    end
                     dat = dat - baseline;
                 end
 
@@ -93,6 +99,12 @@ for fig_idx = 1:length(data_modes)*2
         xlim(xlimss );
         xticks([31 61 91]);
         xticklabels([-1 0 1]);
+        if nargin > 10
+            xlimss = [1 61];
+            xlim(xlimss );
+            xticks([1 61]);
+            xticklabels([-2 0]);
+        end
 
 %         [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(30, length(xlimss ));
 %         xticks(xticks_in);
@@ -101,7 +113,9 @@ for fig_idx = 1:length(data_modes)*2
         title(celltypes_ids{celtype}, 'FontSize', 7, 'FontName', 'arial','FontWeight','normal');
 
 
-        
+        ax = gca;
+        ax.YAxis.Exponent = 0;  % removes the x10^… factor
+
         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(celtype, :));
         
         yli = ylim;
