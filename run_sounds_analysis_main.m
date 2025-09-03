@@ -103,6 +103,16 @@ savepath = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\';
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_deconv',plot_info);
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
+
+mod_index_results_ctrl = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_index_results.mat').results;
+plot_info.plot_mode = 'ctrl';% stim ctrl or both
+context_to_plot = [1];
+plot_info.line_colors = [0.3,0.2,0.6 ; 1,0.7,0];
+plot_info.avg_traces = 1;
+dataset_to_plot = 9;
+sig_neurons_to_plot =[];
+wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results_ctrl,...
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,1, 'sound',plot_info);
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 %make plots using all cells
 % Set y-axis limits for the plots.

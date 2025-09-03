@@ -1,4 +1,4 @@
-function plot_avg_trial_traces_simple(data,sig_neurons,mod_index,dataset_index,plot_mode,save_dir)
+function plot_avg_trial_traces_simple(data,sig_neurons,mod_index,dataset_index,plot_params,save_dir, varargin)
 if length(sig_neurons) > 5
         total_to_plot = 5;
     else
@@ -6,19 +6,40 @@ if length(sig_neurons) > 5
 end
 % Validate plot_mode.
 valid_modes = {'both', 'stim', 'ctrl'};
-if ~ismember(plot_mode, valid_modes)
+if ~ismember(plot_params.plot_mode, valid_modes)
     error('Unknown plot_mode. Use ''both'', ''stim'', or ''ctrl''.');
 end
+
+if isfield(plot_params,'line_colors')
+    line_colors = plot_params.line_colors; 
+    dilution_factor = 0.6; % 30% white
+    trial_colors = line_colors*(1 - dilution_factor) + dilution_factor*ones(size(line_colors));
+else
+    trial_colors = [0.7 0.7 0.7];
+    line_colors = [0,0,0];
+end
+
+
 
 for i = 1:total_to_plot
     neuron_id = sig_neurons(i);
     figure(200); clf; 
     hold on
     for tr=1:size(data,1) %1:length trials
-        plot(squeeze(data(tr,neuron_id,:)),'color',[0.7 0.7 0.7],'LineWidth',.3);
+        plot(squeeze(data(tr,neuron_id,:)),'color',trial_colors(1,:),'LineWidth',.3);
     end
     
-    plot(squeeze(mean(data(:,neuron_id,:))),'k','LineWidth',1.0);
+    plot(squeeze(mean(data(:,neuron_id,:))),'color',line_colors(1,:),'LineWidth',1.0);
+
+    if nargin > 6 %plot two types of trials if given
+        data2 = varargin{1,1};
+        for tr=1:size(data2,1) %1:length trials
+            plot(squeeze(data2(tr,neuron_id,:)),'color',trial_colors(2,:),'LineWidth',.3);
+        end
+        plot(squeeze(mean(data2(:,neuron_id,:))),'color',line_colors(2,:),'LineWidth',1.0);
+    end
+    plot(squeeze(mean(data(:,neuron_id,:))),'color',line_colors(1,:),'LineWidth',1.0);
+
     % Hide axis ticks and labels, but keep title
     set(gca,'XTick',[],'YTick',[]);
     set(gca,'XColor','none','YColor','none');
@@ -27,7 +48,7 @@ for i = 1:total_to_plot
     
     set(gca, 'box', 'off')
     % set stim onset line
-    if strcmp(plot_mode,'ctrl')
+    if strcmp(plot_params.plot_mode,'ctrl')
         xline(61, 'y','color',[0.5 0.5 0.5],'LineWidth',2,'alpha',0.5);% [0.9 0.8 0.2]
     else
         xline(61, 'y','color',[0.9290 0.6940 0.1250],'LineWidth',2,'alpha',0.5);% [0.9 0.8 0.2]
@@ -62,7 +83,7 @@ for i = 1:total_to_plot
         if ~exist(save_dir, 'dir')
             mkdir(save_dir);
         end
-        saveas(gcf, fullfile(save_dir, sprintf('Avg_traces_neuron_%d_dataset_%i_context_%c.fig', neuron_id, dataset_index(1), num2str(dataset_index(2)))));
-        exportgraphics(gcf, fullfile(save_dir, sprintf('Avg_traces_neuron_%d_dataset_%i_context_%c.pdf', neuron_id, dataset_index(1), num2str(dataset_index(2)))), 'ContentType', 'vector');
+        saveas(gcf, fullfile(save_dir, sprintf('Avg_traces_neuron_%d_dataset_%i_context_%c_trialtype_%s.fig', neuron_id, dataset_index(1), num2str(dataset_index(2)),plot_params.plot_mode)));
+        exportgraphics(gcf, fullfile(save_dir, sprintf('Avg_traces_neuron_%d_dataset_%i_context_%c_trialtype_%s.pdf', neuron_id, dataset_index(1), num2str(dataset_index(2)),plot_params.plot_mode)), 'ContentType', 'vector');
     end
 end

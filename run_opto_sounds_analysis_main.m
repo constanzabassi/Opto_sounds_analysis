@@ -65,17 +65,23 @@ modulation_type = 1; %positive or negative
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
  %single trial plots
  dataset_to_plot = 9;
-context_to_plot = [3];
+context_to_plot = [3]; %spont
 modulation_type = 1; %positive or negative
-plot_info = params.plot_info;
 plot_info.plot_mode = 'stim';% stim ctrl or both
 plot_info.avg_traces = 1;
 
  wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
+
  modulation_type = -1;
   wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,modulation_type, 'opto',plot_info);
+
+plot_info.line_colors = [0.3,0.2,0.6 ; 1,0.7,0];
+plot_info.plot_mode = 'both';% stim ctrl or both
+context_to_plot = [1];
+ wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results,...
+     dataset_to_plot, context_to_plot,sig_neurons_to_plot,1, 'opto',plot_info);
 
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
