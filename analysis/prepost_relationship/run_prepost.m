@@ -121,7 +121,7 @@ modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{di
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',0,1,[-.6,2]);
 
 [preavg_index_by_dataset,~] = unpack_modindexm(avg_pre,[],pooled_cell_types,[1:24]);
-preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(current_save_dir, preavg_index_by_dataset, [1:24],...
+preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse('W:\Connie\results\Bassi2025\fig4', preavg_index_by_dataset, [1:24],...
           params.plot_info, [.1,.4],0,'Pre Mean (\DeltaF/F)');
 
 [diff_stim_index_by_dataset,~] = unpack_modindexm(diff_stim,[],pooled_cell_types,[1:24]);

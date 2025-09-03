@@ -104,6 +104,16 @@ for fig_idx = 1:length(data_modes)*2
             xlim(xlimss );
             xticks([1 61]);
             xticklabels([-2 0]);
+
+%             xlimss = [1 122];
+%             xlim(xlimss );
+%             xticks([1 61 122]);
+%             xticklabels([-2 0 2]);
+
+%             xlimss = [50 61];
+%             xlim(xlimss );
+%             xticks([50 61]);
+%             xticklabels([-0.33 0]);
         end
 
 %         [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(30, length(xlimss ));

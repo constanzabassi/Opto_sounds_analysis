@@ -9,6 +9,7 @@ keep context_data all_celltypes
 [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis(context_data.dff, [1:24], all_celltypes,[],[],[]); %,{50:59,63:73}
 
 save_dir = 'W:\Connie\results\Bassi2025\fig4';%'V:\Connie\results\opto_sound_2025\context\axis_lme_plots_updated\dff';
+save_dir2 = 'W:\Connie\results\Bassi2025\fig5';%'V:\Connie\results\opto_sound_2025\context\axis_lme_plots_updated\dff';
 
 %% plot mean projection traces across datasets
 celltype = 4; %4 = all
@@ -59,18 +60,23 @@ coeffs_sound_stim = extract_and_rename_coefficients(lme_sound_stim, lme_sound_st
 
 
 plot_fixed_effects(coeffs_sound,coeffs_stim,  save_dir, [0.3,0.2,0.6 ; 1,0.7,0],[]); %“Active Engagement Effect”“Passive Engagement Effect”“Context Offset (Passive - Active)”“Interaction (Slope Difference)”%{'Intercept','Engagement effect(A)','P vs A offset', 'Context:Engagement (P vs A)'}; %{"Effect of engagement (active)", "Passive vs. active shift", "Change in engagement effect (passive vs. active)"}
-plot_fixed_effects(coeffs_sound_stim, coeffs_sound_stim, save_dir, [0,0,0],[]);
+plot_fixed_effects(coeffs_sound_stim, coeffs_sound_stim, save_dir2, [0,0,0],[]);
 
 % p_val_sound = plot_me_residuals(tbl_sound,'Sound',save_dir);
 % p_val_stim = plot_me_residuals(tbl_stim,'Stim',save_dir);
 
-p_val_sound_stim = plot_me_residuals(tbl_sound_stim,'Sound',save_dir,'Context');
+p_val_sound_stim = plot_me_residuals(tbl_sound_stim,'Sound',save_dir2,'Context');
 
 
 plot_me_regression_lines(lme_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir);
 plot_me_regression_lines(lme_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir);
 
-plot_me_regression_lines(lme_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir,'Stim');
+plot_me_regression_lines(lme_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir2,'Stim');
+
+%predcited vs observed
+plot_scatter_pred_vs_obs(lme_sound,'Sound',save_dir);
+plot_scatter_pred_vs_obs(lme_stim,'Stim',save_dir);
+plot_scatter_pred_vs_obs(lme_sound_stim,'Sound',save_dir2);
 
 % plot_predictor_variance(lme_sound);
 % plot_predictor_variance(lme_stim);

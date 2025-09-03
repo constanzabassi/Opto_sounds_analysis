@@ -104,7 +104,7 @@ if isfield(hist_weight_ct_stats, 'p_values') && ~isempty(hist_weight_ct_stats.p_
 end
 
 %adjust plot and position
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
 %% create bar plot summarizing results
 % Bar plot of mean ± SEM per cell type
@@ -142,7 +142,7 @@ xli = xlim;
 xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
 % title('Mean Weight ± SEM');
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 
 %do statistical analysis
 for c = 1:num_combos
@@ -220,7 +220,7 @@ xli = xlim;
 xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
 % title('Mean Weight ± SEM');
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 
 %do statistical analysis
 for c = 1:num_combos
