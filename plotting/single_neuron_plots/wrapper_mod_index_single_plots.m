@@ -100,10 +100,15 @@ for current_dataset = dataset_to_plot
                 %plot avg trace and trials in gray per neuron
                 if strcmp(plot_params.plot_mode,'ctrl')
                     plot_avg_trial_traces_simple(ctrl_data(pooled_ctrl_indices, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg', save_string));
+                    plot_avg_trial_traces_simple(ctrl_data(left_ctrl_all, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg_left', save_string));
+                    plot_avg_trial_traces_simple(ctrl_data(right_ctrl_all, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg_right', save_string));
                 elseif strcmp(plot_params.plot_mode,'stim')
                     plot_avg_trial_traces_simple(stim_data(pooled_stim_indices, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg', save_string));
                 else
                     plot_avg_trial_traces_simple(ctrl_data(pooled_ctrl_indices, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg', save_string),stim_data(pooled_stim_indices, :, :));
+                    plot_avg_trial_traces_simple(ctrl_data(left_ctrl_all, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg_left', save_string),stim_data(right_ctrl_all, :, :));
+                    plot_avg_trial_traces_simple(ctrl_data(left_ctrl_all, :, :),sig_neurons,mod_index,[current_dataset, context],plot_params,fullfile(info.savepath,'individual_neuron_plots_avg_right', save_string),stim_data(right_ctrl_all, :, :));
+
                 end
             end
 

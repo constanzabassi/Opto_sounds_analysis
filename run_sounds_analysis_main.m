@@ -111,7 +111,10 @@ plot_info.line_colors = [0.3,0.2,0.6 ; 1,0.7,0];
 plot_info.avg_traces = 1;
 dataset_to_plot = 9;
 sig_neurons_to_plot =[];
-wrapper_mod_index_single_plots(params.info, dff_st, stim_trials_context, ctrl_trials_context, mod_index_results_ctrl,...
+plot_info.avg_traces = 1;
+plot_info.plot_avg = 0;
+plot_info.caxis = 0;
+wrapper_mod_index_single_plots(params.info, dff_st_combined, stim_trials_context, ctrl_trials_context, mod_index_results_ctrl,...
      dataset_to_plot, context_to_plot,sig_neurons_to_plot,1, 'sound',plot_info);
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 %make plots using all cells

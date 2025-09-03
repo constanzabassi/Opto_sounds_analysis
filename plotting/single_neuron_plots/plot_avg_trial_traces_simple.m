@@ -61,6 +61,7 @@ for i = 1:total_to_plot
     % Determine Y scale based on ylim
     if ylims(2) > 1
         y_scale = 1;
+        y_scale
     else
         y_scale = 0.2;
     end
