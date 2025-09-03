@@ -109,8 +109,10 @@ plot_me_regression_lines_separate_ctx(lme_stim_pass_separate_ctx,tbl_stim_pass_s
 save(strcat('coeffs_sound_separate_ctx'),'coeffs_sound_separate_ctx');
 save(strcat('coeffs_stim_separate_ctx'),'coeffs_stim_separate_ctx');
 %% performance
-lme_perf = plot_errorbar_performance_lme(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,save_dir);
-save(strcat('lme_perf'),'lme_perf');
+% lme_perf = plot_errorbar_performance_lme(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,save_dir);
+% save(strcat('lme_perf'),'lme_perf');
+
+plot_performance_vs_engagement_axis(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,[15,5],save_dir);
 %% weights
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue

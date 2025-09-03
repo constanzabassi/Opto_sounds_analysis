@@ -39,7 +39,7 @@ if nargin > 6
     act_by_bin = nan(n_animals, n_bins);
 end
 
-min_num_trials = 5;
+min_num_trials = 3;
 % Loop through animals
 for i = 1:n_animals
     idx = animal_id_all == i;
