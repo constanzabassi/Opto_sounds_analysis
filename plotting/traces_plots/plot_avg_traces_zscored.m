@@ -16,6 +16,7 @@ zscored_means = cell([2,size(deconv_response)]); % {stim or ctrl, context, mouse
 for stim_ctrl = 1:2
     for celtype = 1:size(deconv_response,3)
         for mouse = 1:size(deconv_response,2)
+            mouse
             % --- collect data across contexts ---
             all_context_data = [];
             context_sizes = zeros(size(deconv_response,1),1);
@@ -27,9 +28,9 @@ for stim_ctrl = 1:2
                 end
     
                 % choose stim if available, otherwise ctrl
-                if stim_ctrl_idx(stim_ctrl) == 1 && isfield(dat_struct,'stim') && ~isempty(dat_struct.stim) && length( dat_struct.stim) > 1
+                if stim_ctrl_idx(stim_ctrl) == 1 && isfield(dat_struct,'stim') && ~isempty(dat_struct.stim) && size( dat_struct.stim,2) > 1
                     dat = dat_struct.stim;
-                elseif stim_ctrl_idx(stim_ctrl) == 0 && isfield(dat_struct,'ctrl') && ~isempty(dat_struct.ctrl) && length( dat_struct.ctrl) > 1
+                elseif stim_ctrl_idx(stim_ctrl) == 0 && isfield(dat_struct,'ctrl') && ~isempty(dat_struct.ctrl) && size( dat_struct.ctrl,2) > 1
                     dat = dat_struct.ctrl;
                 else
                     continue

@@ -35,6 +35,11 @@ for dataset_index = chosen_mice
             if ~isempty(chosen_cells) && length(chosen_cells{dataset_index,cel})>1 && all(cellfun(@(x) size(x.stim,1), {deconv_st{1:size(deconv_st,1),dataset_index}}) > 2) %at least 2 cells of this cell type!, at least 3 trials across all contexts for this mouse! % 
                 deconv_response{context,dataset_index,cel}.stim = deconv_st{context,dataset_index}.stim(:,chosen_cells{dataset_index,cel},:);
                 deconv_response{context,dataset_index,cel}.ctrl = deconv_st{context,dataset_index}.ctrl(:,chosen_cells{dataset_index,cel},:);
+                if size(all_celltypes,1)>1 && ~isempty(all_celltypes{context,dataset_index}.(fieldss{cel}))
+                    chosen_cells{dataset_index,cel} = all_celltypes{context,dataset_index}.(fieldss{cel});
+                    deconv_response{context,dataset_index,cel}.stim = deconv_st{context,dataset_index}.stim(:,chosen_cells{dataset_index,cel},:);
+                    deconv_response{context,dataset_index,cel}.ctrl = deconv_st{context,dataset_index}.ctrl(:,chosen_cells{dataset_index,cel},:);
+                end
             else
                 deconv_response{context,dataset_index,cel}.stim = nan;
                 deconv_response{context,dataset_index,cel}.ctrl = nan;

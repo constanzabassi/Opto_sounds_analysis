@@ -25,7 +25,7 @@ for fig_idx = 1:length(data_modes)*2
 
             for mouse = 1:size(deconv_response,2)
                 dat_struct = deconv_response{context,mouse,celtype};
-                if isempty(dat_struct)
+                if isempty(dat_struct) || size(dat_struct.stim,2) == 1
                     continue
                 end
 
