@@ -115,9 +115,9 @@ if nargin > 9
     rightAx.Visible = 'off';
 
     box(rightAx, 'off');
-    set(mainAx, 'FontSize', 8)
+    set(mainAx, 'FontSize', 7)
 %     set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
-    set(mainAx, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+    set(mainAx, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 
     
 

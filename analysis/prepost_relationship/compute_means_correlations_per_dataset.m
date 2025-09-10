@@ -11,17 +11,22 @@ for ctx = 1:n_context
         all_x = []; all_y = [];
         for dataset_index = 1:length(all_celltypes)
             if ~isempty(sig_mod_boot)
-                if cell_type == n_celltypes+1 %use all cells
-                    selected_cells = 1:length(baseline_sound{dataset_index,1});
-                else
-                    selected_cells = sig_mod_boot{dataset_index}(ismember(sig_mod_boot{dataset_index}, ...
-                        all_celltypes{dataset_index}.(celltype_fields{cell_type})));
-                end
+                    if cell_type == n_celltypes+1 %use all cells
+                        selected_cells = 1:length(baseline_sound{dataset_index,1});
+                    else
+                        selected_cells = sig_mod_boot{dataset_index}(ismember(sig_mod_boot{dataset_index}, ...
+                            all_celltypes{dataset_index}.(celltype_fields{cell_type})));
+                    end
+
             else
                 if cell_type == n_celltypes+1 %use all cells
                     selected_cells = 1:length(baseline_sound{dataset_index,1});
                 else
-                    selected_cells = all_celltypes{dataset_index}.(celltype_fields{cell_type});
+                    if size(all_celltypes,1) > 1 %assumes it is separated by context!
+                        selected_cells = all_celltypes{ctx,dataset_index}.(celltype_fields{cell_type});
+                    else
+                        selected_cells = all_celltypes{ctx,dataset_index}.(celltype_fields{cell_type});
+                    end
                 end
             end
             
