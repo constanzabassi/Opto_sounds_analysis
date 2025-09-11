@@ -56,7 +56,11 @@ if nargin > 9
                 selected_cells = sig_mod_boot{dataset_index}(ismember(sig_mod_boot{dataset_index}, ...
                     all_celltypes{dataset_index}.(celltype_fields{cell_type})));
             else
-                selected_cells = all_celltypes{dataset_index}.(celltype_fields{cell_type});
+                if size(all_celltypes,1) > 1 %assumes it is separated by context!
+                    selected_cells = all_celltypes{ctx,dataset_index}.(celltype_fields{cell_type});
+                else
+                    selected_cells = all_celltypes{dataset_index}.(celltype_fields{cell_type});
+                end
             end
             x = index{dataset_index,1}(selected_cells);
             y = index{dataset_index,2}(selected_cells);

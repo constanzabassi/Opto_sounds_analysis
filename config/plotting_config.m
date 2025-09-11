@@ -1,6 +1,6 @@
 function plot_info = plotting_config()
 %% set colors and titles
-plot_info.behavioral_contexts = {"Active","Passive","Spont"};
+plot_info.behavioral_contexts = {"Active","Passive"}; %,"Spont"};
 % plot_info.lineStyles_contexts = [{'-.'},{'--'}, {'-'}];
 plot_info.lineStyles_contexts = [{'-'},{'-'}, {'-'}];
 plot_info.colors_stimctrl(1,:) = [0.9 0.6 0]; %yellow
@@ -89,4 +89,8 @@ plot_info.colors_pooled_3contexts = [0.3,0.2,0.6 %purple
                             0,0,0 %black
                             0.7,0.7,0.7
                             0.7,0.7,0.7];% 
+plot_info.pooled_colors = [0.3,0.2,0.6
+                            1,0.7,0
+                            0.3,0.8,1
+                            0.5 0.5 0.5];
 plot_info.pooled_names = {'Sound','Photostim','Both','Unmodulated'};

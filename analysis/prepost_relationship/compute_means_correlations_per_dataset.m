@@ -25,7 +25,7 @@ for ctx = 1:n_context
                     if size(all_celltypes,1) > 1 %assumes it is separated by context!
                         selected_cells = all_celltypes{ctx,dataset_index}.(celltype_fields{cell_type});
                     else
-                        selected_cells = all_celltypes{ctx,dataset_index}.(celltype_fields{cell_type});
+                        selected_cells = all_celltypes{dataset_index}.(celltype_fields{cell_type});
                     end
                 end
             end
