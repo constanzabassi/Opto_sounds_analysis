@@ -2,7 +2,7 @@ function plot_speed_avg_trace_across_contexts(avg_speed_stats, function_params, 
 %avg_speed_axis_data(context, speed axis) - ROLL = 1, PITCH = 2, BOTH = 3;
 % FRAMES WERE AVERAGE ACROSS LEFT AND RIGHT TRIALS!!!!!!
     %make average trace and cdf plots!
-    positions = utils.calculateFigurePositions(1, 6, .4,[]);
+    positions = utils.calculateFigurePositions(1, 7, .3,[]);
 
     figure(661); clf;
     hold on;
@@ -33,7 +33,7 @@ function plot_speed_avg_trace_across_contexts(avg_speed_stats, function_params, 
         if i == 3
             title('Total Speed', 'FontWeight', 'normal');
                 for contextIdx = 1:length(contexts)
-                    fontSize = 12;
+                    fontSize = 7;
                     y_offset_base = 0.4;
                     utils.place_text_labels(function_params.contexts, function_params.contexts_colors, y_offset_base, fontSize);
                 end
@@ -44,7 +44,7 @@ function plot_speed_avg_trace_across_contexts(avg_speed_stats, function_params, 
         if i == 1
             ylabel('Speed');
         end
-        set(gca, 'XTickLabelRotation', 90, 'FontSize', 12, 'Units', 'inches', 'Position', positions(i, :));
+        set(gca, 'XTickLabelRotation', 90, 'FontSize', 7, 'Units', 'inches', 'Position', positions(i, :));
         hold off;
     end
     hold off;

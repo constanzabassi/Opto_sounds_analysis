@@ -60,7 +60,7 @@ end
 title('Pitch','FontWeight','normal')
 legend('Location', 'southeastoutside','box','off'); % Add legend for clarity
 
-set(gca, 'FontSize', 12, 'Units', 'inches', 'Position', [1, 1, 1.5, 1.5]);
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', [1, 1, 1.2, 1.2]);
 
 
 subplot(1,2,2) %ROLL second
@@ -84,7 +84,7 @@ else
     xlabel('Velocity Change');
 end
 title('Roll','FontWeight','normal')
-set(gca, 'FontSize', 12, 'Units', 'inches', 'Position', [4.7, 1, 1.5, 1.5]);
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', [4.7, 1, 1.2, 1.2]);
 hold off
 
 % do statistical comparisons across distributions of changes across contexts (here I am comparing all trials in each context)

@@ -5,7 +5,7 @@ load('V:\Connie\results\opto_2025\context\running\info.mat');
 [speed_params,speed_params_single] = get_speed_params(1); %control_or_opto
 
 %% 1) PLOT EXAMPLE TRIALS HEATMAPS ALIGNED TO SOUNDS ACROSS CONTEXTS
-save_data_directory = []; %['V:/Connie/results/opto_2025/context/running_updated/example_running_trials'];
+save_data_directory = ['W:/Connie/results/Bassi2025/fig3/running_updated/example_running_trials'];%['V:/Connie/results/opto_2025/context/running_updated/example_running_trials'];
 chosen_mice = [1:25];
 
 % align to stimulus
@@ -52,11 +52,11 @@ speed_params.chosen_mice = [1:25];
 %2) POOL AND ALIGN VELOCITY TO SOUND!
 mouse_vel_aligned_sounds = run_velocity_opto_code_using_sound(speed_params.chosen_mice,info.mouse_date,info.serverid,speed_params.frames_before_event, speed_params.frames_after_event,stim_info_combined); %using ctrl and sound only trials
 % balance sounds into left and right ('_all' includes all left and right unbalanced)- make sure to use in the context of opto trials!!
-[sound_trials_contexts,left_sounds_balanced,right_sounds_balanced,left_sounds_all,right_sounds_all]  = find_sound_trials_using_sounds(sound_left_trials_context,sound_right_trials_context);
+% [sound_trials_contexts,left_sounds_balanced,right_sounds_balanced,left_sounds_all,right_sounds_all]  = find_sound_trials_using_sounds(sound_left_trials_context,sound_right_trials_context);
 [~, ~, ~, ~, ~, ~, left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = find_sound_trials(info,stim_trials_context,ctrl_trials_context);
 %% 3) Make plots of average speed across contexts
 speed_params.trials_to_use =  {left_ctrl_all;right_ctrl_all};
-save_dir = ['V:\Connie\results\opto_sound_2025\context\running_updated\avg_traces';]; %'V:\Connie\results\opto_2025\context\running_updated\avg_traces';
+save_dir = ['W:/Connie/results/Bassi2025/fig3/running_updated/avg_traces'];%['V:\Connie\results\opto_sound_2025\context\running_updated\avg_traces';]; %'V:\Connie\results\opto_2025\context\running_updated\avg_traces';
 speed_params.specified_frames = speed_params.stim_frame; %whichever frames to take average off (to write numbers down on paper)
 
 %calculate deltas and means for aligned velocity/speed

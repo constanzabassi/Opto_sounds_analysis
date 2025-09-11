@@ -11,7 +11,7 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
 
     vel_aligned_left = [];
     vel_aligned_right = [];
-    num_filler_rows = 10;
+    num_filler_rows = 15;
     intervals_y = 20;
     %GET ALIGNED RUNNING DATA
     if strcmp(turn_params.vel_type,'roll')
@@ -91,7 +91,7 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
     imagesc(vel_to_plot);
     if ~isempty(mouse_vel_pass)
         for t = 1:length_active_left
-            plot(trial_event_info(m).stimulus_rel(t), t, '.k')
+            plot(trial_event_info(m).stimulus_rel(t), t, 'ok', 'MarkerSize', 1, 'MarkerFaceColor', 'k');
         end
     end
     xline(turn_params.onset_frame, '--k','LineWidth',2); % Add vertical line
@@ -114,9 +114,9 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
 
     caxis(caxis_values);
     ylabel('Trials')
-    set(gca, 'FontSize', 12)
+    set(gca, 'FontSize', 7)
     % Adjust position for the top-left plot (square)
-    set(gca, 'Units', 'inches', 'Position', [0.6, 4, 1.2, 1.2],'YDir', 'reverse'); %flip Y axis to start trials from top to bottom!
+    set(gca, 'Units', 'inches', 'Position', [0.6, 4, 1.0, 1.0],'YDir', 'reverse'); %flip Y axis to start trials from top to bottom!
     drawnow;
 %     set(gca, 'Units', 'inches', 'Position', [1, 1, 2, 2]); % Subplot centered at (2,3) with 2x2 size
 %     set(gca, 'Position', [0.05, 0.55, 0.25, 0.25]); % [left, bottom, width, height]
@@ -128,7 +128,7 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
     imagesc(vel_to_plot);
     if ~isempty(mouse_vel_pass)
         for t = 1:length_active_right
-            plot(trial_event_info(m).stimulus_rel(t+length_active_left), t, '.k')
+            plot(trial_event_info(m).stimulus_rel(t+length_active_left), t , 'ok', 'MarkerSize', 1, 'MarkerFaceColor', 'k');
         end
     end
 
@@ -151,12 +151,12 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
     end
     caxis(caxis_values);
 %     ylabel('Trials')
-    set(gca, 'FontSize', 12)
+    set(gca, 'FontSize', 7)
     % Adjust position for the top-right plot (square)
-    set(gca, 'Units', 'inches', 'Position', [2.2, 4, 1.2, 1.2],'YDir', 'reverse'); % [left, bottom, width, height] top = 6-0.5-height// width 1 + width first plot
+    set(gca, 'Units', 'inches', 'Position', [2.0, 4, 1.0, 1.0],'YDir', 'reverse'); % [left, bottom, width, height] top = 6-0.5-height// width 1 + width first plot
     % Add colorbar and adjust its position
     cb = colorbar;
-    set(cb, 'Units', 'inches', 'Position', [3.5, 4, .1, 1.2]); %'Position', [.96, 0.55, 0.02, 0.3]); % Adjust colorbar position to the right
+    set(cb, 'Units', 'inches', 'Position', [3.1, 4, .1, 1.0]); %'Position', [.96, 0.55, 0.02, 0.3]); % Adjust colorbar position to the right
     drawnow;
 
     if turn_params.plot_avg == 1;
@@ -186,9 +186,9 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
         xlabel('Time (s)')
         ylabel('Average Velocity')
         ylim(ylims)
-        set(gca, 'FontSize', 12)
+        set(gca, 'FontSize', 7)
         % Adjust position for the bottom-left plot (rectangular)
-        set(gca, 'Units', 'inches', 'Position', [0.6, 2.75, 1.2, .75]); % [left, bottom, width, height]
+        set(gca, 'Units', 'inches', 'Position', [0.6, 2.75, 1.0, .75]); % [left, bottom, width, height]
         % Bottom-right plot (Roll Right Speed)
         subplot(2,2,4)
         vel_to_plot = vel_aligned_right;
@@ -216,9 +216,9 @@ for m = chosen_mice %pos roll mice: [1,3,7,8,13,14,15,21,22,23]; %neg roll mice:
         xlabel('Time (s)')
     %     ylabel('Average Speed')
         ylim(ylims)
-        set(gca, 'FontSize', 12)
+        set(gca, 'FontSize', 7)
         % Adjust position for the bottom-right plot (rectangular)
-        set(gca, 'Units', 'inches', 'Position', [2.2, 2.75, 1.2, .75]);% [left, bottom, width, height]
+        set(gca, 'Units', 'inches', 'Position', [2.0, 2.75, 1.0, .75]);% [left, bottom, width, height]
     end
 
     temp = strfind(mouse_date{1,m},'/');

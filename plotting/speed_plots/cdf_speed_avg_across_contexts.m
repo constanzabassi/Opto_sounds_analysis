@@ -23,7 +23,7 @@ cdf_data = struct();
 possible_intervals = [20,25];
 
 %make average trace and cdf plots!
-positions = utils.calculateFigurePositions(1, 6, .4,[]); %rows and number of columns wanted followed by spacing between them (0.4)
+positions = utils.calculateFigurePositions(1, 7, .3,[]); %rows and number of columns wanted followed by spacing between them (0.4)
 
 figure(662);clf;
 
@@ -59,13 +59,13 @@ for move_type = 1:length(movement_types)
     end
     if move_type == 3
         for contextIdx = 1:length(function_params.contexts)
-            fontSize = 12;
+            fontSize = 7;
             y_offset_base = 0.4;
             utils.place_text_labels(function_params.contexts, function_params.contexts_colors, y_offset_base, fontSize);
         end
     end
     
-    set(gca, 'XTickLabelRotation', 90, 'FontSize', 12, 'Units', 'inches', 'Position', positions(move_type,:));
+    set(gca, 'XTickLabelRotation', 90, 'FontSize', 7, 'Units', 'inches', 'Position', positions(move_type,:));
     hold off;
 end
 
