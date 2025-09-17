@@ -1,4 +1,4 @@
-function [pooled_cell_types, pooled_names,pooled_colors] = organize_functional_groups(all_celltypes, sound_sig, opto_sig, opto_mod, group_order,chosen_sessions,plot_info,varargin)
+function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organize_functional_groups(all_celltypes, sound_sig, opto_sig, opto_mod, group_order,chosen_sessions,plot_info,varargin)
 % pooled_cell_types = organize_cells(all_celltypes, sound_sig, opto_sig, opto_mod, group_order, [contexts])
 %
 % INPUTS
@@ -20,6 +20,8 @@ function [pooled_cell_types, pooled_names,pooled_colors] = organize_functional_g
     else
         n_contexts = 1;
     end
+
+    sig_mod_boot = [];
 
     % color + name mapping
     group_map = struct( ...
@@ -77,6 +79,25 @@ function [pooled_cell_types, pooled_names,pooled_colors] = organize_functional_g
                     otherwise
                         error('Unknown group name: %s', group_order{g});
                 end
+            end
+            if length(group_order) == 1
+                switch lower(group_order{g})
+                    case 'sound'
+                        sig_mod_boot{context,dataset} = sound_only{dataset};
+                    case 'opto'
+                        sig_mod_boot{context,dataset} = opto_only{dataset};
+                    case 'both'
+                        sig_mod_boot{context,dataset} = both{dataset};
+                    case 'unmodulated'
+                        sig_mod_boot{context,dataset} = unmod;
+                    case 'modulated'
+                        sig_mod_boot{context,dataset} = current_sig;
+                    case 'all'
+                        sig_mod_boot{context,dataset} = all_ids;
+                    otherwise
+                        error('Unknown group name: %s', group_order{g});
+                end
+                 
             end
         end
     end

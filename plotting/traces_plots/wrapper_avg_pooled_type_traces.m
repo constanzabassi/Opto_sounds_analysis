@@ -1,7 +1,7 @@
-function wrapper_avg_pooled_type_traces(context_data,all_celltypes,chosen_mice,savepath,data_type,plot_info,baseline)
+function wrapper_avg_pooled_type_traces(context_data,all_celltypes,sig_cells,chosen_mice,savepath,data_type,plot_info,baseline)
 
-%get distinct pools
-sig_cells = [];
+% %get distinct pools
+% sig_cells = [];
 
 %get context,mouse,celltype responses (across all trials (not
 %separated by left or rigth)- so overall avg)
@@ -15,4 +15,4 @@ contexts_to_plot = [1,2]; %
 plot_info.trace_modes = {'raw', 'bs'}; %{'raw', 'bs'}
 plot_avg_traces_baseline_subtracted(neural_response(contexts_to_plot,:,:),plot_info.colors_pooled_3contexts,{'-','-'},plot_info.pooled_names,1:122,[60,63],savepath,avg_across_neurons,[data_type num2str(baseline(1)) 'to' num2str(baseline(end))],plot_info,baseline);
 plot_avg_traces_zscored(neural_response(contexts_to_plot,:,:), plot_info.colors_pooled_3contexts,{'-','-'}, ...
-    plot_info.pooled_names,1:122,[60,63], savepath, [data_type num2str(baseline(1)) 'to' num2str(baseline(end))],plot_info);
+    plot_info.pooled_names,1:60,[60,63], savepath, [data_type num2str(baseline(1)) 'to' num2str(baseline(end))],plot_info);

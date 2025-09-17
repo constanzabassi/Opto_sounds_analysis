@@ -121,7 +121,7 @@ wrapper_mod_index_single_plots(params.info, dff_st_combined, stim_trials_context
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 %make plots using all cells
 % Set y-axis limits for the plots.
-plot_info.y_lims = [-.2, .25];
+plot_info.y_lims = [-.2, .20];
 % Set labels for plots.
 plot_info.plot_labels = {'Sounds','Sounds'}; % Alternative could be {'Left Sounds','Right Sounds'}
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
@@ -130,7 +130,7 @@ params.plot_info = plot_info;
 params.info.chosen_mice = [1:25];
 
 %save directory
-save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, [], all_celltypes, params, save_dir);
@@ -155,14 +155,14 @@ mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, m
 
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 % Set y-axis limits for the plots.
-plot_info.y_lims = [-.2, .4];
+plot_info.y_lims = [-.2, .2];
 % Set labels for plots.
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 params.plot_info = plot_info;
 params.info.chosen_mice = [1:25];
 
 %save directory
-save_dir = [mod_params.savepath];% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
+save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\sig_neurons';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 [combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
