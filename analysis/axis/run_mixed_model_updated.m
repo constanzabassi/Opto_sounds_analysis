@@ -118,7 +118,7 @@ save(strcat('coeffs_stim_separate_ctx'),'coeffs_stim_separate_ctx');
 % lme_perf = plot_errorbar_performance_lme(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,save_dir);
 % save(strcat('lme_perf'),'lme_perf');
 
-plot_performance_vs_engagement_axis(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,[15,5],save_dir);
+plot_performance_vs_engagement_axis(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,[15,5],save_dir,[-1,1]);
 %% weights
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue
