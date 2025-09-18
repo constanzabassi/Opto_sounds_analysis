@@ -1,4 +1,4 @@
-function plot_performance_vs_engagement_axis(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,window_bins,save_dir,varargin)
+function plot_performance_vs_engagement_axis(percent_correct_concat,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,window_bins,save_dir,edge_input,varargin)
 %% collect correctness across mice
 correct_all_ctrl = []; animal_id_all=[];
 for dataset = 1:24
@@ -13,7 +13,7 @@ animal_active = animal_id_all;  % Categorical ID
 %%
 % Parameters
 window_size = window_bins(1);
-if nargin < 8
+if nargin < 9
     plot_sessions = 0;
 else
     plot_sessions = varargin{1,1};
@@ -78,35 +78,11 @@ ylabel('Fraction Correct');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 
 % Bin data based on engagement quantiles
-edges = linspace(-1,1, window_bins(2)+1);%prctile(engagement_active, linspace(0, 100, 6));%linspace(0,2, 6); %prctile(engagement_active, linspace(0, 100, 6));  % 5 bins
+edges = linspace(edge_input(1),edge_input(2), window_bins(2)+1);%prctile(engagement_active, linspace(0, 100, 6));%linspace(0,2, 6); %prctile(engagement_active, linspace(0, 100, 6));  % 5 bins
 bin_centers = movmean(edges, 2, 'Endpoints','discard');
 n_bins = length(bin_centers);
 
 [~, ~, bin_idx] = histcounts(all_engagement, edges);
-% Initialize
-binned_mean_success = zeros(n_bins, 1);
-binned_sem_success = zeros(n_bins, 1);
-% Loop through bins to compute mean and SEM
-for b = 1:n_bins
-    bin_trials = all_success(bin_idx == b);
-    if ~isempty(bin_trials)
-        binned_mean_success(b) = mean(bin_trials);
-        binned_sem_success(b) = std(bin_trials) / sqrt(length(bin_trials));
-    else
-        binned_mean_success(b) = NaN;
-        binned_sem_success(b) = NaN;
-    end
-end
-% Plot: Error bar scatter (pooling across all sessions together)
-figure(403);clf;
-errorbar(bin_centers, binned_mean_success, binned_sem_success, '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
-xlabel({'Engagement Projection';'(z-scored)'});
-ylabel({'Fraction Correct';'(pooled across sessions)'});
-ylim([.7 .8]);
-xli = xlim;
-xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
-set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-box off
 
 %separate per session
 % Initialize per-animal matrix [animal x bins]
@@ -144,7 +120,8 @@ end
 errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
 xlabel({'Engagement Projection';'(z-scored)'});
 ylabel('Fraction Correct');
-ylim([.7 .82]);
+ylims = ylim;
+ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
 xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -179,8 +156,8 @@ box off
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(404,strcat('errorbar_performance_vs_zengagement_axis_windownbin',num2str(window_bins),'.fig'));
-    exportgraphics(figure(404),strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'.pdf'), 'ContentType', 'vector');
-    exportgraphics(figure(405),strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'.pdf'), 'ContentType', 'vector');
+    saveas(404,strcat('errorbar_performance_vs_zengagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.fig'));
+    exportgraphics(figure(404),strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
+    exportgraphics(figure(405),strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
 
 end

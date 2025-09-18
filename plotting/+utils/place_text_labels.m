@@ -3,7 +3,13 @@ function place_text_labels(labels, colors, y_offset_base, fontSize,varargin)
     x_range = xlim;
     y_range = ylim;
     % Calculate base text position
-    text_x = x_range(2) - y_offset_base * diff(x_range);
+    if size(varargin,2)>1 %adjust x offset independent of y
+        x_offset_base = varargin{2};
+    else
+        x_offset_base = y_offset_base;
+    end
+    
+    text_x = x_range(2) - x_offset_base * diff(x_range);
     text_y = y_range(1) + y_offset_base * diff(y_range);
     % Default font size if not provided
     if nargin < 4 || isempty(fontSize)
@@ -19,19 +25,19 @@ function place_text_labels(labels, colors, y_offset_base, fontSize,varargin)
     % Calculate base text position depending on location
     switch location
         case 'bottomright'
-            text_x = x_range(2) - y_offset_base * diff(x_range);
+            text_x = x_range(2) - x_offset_base * diff(x_range);
             text_y = y_range(1) + y_offset_base * diff(y_range);
             y_direction = -1;
         case 'bottomleft'
-            text_x = x_range(1) + y_offset_base * diff(x_range);
+            text_x = x_range(1) + x_offset_base * diff(x_range);
             text_y = y_range(1) + y_offset_base * diff(y_range);
             y_direction = -1;
         case 'topright'
-            text_x = x_range(2) - y_offset_base * diff(x_range);
+            text_x = x_range(2) - x_offset_base * diff(x_range);
             text_y = y_range(2) - y_offset_base * diff(y_range);
             y_direction = 1;
         case 'topleft'
-            text_x = x_range(1) + y_offset_base * diff(x_range);
+            text_x = x_range(1) + x_offset_base * diff(x_range);
             text_y = y_range(2) - y_offset_base * diff(y_range);
             y_direction = 1;
         otherwise
