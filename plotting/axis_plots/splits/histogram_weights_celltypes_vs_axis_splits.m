@@ -1,9 +1,9 @@
-function [binned_weight_all_celltype,hist_weight_ct_stats] = histogram_weights_celltypes_vs_axis(chosen_datasets,proj_weights, axis_type2,all_celltypes,edge_values,num_bins,colorss,save_dir)
+function [binned_weight_all_celltype,hist_weight_ct_stats] = histogram_weights_celltypes_vs_axis_splits(chosen_datasets,proj_weights, axis_type2,all_celltypes,edge_values,num_bins,colorss,save_dir)
 num_datasets = length(chosen_datasets);
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 
 possible_celltypes = fieldnames(all_celltypes{1,1});
-
+n_splits = size(proj_weights,1);
 % Bin by engagement
 edges = linspace(edge_values(1),edge_values(2), num_bins+1); %linspace(min(all_engagement), max(all_engagement), num_bins+1);
 bin_centers = edges(1:end-1) + diff(edges)/2;
@@ -21,10 +21,16 @@ for celltype = 1:3
 %         data = proj_weights{dataset, celltype}.(lower(axis_type2));
         %get current dataset celltypes
         current_cells = all_celltypes{1,dataset}.(possible_celltypes{celltype});
+        temp = [];
+        for splits = 1:n_splits
+            data = proj_weights{splits,dataset, 4}.(lower(axis_type2));
+            temp = [temp;data];
+        end
+        %calculate mean across splits per cell
+        data_split_means = mean(temp,1);
 
-        data = proj_weights{dataset, 4}.(lower(axis_type2));
     
-        weights = data(current_cells); %zscore(data); % mean across cells
+        weights = data_split_means(current_cells); %zscore(data); % mean across cells
         all_weight_means = [all_weight_means, weights];
         all_weight_means_datasets(celltype,dataset) = mean(abs(weights));
         dataset_means(dataset) = mean(weights); % <- compute dataset-level average
@@ -96,9 +102,9 @@ if isfield(hist_weight_ct_stats, 'p_values') && ~isempty(hist_weight_ct_stats.p_
         p = hist_weight_ct_stats.p_values(c);
         if p < 0.05 / 3  % Bonferroni correction
             y = ylim;
-            star_y = y(2) - 0.05 + (c * offset);
+            star_y = y(2) - 0.15 + (c * offset);
             x_pos = [min(mean_diff(ct_combos(c,1)),mean_diff(ct_combos(c,2))),max(mean_diff(ct_combos(c,1)),mean_diff(ct_combos(c,2)))];
-            utils.plot_pval_star(0, star_y, p, [x_pos, x_pos], 0.05);
+            utils.plot_pval_star(0, star_y, p, [x_pos], 0.05);
         end
     end
 end

@@ -14,7 +14,14 @@ tbl_passive = tbl(context_all == 1,var_names);
 [yhat_active,  yci_active]  = predict(lme, tbl);
 tbl_active = tbl(:,var_names);
 
-
+% figure out which contexts were plotted
+if all(context_all == 1 ) 
+    contexts_to_plot = 2;
+elseif all(context_all == 0) 
+    contexts_to_plot = 1;
+else
+    contexts_to_plot = [1,2];
+end
 %% make plots!
 
 positions = utils.calculateFigurePositions(1, 5, .5, []);
@@ -25,8 +32,13 @@ pred_active = lme.Coefficients.Estimate(1) + ...
                lme.Coefficients.Estimate(2) * xvals;
 
 figure(103); clf; hold on;
-scatter(tbl{context_all==0,var_names{2}}, tbl{context_all==0,var_names{1}}, 5,'MarkerEdgeColor',[0.2 0.2 0.2], 'MarkerEdgeAlpha',.8)%[0.2 0.2 0.2], 'filled', 'MarkerFaceAlpha',1)
-scatter(tbl{context_all==1,var_names{2}}, tbl{context_all==1,var_names{1}}, 5,'MarkerEdgeColor',[0.8 0.8 0.8], 'MarkerEdgeAlpha',.8)%[0.8 0.8 0.8], 'filled', 'MarkerFaceAlpha',1)
+if isequal(contexts_to_plot,[1,2]) || isequal(contexts_to_plot,2)
+    scatter(tbl{context_all==0,var_names{2}}, tbl{context_all==0,var_names{1}}, 5,'MarkerEdgeColor',[0.2 0.2 0.2], 'MarkerEdgeAlpha',.8)%[0.2 0.2 0.2], 'filled', 'MarkerFaceAlpha',1)
+    scatter(tbl{context_all==1,var_names{2}}, tbl{context_all==1,var_names{1}}, 5,'MarkerEdgeColor',[0.8 0.8 0.8], 'MarkerEdgeAlpha',.8)%[0.8 0.8 0.8], 'filled', 'MarkerFaceAlpha',1)
+else
+    scatter(tbl{context_all==0,var_names{2}}, tbl{context_all==0,var_names{1}}, 5,'MarkerEdgeColor',[0.4 0.4 0.4], 'MarkerEdgeAlpha',.8)%[0.2 0.2 0.2], 'filled', 'MarkerFaceAlpha',1)
+end
+
 
 plot(xvals, pred_active, 'k', 'LineWidth', 2.2)
 
@@ -34,7 +46,7 @@ plot(xvals, pred_active, 'k', 'LineWidth', 2.2)
 ylabel({ylabel_string;'(z-scored)'});
 
 if nargin > 5
-    xlabel(strcat({varargin{1,1},' Projection';'(z-scored)'}))
+    xlabel({strcat(varargin{1,1},' Projection');'(z-scored)'})
     ylabel_string_updated = [ylabel_string varargin{1,1}];
 else
     xlabel({'Engagement Projection';'(z-scored)'})
@@ -64,16 +76,23 @@ yhat_active_sorted = yhat_active(idx_active);
 yci_active_sorted = yci_active(idx_active, :);
 
 % Plot passive trial predictions and CIs
-fill([x_active_sorted; flipud(x_active_sorted)], ...
-     [yci_active_sorted(:,1); flipud(yci_active_sorted(:,2))], ...
-     [0.3 0.3 0.3], 'EdgeColor', 'none', 'FaceAlpha', 0.3);
-plot(x_active_sorted, yhat_active_sorted, 'k','LineWidth', 2);
+if ismember(1,contexts_to_plot)
+    fill([x_active_sorted; flipud(x_active_sorted)], ...
+         [yci_active_sorted(:,1); flipud(yci_active_sorted(:,2))], ...
+         [0.3 0.3 0.3], 'EdgeColor', 'none', 'FaceAlpha', 0.3);
+    plot(x_active_sorted, yhat_active_sorted, 'k','LineWidth', 2);
+else
+    fill([x_active_sorted; flipud(x_active_sorted)], ...
+         [yci_active_sorted(:,1); flipud(yci_active_sorted(:,2))], ...
+         [0.8 0.8 0.8], 'EdgeColor', 'none', 'FaceAlpha', 0.4);
+    plot(x_active_sorted, yhat_active_sorted,'Color', [0.6 0.6 0.6],'LineWidth', 2);
+end
 
 % Plot active trial predictions and CIs (if model includes context)
 
 ylabel({ylabel_string;'(z-scored)'});
 if nargin > 5
-    xlabel(strcat({varargin{1,1},' Projection';'(z-scored)'}))
+    xlabel({strcat(varargin{1,1},' Projection');'(z-scored)'})
     ylabel_string_updated = [ylabel_string varargin{1,1}];
 else
     ylabel_string_updated = ylabel_string;
@@ -87,10 +106,10 @@ utils.set_current_fig;
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
-    saveas(103,strcat('linear_regression_',num2str(ylabel_string_updated),'.fig'));
-    exportgraphics(figure(103),strcat('linear_regression_',num2str(ylabel_string_updated),'.pdf'), 'ContentType', 'vector');
+    saveas(103,strcat('scatter_linear_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.fig'));
+    exportgraphics(figure(103),strcat('scatter_linear_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.pdf'), 'ContentType', 'vector');
 
-    saveas(1003,strcat('linear_lineonly_regression_',num2str(ylabel_string_updated),'.fig'));
-    exportgraphics(figure(1003),strcat('linear_lineonly_regression_',num2str(ylabel_string_updated),'.pdf'), 'ContentType', 'vector');
+    saveas(1003,strcat('linear_lineonly_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.fig'));
+    exportgraphics(figure(1003),strcat('linear_lineonly_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.pdf'), 'ContentType', 'vector');
 
 end

@@ -54,5 +54,9 @@ function place_text_labels(labels, colors, y_offset_base, fontSize,varargin)
     for i = 1:num_labels
         text(text_x, text_y - y_offsets(i) * diff(y_range), labels{i}, ...
              'Color', colors(i,:), 'FontSize', fontSize);
+        if size(varargin,2)>2
+            text(text_x, text_y - y_offsets(i) * diff(y_range), labels{i}, ...
+             'Color', colors(i,:), 'FontSize', fontSize,'BackgroundColor', 'w');   % white background);
+        end
     end
 end

@@ -1,4 +1,4 @@
-function [lm, tbl, proj_all, engagement_proj_all, context_all, corr_mean, corr_all] = ...
+function [lm, tbl, proj_all, engagement_proj_all, context_all, corr_mean, corr_all,corr_all_stats] = ...
     linear_regression_corr_model(proj, axis_type, celltype, frame_range_pre, frame_range_post, contexts, varargin)
 % Initialize
 proj_all = [];
@@ -56,6 +56,9 @@ lm = fitlm(tbl, formula);
 disp(lm)
 % Average correlation
 corr_mean = mean(corr_all(:), 'omitnan');
+% p value using permutation test (each dataset)s correlation vs zero)
+[corr_all_stats.p, corr_all_stats.obsDiff, corr_all_stats.effectSize] = permutationTest_updatedcb(mean(corr_all), zeros(size(mean(corr_all))), 10000, ...
+                                                     'paired', 1, 'sidedness', 'larger');
 end
 
 
