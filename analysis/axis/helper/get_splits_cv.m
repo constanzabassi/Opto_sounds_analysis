@@ -10,7 +10,7 @@ function cv_splits = get_splits_cv(total_trials, divisions,random_or_not, splits
 % OUTPUT:
 %   cv_splits is a struct array with fields:
 %       .train, .test
-rng(2025)
+rng(5)
 if random_or_not == 0
         % --------- CROSS-VALIDATED FOLDS ------------
         shuffled = randperm(total_trials);

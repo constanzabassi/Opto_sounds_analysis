@@ -5,7 +5,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         %LOAD VIRMEN TRIAL INFO
         all_trial_info = load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat').all_trial_info_sounds; %all_trial_info
 
-        rng(2025);
+        rng(5);
         % Define the frames for after and before stimulus
         if nargin > 5
             aframes = varargin{1,1}{2};  % After stimulus
@@ -110,19 +110,28 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 stim_matrix = [dff_st{1, current_dataset}.stim(:,mod_cells,:); dff_st{2, current_dataset}.stim(:,mod_cells,:)]; % stim + sound (active and passive)
                 ctrl_matrix = [dff_st{1, current_dataset}.ctrl(:,mod_cells,:); dff_st{2, current_dataset}.ctrl(:,mod_cells,:)]; % sound only (active and passive)
     
+                %CONCATENATE TRIALS ACROSS CONTROL AND STIM CONDITIONS
                 active_passive_sound_mean = [
-                nanmean(ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean(ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                nanmean([ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes)], [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                nanmean([ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes)], [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
                 context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
                 norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
+                norm_context_diff_stim = norm_context_diff;
 
-                % do pre of stim trials also (to increase number of trials for
-                % behavioral performance plots)
-                active_passive_sound_mean_stim = [
-                nanmean(stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean(stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
-                context_axis_stim = active_passive_sound_mean_stim(1,:) - active_passive_sound_mean_stim(2,:); % active - passive
-                norm_context_diff_stim = context_axis_stim ./ sqrt(sum(context_axis_stim.^2)); % Normalize context axis
+%                 %SEPARATED BY CONTROL AND STIM TRIALS TO DEFINE THE AXIS
+%                 active_passive_sound_mean = [
+%                 nanmean(ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+%                 nanmean(ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+%                 context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
+%                 norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
+% 
+%                 % do pre of stim trials also (to increase number of trials for
+%                 % behavioral performance plots)
+%                 active_passive_sound_mean_stim = [
+%                 nanmean(stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes), [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+%                 nanmean(stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes), [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+%                 context_axis_stim = active_passive_sound_mean_stim(1,:) - active_passive_sound_mean_stim(2,:); % active - passive
+%                 norm_context_diff_stim = context_axis_stim ./ sqrt(sum(context_axis_stim.^2)); % Normalize context axis
     
                 % --- 4) Calculate NOISE Axis ---
                 stim_matrix = [dff_st{1, current_dataset}.stim(:,mod_cells,:); dff_st{2, current_dataset}.stim(:,mod_cells,:)]; % stim + sound (active and passive)

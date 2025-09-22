@@ -60,7 +60,9 @@ n_total = size(tbl,1);
 utils.place_text_labels({['n = ', num2str(n_total)]},'k',0,5,'topleft',0.05)
 utils.place_text_labels({['r = ', num2str(round(r,2))]},'k',0.1,5,'topleft',0.05)
 utils.place_text_labels({['p = ',num2str(p_val, '%.1e')]},'k',0.2,5,'topleft',0.05)
-
+if nargin > 6
+    utils.place_text_labels({['r = ', num2str(round(varargin{1,2}(1),2)), 'p=',num2str(round(varargin{1,2}(2)))]},'k',0.1,5,'bottomleft',0.05)
+end
 utils.set_current_fig;
 
 % SECOND PLOT WITHOUT ANY SCATTER POINTS
