@@ -3,6 +3,8 @@ function mod_index = compute_mod_index(avg1, avg2, mod_type)
     switch mod_type
         case 'ctrl'
             mod_index = compute_mod_index_ctrl(avg1, avg2);
+        case 'pre_engagement'
+            mod_index = compute_mod_index_ctrl(avg1, avg2); %stim is active, control is passive
         case 'ctrl_num'
             mod_index = compute_mod_index_ctrl_numerator(avg1, avg2);
         case 'prepost_ctrl'

@@ -33,7 +33,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
 %   5. For each neuron, compute the p-value as:
 %          p = (number of shuffles with |shuffled_mod| >= |observed_mod| + 1) / (nShuffles + 1)
 %
-%   Author: Your Name, Date
+%   Author: CB, 9/22/25
     %%% Step 1: Compute Averages for Group1 and Group2 %%%
     if (strcmp(mod_type, 'prepost')|| strcmp(mod_type, 'prepost_num') || strcmp(mod_type, 'prepost_sound') || strcmp(mod_type,'prepost_abs')) && length(response_range) > 1
         % For prepost comparisons: use two different response windows.
@@ -51,7 +51,9 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             data_subset2 = double(data_subset2);
             group1 = mean(data_subset1(:, :, response_range{1}), 3) - mean(data_subset1(:, :, response_range{2}), 3);
             group2 = mean(data_subset2(:, :, response_range{1}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
-
+    elseif strcmp(mod_type,'pre_engagement')
+            group1 = mean(data_subset1(:, :, response_range{2}), 3); %take mean across pre stim period!
+            group2 = mean(data_subset2(:, :, response_range{2}), 3);
     else
         % For 'ctrl' and 'influence', use the first response_range:
         group1 = mean(data_subset1(:, :, response_range{1}), 3);  % from stim_data_subset
@@ -59,7 +61,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
     end
 
     %%% Step 2: Compute the Observed Modulation Index %%%
-    if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl')
+    if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'pre_engagement')
         observed_mod = compute_mod_index_ctrl(group1, group2);
     elseif strcmp(mod_type, 'ctrl_num')
         observed_mod = compute_mod_index_ctrl_numerator(group1, group2);
@@ -95,7 +97,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         simGroup2 = combined(permIdx(nTrials_group1+1:end), :);
 
         %select appropriate calculation
-        if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl')
+        if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'pre_engagement')
             bootMod(shuff, :) = compute_mod_index_ctrl(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'ctrl_num')
             bootMod(shuff, :) = compute_mod_index_ctrl_numerator(simGroup1, simGroup2);
