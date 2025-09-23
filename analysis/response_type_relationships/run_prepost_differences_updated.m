@@ -12,10 +12,13 @@ params.plot_info = plot_info;
 
 %% set up colors and different pools of cells
 %within context use below
-[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 2);
+% [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 2);
+
 % % below is using previous code (with previous significance definitions of
 % % union active/passive for sound, spontaneous for stim
-% [pooled_cell_types_modulated,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sound_sig_cells, opto.sig_cells, opto.mod(1:24,:), {'unmodulated','modulated'},[1:24],plot_info, 1);
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 1);
+
+[pooled_cell_types_stim,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'unmodulated','sound','both','opto'},[1:24],plot_info, 1);
 
 % set up plotting labels
 plot_info.y_lims = [-.2, .4];
@@ -68,12 +71,17 @@ end
 
 %% Make plots
 %make scatter plots and save them!
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
 
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (sound)',0,1,[-.6,2]);
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',0,1,[-.6,2]);
 
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Active Pre (sound)', 'Active Post (sound)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,2}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Passive Pre (sound)', 'Passive Post (sound)',0,1,[-.6,2]);
+
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
 
 % --- Defaults for responses ---
 response_types_info = { ...

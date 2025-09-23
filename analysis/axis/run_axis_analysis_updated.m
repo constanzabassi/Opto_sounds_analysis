@@ -7,7 +7,8 @@ keep context_data all_celltypes plot_info
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis_updated(context_data.dff, [1:24], all_celltypes,[]); %,{50:59,63:73}
 
 split_params.divisions = 4; split_params.random_or_not = 0; split_params.splits = 4;
-[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis_updated_specify_splits(context_data.dff, [1:24], all_celltypes,[],split_params); %,{50:59,63:73}
+[proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat] = ...
+    find_axis_updated_specify_splits(context_data.dff, [1:24], all_celltypes,[],split_params); %,{50:59,63:73}
 
 save_dir = 'W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\';%'V:\Connie\results\opto_sound_2025\context\axis_lme_plots_updated\dff';
 save_dir2 = 'W:\Connie\results\Bassi2025\fig5\updated_4cv_combined_eng\';%'V:\Connie\results\opto_sound_2025\context\axis_lme_plots_updated\dff';
@@ -63,9 +64,14 @@ for d = 1:nDatasets
     concat_activity{d} = vertcat(act{:,d,4}); %trials x neurons
     mean_act = mean(concat_activity{d}(:,50:59),2);
     activity_all{d} = mean_act';
+
+    %do the same for the engagement axis
+    concat_engagement{d} = vertcat(engagement_concat{:,d,4}); %trials x neurons
+    mean_engagement = mean(concat_engagement{d}(:,50:59),2);
+    engagement_all{d} = mean_engagement';
 end
-plot_performance_vs_engagement_axis(percent_correct_all,engagement_proj_all_sound,engagement_proj_all_stim,context_all_sound,context_all_stim,[20,5],save_dir,[-1.5,2]);
-plot_performance_vs_activity(percent_correct_all,activity_all,[20,5],save_dir,[-1.5,2]);
+plot_performance_vs_engagement_axis_updated(percent_correct_all,engagement_all,[25,5],save_dir,[0,2]);
+plot_performance_vs_activity(percent_correct_all,activity_all,[25,5],save_dir,[-1,1.5]);
 %% plot weights across cell types
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue

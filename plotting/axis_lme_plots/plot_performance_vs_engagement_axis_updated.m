@@ -1,4 +1,4 @@
-function plot_performance_vs_activity(percent_correct_concat,engagement_concat,window_bins,save_dir,edge_input,varargin)
+function plot_performance_vs_engagement_axis_updated(percent_correct_concat,engagement_concat,window_bins,save_dir,edge_input,varargin)
 %% collect correctness across mice
 correct_all_ctrl = []; animal_id_all=[]; engagement_active = [];
 for dataset = 1:24
@@ -59,7 +59,7 @@ positions = utils.calculateFigurePositions(1, 5, .5, []);
 figure(401); clf;
 scatter(all_engagement, all_success, 8, 'filled', ...
     'MarkerFaceAlpha', 0.1, 'MarkerEdgeAlpha', 0.05);
-xlabel({'Mean Activity';'(z-scored)'});
+xlabel({'Engagement Projection';'(z-scored)'});
 ylabel('Fraction Correct');
 % title(sprintf('Sliding window (n = %d trials per window)', window_size));
 % % Optional: Linear regression overlay
@@ -113,7 +113,7 @@ if plot_sessions == 1
 end
 % Group mean with error bars (black line)
 errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
-xlabel({'Mean Activity';'(z-scored)'});
+xlabel({'Engagement Projection';'(z-scored)'});
 ylabel('Fraction Correct');
 ylims = ylim;
 ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
@@ -122,16 +122,24 @@ xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 box off
 
-figure(804);clf; colormap gray; 
+figure(804);clf; colormap gray;
 imagesc(n_per_sess); 
-c = colorbar;
-set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-utils.set_current_fig;
-c.Label.String = {'Number of Trials'}; %'Prestimulus "Engagement"';
-c.Label.Rotation = 270; % Rotate the ylabel by 270 degrees'Rotation',270;
-c.Label.Position = [3.958666515350342,29.673913526834678,0];
-xlabel({'Prestimulus'; '"Engagement" Bin'});
+c = colorbar; 
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :)); 
+% utils.set_current_fig; 
+c.Label.String = {'Number of Avg. Windows'}; %'Prestimulus "Engagement"'; 
+c.Label.Rotation = 270; % Rotate the ylabel by 270 degrees'Rotation',270; 
+c.Label.Position = [3.958666563034058,21.152173096718997,0]; 
+xlabel({'Prestimulus'; '"Engagement" Bin'}); 
 ylabel('Dataset ID')
+% Create a red mask where values < 5
+mask = n_per_sess < 5;
+
+% % Overlay mask with transparency
+% h = imagesc(mask);
+% set(h, 'AlphaData', mask*0.4);   % 0.4 transparency
+% colormap(gca, gray);             % keep gray colormap for background
+% h.CData = cat(3, mask, zeros(size(mask)), zeros(size(mask))); % red overlay
 
 % % correect (xaxis) vs engagemnt (yaxis)
 % Correlation
@@ -154,7 +162,7 @@ text(0.43, max(all_engagement)*0.95, ...
     sprintf('P = %.3g\nR = %.2f', p, r), 'FontSize', 6);
 
 xlabel('Fraction Correct');
-ylabel({'Mean Activity';'(z-scored)'});
+ylabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 box off

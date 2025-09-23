@@ -155,7 +155,7 @@ mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, m
 
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)
 % Set y-axis limits for the plots.
-plot_info.y_lims = [-.2, .2];
+plot_info.y_lims = [-.2, .3];
 % Set labels for plots.
 plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to plot
 params.plot_info = plot_info;
