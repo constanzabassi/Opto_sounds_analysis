@@ -51,7 +51,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
             data_subset2 = double(data_subset2);
             group1 = mean(data_subset1(:, :, response_range{1}), 3) - mean(data_subset1(:, :, response_range{2}), 3);
             group2 = mean(data_subset2(:, :, response_range{1}), 3) - mean(data_subset2(:, :, response_range{2}), 3);
-    elseif strcmp(mod_type,'pre_engagement')
+    elseif strcmp(mod_type,'pre_engagement') || strcmp(mod_type,'pre_engagement_num')
             group1 = mean(data_subset1(:, :, response_range{2}), 3); %take mean across pre stim period!
             group2 = mean(data_subset2(:, :, response_range{2}), 3);
     else
@@ -63,7 +63,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
     %%% Step 2: Compute the Observed Modulation Index %%%
     if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'pre_engagement')
         observed_mod = compute_mod_index_ctrl(group1, group2);
-    elseif strcmp(mod_type, 'ctrl_num')
+    elseif strcmp(mod_type, 'ctrl_num') || strcmp(mod_type,'pre_engagement_num')
         observed_mod = compute_mod_index_ctrl_numerator(group1, group2);
     elseif strcmp(mod_type, 'influence')
         observed_mod = compute_mod_index_influence(group1, group2);
@@ -99,7 +99,7 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         %select appropriate calculation
         if strcmp(mod_type, 'ctrl') || strcmp(mod_type, 'prepost_ctrl') || strcmp(mod_type, 'pre_engagement')
             bootMod(shuff, :) = compute_mod_index_ctrl(simGroup1, simGroup2);
-        elseif strcmp(mod_type, 'ctrl_num')
+        elseif strcmp(mod_type, 'ctrl_num') || strcmp(mod_type,'pre_engagement_num')
             bootMod(shuff, :) = compute_mod_index_ctrl_numerator(simGroup1, simGroup2);
         elseif strcmp(mod_type, 'influence')
             bootMod(shuff, :) = compute_mod_index_influence(simGroup1, simGroup2);

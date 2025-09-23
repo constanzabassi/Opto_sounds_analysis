@@ -62,6 +62,10 @@ wrapper_avg_cell_type_traces_engagement(context_data.dff,all_celltypes,mod_index
 mod_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, all_celltypes, params, mod_params.savepath, celltypes_ids,plot_info.y_lims);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
+%plot percentages
+percent_cells = calculate_sig_celltype_percentages(sig_mod_boot, all_celltypes, []);
+bar_plot_percent(percent_cells,[], savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'All Modulated'});
+
 %% compare engagement indices in opto or sound neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
 
@@ -75,4 +79,8 @@ save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datase
 savepath = 'W:\Connie\results\Bassi2025\fig3\pre_engagement\functional_celltype_traces\';
 mod_params.chosen_mice = [1:24]; %1 less for opto control
 wrapper_avg_cell_type_traces_engagement(context_data.dff,pooled_cell_types,mod_indexm,sig_mod_boot,mod_params,savepath,'engagement_dff',plot_info,plot_info.functional_names,plot_info.colors_pooled_3contexts); %repelem(plot_info.functional_colors, 3, 1)
+
+%calculate overlap of positive and negative engagement groups
+percent_cells = calculate_sig_celltype_percentages(sig_mod_boot(1:24), pooled_cell_types, []);
+bar_plot_percent(percent_cells,[], savepath,plot_info.functional_names,plot_info.functional_colors,{'All Modulated'});
 

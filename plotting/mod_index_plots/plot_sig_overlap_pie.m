@@ -1,4 +1,4 @@
-function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_to_compare)
+function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_to_compare,varargin)
 % plot_sig_overlap_pie plots a pie chart showing the overlap of significant neurons
 % across behavioral contexts.
 %
@@ -39,15 +39,29 @@ function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_
     for iHandle = 2:2:2*nLabels
         hText = hPie(iHandle);
         hText.Position = 0.4 * hText.Position;  % shift labels inward by half
-        hText.FontSize = 10;
+        hText.FontSize = 8;
         hText.FontName = 'Arial';
     end
     % Set a custom colormap.
     % Here, we use a 4x3 matrix where each row is an RGB triplet.
-    colormap([1    1    1;    % white
+    colors =  ([1    1    1;    % white
               0.85 0.85 0.85; % light gray
               0.65 0.65 0.65; % medium gray
-              0.45 0.45 0.45]); % dark gray
+              0.45 0.45 0.45; % dark gray
+              0.25 0.25 0.25 ]); %darker gray
+    if nargin > 4
+        colors = varargin{1,1};
+    end
+    
+    patchHand = findobj(hPie, 'Type', 'Patch'); 
+    % The slices come in reverse order, so flip if needed
+    patchHand = flipud(patchHand);
+    
+    % Assign colors
+    for k = 1:numel(patchHand)
+        set(patchHand(k), 'FaceColor', colors(k,:));
+    end
+
     % Remove axes visibility.
     set(gca, 'visible', 'off','Units','Inches', 'Position', positions(1,:));
     
@@ -56,7 +70,7 @@ function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_
     % set_current_fig;
 
     % Create a legend and position it outside the pie chart.       
-    leg = legend(labels,'FontSize', 10,  'box', 'off'); %'Location', 'eastoutside',
+    leg = legend(labels,'FontSize', 8,  'box', 'off'); %'Location', 'eastoutside',
     % Set legend units to normalized so that you can adjust its position relative to the figure.
     leg.Units = 'Inches';
     % Adjust the legend position manually.
