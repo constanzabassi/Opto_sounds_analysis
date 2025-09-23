@@ -63,7 +63,7 @@ mod_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
 %plot percentages
-percent_cells = calculate_sig_celltype_percentages(sig_mod_boot, all_celltypes, []);
+percent_cells = calculate_sig_celltype_percentages(sig_mod_boot_thr, all_celltypes, []);
 bar_plot_percent(percent_cells,[], savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'All Modulated'});
 
 %% compare engagement indices in opto or sound neurons
@@ -81,6 +81,20 @@ mod_params.chosen_mice = [1:24]; %1 less for opto control
 wrapper_avg_cell_type_traces_engagement(context_data.dff,pooled_cell_types,mod_indexm,sig_mod_boot,mod_params,savepath,'engagement_dff',plot_info,plot_info.functional_names,plot_info.colors_pooled_3contexts); %repelem(plot_info.functional_colors, 3, 1)
 
 %calculate overlap of positive and negative engagement groups
-percent_cells = calculate_sig_celltype_percentages(sig_mod_boot(1:24), pooled_cell_types, []);
+percent_cells = calculate_sig_celltype_percentages(sig_mod_boot_thr(1:24), pooled_cell_types, []);
 bar_plot_percent(percent_cells,[], savepath,plot_info.functional_names,plot_info.functional_colors,{'All Modulated'});
 
+%separate by positive and negative modulation
+param_sets = { 
+    struct('mod_threshold', mod_params.mod_threshold, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated'],'chosen_mice', mod_params.chosen_mice),
+    struct('mod_threshold', -1 * mod_params.mod_threshold, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated'],'chosen_mice', mod_params.chosen_mice),
+};
+mod_params.chosen_mice = 1:24;
+for i = 1:length(param_sets)
+        mod_params = param_sets{i};
+        mod_params.data_type = 'engagement';
+        %get the significant neurons (positive, negative, both);
+        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
+        percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), pooled_cell_types, []);
+end
+bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
