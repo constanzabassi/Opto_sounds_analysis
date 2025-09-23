@@ -3,7 +3,7 @@ function [stats] = mod_index_violin_across_celltypes(save_dir,stim_mod,behaviora
 figure(97);clf
 % t = tiledlayout(1,length(celltypes_ids),'TileSpacing','Compact','Padding','Compact');
 positions = utils.calculateFigurePositions(1, 6, .5, []);
-
+p_stim = [];
 for cel_type = 1:length(celltypes_ids)
     %     nexttile
     subplot(1,length(celltypes_ids),cel_type)
@@ -30,6 +30,7 @@ for cel_type = 1:length(celltypes_ids)
     end
 
     %permutation test
+    if length(behavioral_contexts)>1
         possible_tests = nchoosek(1:length(behavioral_contexts),2);
         
         ct = 0;
@@ -46,6 +47,7 @@ for cel_type = 1:length(celltypes_ids)
             end
 
         end
+    end
 
     if nargin >7
         ylim(varargin{1,1});
@@ -95,6 +97,7 @@ for cel_type = 1:length(celltypes_ids)
     end
 
     %permutation test
+    if length(behavioral_contexts)>1
         possible_tests = nchoosek(1:length(behavioral_contexts),2);
         
         ct = 0;
@@ -111,6 +114,7 @@ for cel_type = 1:length(celltypes_ids)
             end
 
         end
+    end
 
     if nargin >7
         ylim(varargin{1,1});

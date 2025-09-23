@@ -7,13 +7,17 @@ positions = utils.calculateFigurePositions(1, 6, .5, []);
 % Get number of datasets
 n_datasets = length(mod_index_by_dataset);
 n_celltypes = size( mod_index_by_dataset,3);
-num_contexts = 2;
+if nargin > 4
+    num_contexts = varargin{1,2};
+else
+    num_contexts = 2;
+end
 
 %initialize plotting variables
 behavioral_contexts = plot_info.behavioral_contexts;
 colors = plot_info.colors_celltypes;
 cell_type_names = plot_info.celltype_names;
-
+p_stim = [];
 
 for cel_type = 1:n_celltypes
     %     nexttile
@@ -40,6 +44,7 @@ for cel_type = 1:n_celltypes
     end
 
     %permutation test
+    if num_contexts > 2
         possible_tests = nchoosek(1:num_contexts,2);
         
         ct = 0;
@@ -56,6 +61,7 @@ for cel_type = 1:n_celltypes
             end
 
         end
+    end
 
     if nargin >3
         ylim(varargin{1,1});
@@ -102,6 +108,7 @@ for cel_type = 1:n_celltypes
     end
 
     %permutation test
+    if num_contexts > 2
         possible_tests = nchoosek(1:num_contexts,2);
         
         ct = 0;
@@ -118,6 +125,7 @@ for cel_type = 1:n_celltypes
             end
 
         end
+    end
 
     if nargin >3
         ylim(varargin{1,1});

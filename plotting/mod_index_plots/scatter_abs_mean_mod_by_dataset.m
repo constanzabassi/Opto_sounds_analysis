@@ -4,9 +4,14 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
     
     figure(600);clf
     
-    num_contexts = 2;%length(plot_info.behavioral_contexts);
+    if nargin > 6
+        num_contexts = varargin{1,2};
+    else
+        num_contexts = 2;
+    end
     x_lines = 0:num_contexts+1;
     mean_cell_all = [];
+    p_val_mod = []; possible_tests = [];
     
     % Get number of datasets
     n_datasets = length(mod_index_by_dataset);
@@ -61,34 +66,35 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
         ylabel('Absolute Modulation Index')
         
         % Statistical testing
-        ct = 0;
-        possible_tests = nchoosek(1:num_contexts,2);
-        y_val = max(mean_cell_all)+0.05;
-        
-        for celltype = 1:n_celltypes
-            for t = 1:size(possible_tests,1)
-                % Get data for statistical test
-                data1 = zeros(n_datasets, 1);
-                data2 = zeros(n_datasets, 1);
-                
-                for d = 1:n_datasets
-                    data1(d) = nanmean(abs(mod_index_by_dataset{d}{possible_tests(t,1)}(celltypes_ids{1,celltype})));
-                    data2(d) = nanmean(abs(mod_index_by_dataset{d}{possible_tests(t,2)}(celltypes_ids{1,celltype})));
-                end
-                
-                % Perform statistical test
-                [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
-                    data1, data2, 10000, 'paired', 1);
-                
-                % Plot significance stars if applicable
-                if p_val_mod(t,celltype) < 0.05/length(possible_tests)
-                    xline_vars = possible_tests(t,:);
-                    ct = ct+.03;
-                    utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
+        if num_contexts > 1
+            ct = 0;
+            possible_tests = nchoosek(1:num_contexts,2);
+            y_val = max(mean_cell_all)+0.05;
+            
+            for celltype = 1:n_celltypes
+                for t = 1:size(possible_tests,1)
+                    % Get data for statistical test
+                    data1 = zeros(n_datasets, 1);
+                    data2 = zeros(n_datasets, 1);
+                    
+                    for d = 1:n_datasets
+                        data1(d) = nanmean(abs(mod_index_by_dataset{d}{possible_tests(t,1)}(celltypes_ids{1,celltype})));
+                        data2(d) = nanmean(abs(mod_index_by_dataset{d}{possible_tests(t,2)}(celltypes_ids{1,celltype})));
+                    end
+                    
+                    % Perform statistical test
+                    [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
+                        data1, data2, 10000, 'paired', 1);
+                    
+                    % Plot significance stars if applicable
+                    if p_val_mod(t,celltype) < 0.05/length(possible_tests)
+                        xline_vars = possible_tests(t,:);
+                        ct = ct+.03;
+                        utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
+                    end
                 end
             end
         end
-        
         % Final plot formatting
         yli = ylim;
         ylim([0,yli(2)])
@@ -159,26 +165,27 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
             end
             
             % Statistical testing for this cell type
-            ct = 0;
-            possible_tests = nchoosek(1:num_contexts,2);
-            if max(mean_cell_all) > 0.1
-                y_val = max(mean_cell_all) + 0.03;
-            else
-                y_val = max(mean_cell_all);
-            end
-            
-            for t = 1:size(possible_tests,1)
-                ctx1 = possible_tests(t,1);
-                ctx2 = possible_tests(t,2);
-
-                % Get data for statistical test
-                % Skip if this celltype has no data for either context
-                if isempty(mod_stats.stats) || ...
-                   celltype > size(mod_stats.stats,1) || ...
-                   isempty(mod_stats.stats(celltype,ctx1).valid_means) || ...
-                   isempty(mod_stats.stats(celltype,ctx2).valid_means)
-                    continue;
+            if num_contexts > 1             
+                ct = 0;
+                possible_tests = nchoosek(1:num_contexts,2);
+                if max(mean_cell_all) > 0.1
+                    y_val = max(mean_cell_all) + 0.03;
+                else
+                    y_val = max(mean_cell_all);
                 end
+                
+                for t = 1:size(possible_tests,1)
+                    ctx1 = possible_tests(t,1);
+                    ctx2 = possible_tests(t,2);
+    
+                    % Get data for statistical test
+                    % Skip if this celltype has no data for either context
+                    if isempty(mod_stats.stats) || ...
+                       celltype > size(mod_stats.stats,1) || ...
+                       isempty(mod_stats.stats(celltype,ctx1).valid_means) || ...
+                       isempty(mod_stats.stats(celltype,ctx2).valid_means)
+                        continue;
+                    end
 
                 % Extract data
                 data1 = mod_stats.stats(celltype,ctx1).valid_means;
@@ -214,6 +221,7 @@ function mod_stats = scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_data
                     xline_vars = possible_tests(t,:) + ((celltype-1)*num_contexts);
                     ct = ct + 0.03;
                     utils.plot_pval_star(0, y_val+ct, p_val_mod(t,celltype), xline_vars, 0.01, plot_info.colors_celltypes(celltype,:))
+                end
                 end
             end
         end

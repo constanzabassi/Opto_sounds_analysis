@@ -73,55 +73,61 @@ for current_dataset = 1: length(info.mouse_date)
         current_conditions_pass = [passive_all_trial_info_sounds(current_dataset).opto.condition];
         current_conditions_ctrl_pass = [passive_all_trial_info_sounds(current_dataset).ctrl.condition];
 
+        %concatenate conditions across contexts
+        current_conditions_active = [current_conditions,current_conditions_ctrl];
+        current_conditions_passive = [current_conditions_pass,current_conditions_ctrl_pass];
 
-        % Extract neural data for the current dataset.
-        stim_data = neural_structure{1,current_dataset}.stim;  % [trials x neurons x frames]
-        ctrl_data = neural_structure{1,current_dataset}.ctrl;  % [trials x neurons x frames]
 
         % Get trial indices for the current context. (CHANGING STIM_TRIALS
         % TO ACTIVE, AND CONTROL TO PASSIVE FOR EASY USE OF CODE)
         context = 1;
-        active_trials = [stim_trials_context{1, current_dataset}{1, context},ctrl_trials_context{1, current_dataset}{1, context}];
+        active_trials = [1:length(ctrl_trials_context{1, current_dataset}{1, context})+length(stim_trials_context{1, current_dataset}{1, context})];
         context = 2;
-        passive_trials = [stim_trials_context{1, current_dataset}{1, context},ctrl_trials_context{1, current_dataset}{1, context}];
+        passive_trials =  [1:length(ctrl_trials_context{1, current_dataset}{1, context})+length(stim_trials_context{1, current_dataset}{1, context})];%[stim_trials_context{1, current_dataset}{1, context},ctrl_trials_context{1, current_dataset}{1, context}];
+
+        % Extract neural data for the current dataset.
+        active_data = [neural_structure{1,current_dataset}.stim(stim_trials_context{1, current_dataset}{1, 1},:,:);neural_structure{1,current_dataset}.ctrl(ctrl_trials_context{1, current_dataset}{1, 1},:,:)];  % [trials x neurons x frames]
+        passive_data = [neural_structure{1,current_dataset}.stim(stim_trials_context{1, current_dataset}{1, 2},:,:);neural_structure{1,current_dataset}.ctrl(ctrl_trials_context{1, current_dataset}{1, 2},:,:)];  % [trials x neurons x frames]
+
 
         % Call the main modulation index function.
         if ~strcmp(mode,'simple') %do balancing etc OR use all trials included
             % Note: calc_mod_index_cv now performs the trial balancing inside each CV repeat.
             [cv_mod_index, cv_mod_index_separate, bootstrapResults] = calc_mod_index_cv(...
-                stim_data, ctrl_data, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
+                active_data, passive_data, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
         else
             if context == 1 %only necessary when selecting specific trials from virmen (like correct vs incorrect)
                 current_conditions = current_conditions(active_trials);
                 current_conditions_ctrl = current_conditions_ctrl(passive_trials);
             end
-            [~, ~, ~, ~, ~, ~, left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = ...
-                find_sound_trials_single(active_trials, passive_trials, current_conditions, current_conditions_ctrl);
+
+            [~, ~, ~, ~, ~, ~, left_active_all, left_passive_all,  right_active_all, right_passive_all] = ...
+                find_sound_trials_single(active_trials, passive_trials, current_conditions_active, current_conditions_passive);
             if nargin > 9
                 stim_to_match = varargin{1,1}{1, current_dataset}{1, context};
                 ctrl_to_match = varargin{1,2}{1, current_dataset}{1, context};
-                 [left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all] = find_overlap_trials (left_stim_all, left_ctrl_all,  right_stim_all, right_ctrl_all, stim_to_match,ctrl_to_match);
+                 [left_active_all, left_passive_all,  right_active_all, right_passive_all] = find_overlap_trials (left_active_all, left_passive_all,  right_active_all, right_passive_all, stim_to_match,ctrl_to_match);
             end
-            stim_data_left = stim_data(left_stim_all,:,:);% trials x neurons x frames using trials for current context
-            ctrl_data_left = ctrl_data(left_ctrl_all,:,:);% trials x neurons x frames using trials for current context
+            active_data_left = active_data(left_active_all,:,:);% trials x neurons x frames using trials for current context
+            passive_data_left = passive_data(left_passive_all,:,:);% trials x neurons x frames using trials for current context
     
-            stim_data_right = stim_data(right_stim_all,:,:);% trials x neurons x frames using trials for current context
-            ctrl_data_right = ctrl_data(right_ctrl_all,:,:);% trials x neurons x frames using trials for current context
+            active_data_right = active_data(right_active_all,:,:);% trials x neurons x frames using trials for current context
+            passive_data_right = passive_data(right_passive_all,:,:);% trials x neurons x frames using trials for current context
 
 
 %         %use below if wanting to use all trials
 %             stim_data = stim_data(stim_trials,:,:);% trials x neurons x frames using trials for current context
 %              ctrl_data = ctrl_data(ctrl_trials,:,:);% trials x neurons x frames using trials for current context
             [cv_mod_left, ~, bootstrapResults_left] = calc_mod_index_cv(...
-                stim_data_left, ctrl_data_left, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
+                active_data_left, passive_data_left, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
 
             [cv_mod_right, ~, bootstrapResults_right] = calc_mod_index_cv(...
-                stim_data_right, ctrl_data_right, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
+                active_data_right, passive_data_right, active_trials, passive_trials, current_conditions, current_conditions_ctrl, ...
                 response_range, mod_type, mode, nRepeats, nShuffles);
 
-            nNeurons = size(stim_data,2);
+            nNeurons = size(active_data,2);
             % Select max side and prepare output;
                 [cv_mod_index, cv_mod_index_separate,side] = select_max_side(...
                     cv_mod_left, cv_mod_right, nNeurons);

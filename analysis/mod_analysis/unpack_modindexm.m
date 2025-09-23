@@ -28,10 +28,10 @@ chosen_cells ={};
 for dataset_index = chosen_mice
     
     % Check if significant modulation data exists for the dataset
-    if ~isempty(sig_mod_boot) && ~isempty(sig_mod_boot{1,dataset_index})
+    if ~isempty(sig_mod_boot) && ~isempty(sig_mod_boot{dataset_index})
         for celltype = 1:length(fieldss)
             % Select cells that are both significant and belong to the given cell type
-            chosen_cells{dataset_index,celltype} = sig_mod_boot{1,dataset_index}(find(ismember(sig_mod_boot{1,dataset_index},all_celltypes{1,dataset_index}.(fieldss{celltype})))) ;
+            chosen_cells{dataset_index,celltype} = sig_mod_boot{dataset_index}(find(ismember(sig_mod_boot{dataset_index},all_celltypes{1,dataset_index}.(fieldss{celltype})))) ;
         end
     elseif isempty(sig_mod_boot)
         % If no significance filtering, use all cells of each type
