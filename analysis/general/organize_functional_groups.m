@@ -14,8 +14,14 @@ function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organiz
 %   pooled_cell_types : 
 %       If contexts=1: {datasets} struct with fields in group_order
 %       If contexts>1: {contexts, datasets} same but separated per context
+    % Optional inputs
+    if nargin > 8
+        sound_sig_neg = varargin{1,2};   % {datasets x 1} negative sound cells
+    else
+        sound_sig_neg = [];
+    end
 
-    if nargin > 6
+    if nargin > 7
         n_contexts = varargin{1};
     else
         n_contexts = 1;
@@ -26,6 +32,7 @@ function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organiz
     % color + name mapping
     group_map = struct( ...
         'sound',       struct('name','Sound','color',[0.3,0.2,0.6]), ...
+        'sound_neg',       struct('name','Sound Neg.','color',[0.2,0,0.5]),...
         'opto',        struct('name','Photostim','color',[1,0.7,0]), ...
         'both',        struct('name','Both','color',[0.3,0.8,1]), ...
         'unmodulated', struct('name','Unmodulated','color',[0.5,0.5,0.5]), ...
@@ -43,29 +50,47 @@ function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organiz
         % pick correct input depending on context
         if n_contexts == 1
             sound_cells = sound_sig;
+            if ~isempty(sound_sig_neg)
+                sound_cells_neg = sound_sig_neg;
+            end
             opto_cells  = opto_sig;
             if size(opto_sig,1) > 3 && size(opto_sig,2) < size(opto_sig,1)
                 opto_cells  = opto_sig';
             end
         else
             sound_cells = sound_sig(chosen_sessions,context)';
+            if ~isempty(sound_sig_neg)
+                sound_cells_neg = sound_sig_neg(chosen_sessions,context)';
+            end
             opto_cells  = opto_sig(chosen_sessions,context)';
         end
 
         % precompute all sets
         sound_only = setdiff_sig_cells(sound_cells(chosen_sessions), opto_cells(chosen_sessions), opto_mod);
-        opto_only  = setdiff_sig_cells(opto_cells(chosen_sessions), sound_cells(chosen_sessions), opto_mod);
-        both       = intersect_sig_cells(opto_cells(chosen_sessions), sound_cells(chosen_sessions), opto_mod);
+        if ~isempty(sound_sig_neg)
+            sound_neg_only = setdiff_sig_cells(sound_cells_neg(chosen_sessions), opto_cells(chosen_sessions), opto_mod);
+            all_sound = union_sig_cells(sound_cells(chosen_sessions), sound_cells_neg(chosen_sessions), opto_mod);
+        else
+            sound_neg_only = cell(size(sound_only)); % empty cells
+            all_sound = sound_cells(chosen_sessions);
+        end
+        opto_only  = setdiff_sig_cells(opto_cells(chosen_sessions), all_sound(chosen_sessions), opto_mod);
+        both       = intersect_sig_cells(opto_cells(chosen_sessions), all_sound(chosen_sessions), opto_mod);
 
         for dataset = chosen_sessions
             all_ids    = 1:sum(num_cells(:,dataset));
             current_sig = [sound_only{dataset}, opto_only{dataset}, both{dataset}];
+            if ~isempty(sound_sig_neg)
+                current_sig = [current_sig, sound_neg_only{dataset}];
+            end
             unmod      = setdiff(all_ids, current_sig);
             % assign dynamically according to requested order
             for g = 1:length(group_order)
                 switch lower(group_order{g})
                     case 'sound'
                         pooled_cell_types{context,dataset}.sound = sound_only{dataset};
+                    case 'sound_neg'
+                        pooled_cell_types{context,dataset}.sound_neg = sound_neg_only{dataset};
                     case 'opto'
                         pooled_cell_types{context,dataset}.opto = opto_only{dataset};
                     case 'both'
@@ -84,6 +109,8 @@ function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organiz
                 switch lower(group_order{g})
                     case 'sound'
                         sig_mod_boot{context,dataset} = sound_only{dataset};
+                    case 'sound_neg'
+                        sig_mod_boot{context,dataset} = sound_neg_only{dataset};
                     case 'opto'
                         sig_mod_boot{context,dataset} = opto_only{dataset};
                     case 'both'
@@ -111,6 +138,9 @@ function [pooled_cell_types, pooled_names,pooled_colors, sig_mod_boot] = organiz
     for g = 1:length(group_order)
         if strcmpi(group_order{g},'opto')
             group_order{g} = 'Photostim';
+        end
+        if strcmpi(group_order{g},'sound_neg')
+            group_order{g} = 'Sound Negative';
         end
         idx = find(strcmpi(plot_info.pooled_names, capitalize(group_order{g})),1);
         if ~isempty(idx)

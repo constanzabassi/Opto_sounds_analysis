@@ -86,6 +86,7 @@ bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_
 %% compare engagement indices in opto or sound neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
 
+%separate positive and negative sound neurons!
 for i = 1:length(param_sets)
         mod_params_plot = param_sets{i};
         mod_params_plot.data_type = 'sounds';
@@ -97,9 +98,12 @@ end
 % [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 2);
 
 % % significance based on union active/passive for sound, spontaneous for stim
-[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+% [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','sound_neg','opto','both','unmodulated'},[1:24],plot_info, 1,sig_cells{2});
 
-savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\functional_celltype_traces\'];
+[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated','sound_neg'},[1:24],plot_info, 1,sig_cells{2});
+
+savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\functional_celltype_traces\separate_sounds'];
 mod_params.chosen_mice = [1:24]; %1 less for opto control
 wrapper_avg_cell_type_traces_engagement(context_data.dff,pooled_cell_types,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'engagement_dff',plot_info,plot_info.functional_names,plot_info.colors_pooled_3contexts); %repelem(plot_info.functional_colors, 3, 1)
 

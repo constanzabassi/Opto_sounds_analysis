@@ -10,7 +10,7 @@ if size(deconv_response,3) > 3
 end
 contexts = {'active', 'passive'};
 data_modes = plot_info.trace_modes;%{'raw', 'bs'}; % raw and baseline subtracted
-stim_ctrl_idx = [1, 0, 1, 0];
+stim_ctrl_idx = [1, 0, 1, 0, 1, 0];
 
 for fig_idx = 1:length(data_modes)*2
     figure(fig_idx); clf;
