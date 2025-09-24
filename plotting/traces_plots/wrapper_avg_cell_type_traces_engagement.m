@@ -17,7 +17,7 @@ for i = 1:length(param_sets)
         %get the significant neurons (positive, negative, both);
         
         %separate sig cells based on threshold (and single side or not)
-        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
+        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm', sig_mod_boot); %using mod_indexm2 because using prepost instead of ctrl for opto
         sig_cells = get_significant_neurons(current_sig_cells, mod_indexm, 'engagement');
         
         %get context,mouse,celltype responses (across all trials (not

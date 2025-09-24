@@ -46,8 +46,7 @@ for ce = 1:numcells
             errorbar(xtips,ytips,SEM_cells(c),'color',colors_celltypes(ce,:),'LineWidth',1.);
     
         end 
-        xticks([1:length(num_percents)])
-        xticklabels([num_percents])
+        xticks([1:num_percents])
 
 
         if num_percents > 1

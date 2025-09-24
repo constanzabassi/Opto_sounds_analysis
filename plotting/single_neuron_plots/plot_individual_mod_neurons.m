@@ -132,7 +132,7 @@ function plot_individual_mod_neurons(stim_data_subset, ctrl_data_subset, mod_ind
             set(gca, 'FontSize', 6);
             hold off;
         end
-        if plot_info.caxis == 1;
+        if isfield(plot_info,'caxis') && plot_info.caxis == 1;
             colorbar('position',[0.789936246481369,0.316666666666667,0.044444444444444,0.488888888888889])%;'eastoutside'
         end
 

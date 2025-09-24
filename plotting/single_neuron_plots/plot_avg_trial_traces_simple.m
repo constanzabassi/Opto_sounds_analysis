@@ -15,8 +15,8 @@ if isfield(plot_params,'line_colors')
     dilution_factor = 0.6; % 30% white
     trial_colors = line_colors*(1 - dilution_factor) + dilution_factor*ones(size(line_colors));
 else
-    trial_colors = [0.7 0.7 0.7];
-    line_colors = [0,0,0];
+    trial_colors = [0.7 0.7 0.7;0.3 0.3 0.3];
+    line_colors = [0,0,0;0,0,0];
 end
 
 

@@ -14,6 +14,7 @@ params.plot_info = plot_info;
 [context_data.dff,stim_trials_context,ctrl_trials_context] = separate_structure_2context(dff_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv] = separate_structure_2context(deconv_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv_interp] = separate_structure_2context(deconv_st_interp,mouse_context_tr,stim_info);%  context.dff{context,mouse}
+keep all_celltypes dff_st deconv_st stim_info mouse_context_tr deconv_st_interp alignment_frames num_cells sorted_cells context_data params plot_info
 %% Calculate engagement index in the pre stimulus period
 mod_params = params.mod;
 mod_params.mod_type = 'pre_engagement';
@@ -53,10 +54,12 @@ plot_info.plot_labels = {'Stim','Ctrl'}; % Alternative could be {'Left Sounds','
 plot_info.behavioral_contexts = {'Engagement Index'}; %decide which contexts to plot
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 params.plot_info = plot_info;
+mod_params.mod_threshold = .1 %1*10e-6;
+save_dir = mod_params.savepath;
 
 %generate average plots
-savepath = 'W:\Connie\results\Bassi2025\fig3\pre_engagement\celltype_traces\';
-wrapper_avg_cell_type_traces_engagement(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'engagement_dff',plot_info, plot_info.celltype_names,plot_info.colors_celltypes_3contexts);
+savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\celltype_traces\'];
+wrapper_avg_cell_type_traces_engagement(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'engagement_dff',plot_info, plot_info.celltype_names,plot_info.colors_celltypes_3contexts);
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, all_celltypes, params, mod_params.savepath, celltypes_ids,plot_info.y_lims);
@@ -66,9 +69,29 @@ save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datase
 percent_cells = calculate_sig_celltype_percentages(sig_mod_boot_thr, all_celltypes, []);
 bar_plot_percent(percent_cells,[], savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'All Modulated'});
 
+param_sets = { 
+    struct('mod_threshold', mod_params.mod_threshold, 'threshold_single_side', 1, 'savestring', [ 'positive_modulated'],'chosen_mice', mod_params.chosen_mice),
+    struct('mod_threshold', -1 * mod_params.mod_threshold, 'threshold_single_side', 1, 'savestring', [ 'negative_modulated'],'chosen_mice', mod_params.chosen_mice),
+};
+mod_params.chosen_mice = 1:24;
+for i = 1:length(param_sets)
+        mod_params_plot = param_sets{i};
+        mod_params_plot.data_type = 'engagement';
+        %get the significant neurons (positive, negative, both);
+        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params_plot, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
+        percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), all_celltypes, []);
+end
+bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'Positive','Negative'});
+
 %% compare engagement indices in opto or sound neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
 
+for i = 1:length(param_sets)
+        mod_params_plot = param_sets{i};
+        mod_params_plot.data_type = 'sounds';
+        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params_plot, sound.mod, sound.sig_mod_boot);
+        sig_cells{i} = get_significant_neurons(current_sig_cells, mod_indexm, 'union'); %union of active and passive
+end
 % set up colors and different pools of cells
 %within context use below
 % [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 2);
@@ -76,9 +99,9 @@ bar_plot_percent(percent_cells,[], savepath,plot_info.celltype_names,plot_info.c
 % % significance based on union active/passive for sound, spontaneous for stim
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
 
-savepath = 'W:\Connie\results\Bassi2025\fig3\pre_engagement\functional_celltype_traces\';
+savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\functional_celltype_traces\'];
 mod_params.chosen_mice = [1:24]; %1 less for opto control
-wrapper_avg_cell_type_traces_engagement(context_data.dff,pooled_cell_types,mod_indexm,sig_mod_boot,mod_params,savepath,'engagement_dff',plot_info,plot_info.functional_names,plot_info.colors_pooled_3contexts); %repelem(plot_info.functional_colors, 3, 1)
+wrapper_avg_cell_type_traces_engagement(context_data.dff,pooled_cell_types,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'engagement_dff',plot_info,plot_info.functional_names,plot_info.colors_pooled_3contexts); %repelem(plot_info.functional_colors, 3, 1)
 
 %calculate overlap of positive and negative engagement groups
 percent_cells = calculate_sig_celltype_percentages(sig_mod_boot_thr(1:24), pooled_cell_types, []);
@@ -91,10 +114,10 @@ param_sets = {
 };
 mod_params.chosen_mice = 1:24;
 for i = 1:length(param_sets)
-        mod_params = param_sets{i};
-        mod_params.data_type = 'engagement';
+        mod_params_plot = param_sets{i};
+        mod_params_plot.data_type = 'engagement';
         %get the significant neurons (positive, negative, both);
-        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
+        [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params_plot, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), pooled_cell_types, []);
 end
 bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
