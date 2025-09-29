@@ -70,8 +70,8 @@ for d = 1:nDatasets
     mean_engagement = mean(concat_engagement{d}(:,50:59),2);
     engagement_all{d} = mean_engagement';
 end
-plot_performance_vs_engagement_axis_updated(percent_correct_all,engagement_all,[25,5],save_dir,[0,2]);
-plot_performance_vs_activity(percent_correct_all,activity_all,[25,5],save_dir,[-1,1.5]);
+plot_performance_vs_engagement_axis_updated(percent_correct_all,engagement_all,[20,5],save_dir,[0,2]);
+plot_performance_vs_activity(percent_correct_all,activity_all,[20,5],save_dir,[-1,1.5]);
 %% plot weights across cell types
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue

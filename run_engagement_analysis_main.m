@@ -125,3 +125,14 @@ for i = 1:length(param_sets)
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), pooled_cell_types, []);
 end
 bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
+
+%% relate to other modulation indices
+savepath1 = [mod_params.savepath '\other_modulation_indices\'];
+%sound
+other_index = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat').mod_indexm;
+modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Active',0,1,[-1,1]);
+%opto
+other_index = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat').mod_indexm;
+modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Passive',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Active',0,1,[-1,1]);

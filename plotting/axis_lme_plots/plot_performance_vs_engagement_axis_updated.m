@@ -24,6 +24,8 @@ all_success = [];
 all_engagement = [];
 session_success = {};
 session_engagement = {};
+session_success_nooverlap = {};
+session_engagement_nonoverlap = {};
 for a = 1:length(animal_ids)
     idx = animal_id_all == animal_ids(a);
     perf = performance_active(idx);         % Binary performance (0/1)
@@ -50,6 +52,18 @@ for a = 1:length(animal_ids)
     end
     session_success{a} = temp_s;
     session_engagement{a} = temp_e;
+    % ----- Non-overlapping window -----
+    temp_e_nonoverlap = [];
+    temp_s_nonoverlap = [];
+    nonoverlap_window = 10;
+    for i = 1:nonoverlap_window:n-nonoverlap_window+1
+        win_eng = sorted_eng(i:i + nonoverlap_window - 1);
+        win_perf = sorted_perf(i:i + nonoverlap_window - 1);
+        temp_e_nonoverlap = [temp_e_nonoverlap, mean(win_eng)];
+        temp_s_nonoverlap = [temp_s_nonoverlap, mean(win_perf)];
+    end
+    session_success_nooverlap{a} = temp_s_nonoverlap;
+    session_engagement_nonoverlap{a} = temp_e_nonoverlap;
 end
 
 positions = utils.calculateFigurePositions(1, 5, .5, []);
@@ -167,12 +181,105 @@ ylabel({'Engagement Projection';'(z-scored)'});
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 box off
 
+%-------non overlaping window----------------
+% Initialize per-animal matrix [animal x bins]
+animal_success_by_bin = NaN(length(animal_ids), n_bins);
+% Loop through animals/sessions
+for a = 1:length(animal_ids)
+    e = session_engagement_nonoverlap{a};
+    s = session_success_nooverlap{a};
+    if isempty(e)
+        continue
+    end
+    % Bin this session's engagement values
+    [n, ~, bin_idx] = histcounts(e, edges);
+    n_per_sess(a,:) = n;
+    % For each bin, compute mean success
+    for b = 1:n_bins
+        bin_trials = s(bin_idx == b);
+        if ~isempty(bin_trials)
+            animal_success_by_bin(a, b) = mean(bin_trials);
+        end
+    end
+end
+% Compute across-animal mean and SEM
+mean_success_per_bin = nanmean(animal_success_by_bin, 1);
+sem_success_per_bin = nanstd(animal_success_by_bin, [], 1) ./ sqrt(sum(~isnan(animal_success_by_bin),1));
+% Plot
+figure(406);clf;
+hold on;
+% Individual animal traces (light gray lines)
+if plot_sessions == 1
+    for a = 1:size(animal_success_by_bin,1)
+        plot(bin_centers, animal_success_by_bin(a,:), '-', 'Color', [0.7 0.7 0.7], 'LineWidth', 0.8);
+    end
+end
+% Group mean with error bars (black line)
+errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
+xlabel({'Engagement Projection';'(z-scored)'});
+ylabel('Fraction Correct');
+ylims = ylim;
+ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
+xli = xlim;
+xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+box off
+
+all_engagement = [session_engagement_nonoverlap{1,:}];
+all_success = [session_success_nooverlap{1,:}];
+[r, p] = corr(all_success', all_engagement');
+% Plot
+figure(407);clf; hold on;
+scatter(all_success, all_engagement, 20, ...
+    'MarkerFaceColor', [0.6 0.6 0.6], ... % [0.3 0.6 0.9]
+    'MarkerEdgeColor', 'none', ...
+    'MarkerFaceAlpha', 0.1);
+
+% Linear regression
+mdl = fitlm(all_success, all_engagement);
+xvals = linspace(min(all_success), max(all_success), 100);
+yhat = predict(mdl, xvals');
+plot(xvals, yhat, 'k-', 'LineWidth', 1.5);
+
+% --- Mean dots per bin ---
+bin_edges = min(all_success):0.1:1; % adjust bin size as needed
+bin_centers = bin_edges(1:end-1) + diff(bin_edges)/2;
+
+for b = 1:length(bin_edges)-1
+    idx = all_success > bin_edges(b) & all_success <= bin_edges(b+1);
+    % Bin this session's engagement values
+%     [n, ~, bin_idx] = histcounts(e, bin_edges);
+    if any(idx)
+        mean_success = mean(all_success(idx));
+        mean_engagement = mean(all_engagement(idx));
+        plot(mean_success, mean_engagement, 'o', ...
+            'MarkerFaceColor', [0.3 0.3 0.3], ... %[0 0.2 0.6]
+            'MarkerEdgeColor', 'none', ...
+            'MarkerSize', 3);
+    end
+end
+
+% Annotations
+text(0.43, max(all_engagement)*0.95, ...
+    sprintf('P = %.3g\nR = %.2f', p, r), 'FontSize', 6);
+
+xlabel('Fraction Correct');
+ylabel({'Engagement Projection';'(z-scored)'});
+% title('Correlation: Engagement vs Performance (sliding window)');
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+xlim([min(all_success)-0.05,1.05])
+box off
+
+
+
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
     saveas(404,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.fig'));
     exportgraphics(figure(404),strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
     exportgraphics(figure(405),strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
+    exportgraphics(figure(407),strcat('scatter_nonoverlap_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
+
     exportgraphics(figure(804),strcat('heatmap_ntrials_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf'), 'ContentType', 'vector');
 
 

@@ -1,4 +1,4 @@
-function [lm, tbl, proj_all, engagement_proj_all, context_all, corr_mean, corr_all,corr_all_stats] = ...
+function [lm, tbl, proj_all, engagement_proj_all, context_all, corr_mean, corr_all,corr_all_stats,lme] = ...
     linear_regression_corr_model(proj, axis_type, celltype, frame_range_pre, frame_range_post, contexts, varargin)
 % Initialize
 proj_all = [];
@@ -59,6 +59,20 @@ corr_mean = mean(corr_all(:), 'omitnan');
 % p value using permutation test (each dataset)s correlation vs zero)
 [corr_all_stats.p, corr_all_stats.obsDiff, corr_all_stats.effectSize] = permutationTest_updatedcb(mean(corr_all), zeros(size(mean(corr_all))), 10000, ...
                                                      'paired', 1, 'sidedness', 'larger');
+
+
+
+% convert to categorical
+animal_id_all = categorical(animal_id_all);
+
+response_var = strcat(axis_type, 'Proj');
+tbl = table(proj_all, engagement_proj_all, animal_id_all, ...
+    'VariableNames', {strcat(axis_type,'Proj'),'EngagementProj','AnimalID'});
+
+formula = sprintf('%s ~ EngagementProj + (1|AnimalID)', response_var);
+
+lme = fitlme(tbl, formula);
+disp(lme)
 end
 
 

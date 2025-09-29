@@ -6,7 +6,20 @@ end
 
 positions = utils.calculateFigurePositions(1, 6, .4, []);
 if size(deconv_response,3) > 3
-    positions = utils.calculateFigurePositions(1, 7, .3, []);
+%     positions = utils.calculateFigurePositions(1, 7, .3, []);
+% 
+%     %make skinnier and taller (good for 3)
+%     positions(:,1) = positions(:,1)-.1;
+%     positions(:,4) = positions(:,4)+.1;
+%     positions(:,2) = positions(:,2)-.2;
+%     positions(:,3) = positions(:,3)-.1;
+positions = utils.calculateFigurePositions(1, 9, .2, []);
+
+    %make skinnier and taller (good for 3)
+    positions(:,1) = positions(:,1)-.1;
+    positions(:,4) = positions(:,4)+.1;
+    positions(:,2) = positions(:,2)-.2;
+    positions(:,3) = positions(:,3)-.1;
 end
 contexts = {'active', 'passive'};
 data_modes = plot_info.trace_modes;%{'raw', 'bs'}; % raw and baseline subtracted
@@ -104,6 +117,14 @@ for fig_idx = 1:length(data_modes)*2
             xlim(xlimss );
             xticks([1 61]);
             xticklabels([-2 0]);
+            yli = ylim;
+            for f = 1:size(stim_frame,1)
+                x = [stim_frame(f,1), stim_frame(f,2), stim_frame(f,2), stim_frame(f,1)];
+                y = [yli(1), yli(1), yli(2), yli(2)];
+                patch(x, y, [.9 .0 .6], 'EdgeColor', 'none', 'FaceAlpha', 0.1); %[.5 .5 .5]
+
+            end
+            
 
 %             xlimss = [1 122];
 %             xlim(xlimss );
@@ -129,15 +150,17 @@ for fig_idx = 1:length(data_modes)*2
         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(celtype, :));
         
         yli = ylim;
-        for f = 1:size(stim_frame,1)
-            if contains(type,'opto')
-                color_onset = [1 0.8 0.3];
-            else
-                color_onset = [.5 .5 .5];
+        if nargin < 10
+            for f = 1:size(stim_frame,1)
+                if contains(type,'opto')
+                    color_onset = [1 0.8 0.3];
+                else
+                    color_onset = [.5 .5 .5];
+                end
+    
+                rectangle('Position', [stim_frame(f,1), yli(1), stim_frame(f,2)-stim_frame(f,1), ...
+                    yli(2)-yli(1)], 'FaceColor', color_onset, 'EdgeColor', 'none');
             end
-
-            rectangle('Position', [stim_frame(f,1), yli(1), stim_frame(f,2)-stim_frame(f,1), ...
-                yli(2)-yli(1)], 'FaceColor', color_onset, 'EdgeColor', 'none');
         end
 %         xline(stim_frame(1), '--k', 'LineWidth', 1);
 
