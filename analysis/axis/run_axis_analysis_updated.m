@@ -37,25 +37,62 @@ celltype = 4;
 frame_range_pre= 50:59;
 frame_range_post = 63:93;
 %sound (predicted) vs engagement axis
-[lme_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound,corr_mean, corr_all, corr_stats] = ...
+[lm_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound,corr_mean, corr_all, corr_stats] = ...
     linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
 %stim(predicted) vs engagement axis
-[lme_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim,corr_mean_stim, corr_all_stim,corr_stats_stim] = ...
+[lm_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim,corr_mean_stim, corr_all_stim,corr_stats_stim] = ...
     linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
 
 % % %sound(predicted) vs stim
-[lme_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim,corr_mean_sound_stim, corr_all_sound_stim,corr_stats_sound_stim] = ...
+[lm_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim,corr_mean_sound_stim, corr_all_sound_stim,corr_stats_sound_stim] = ...
     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
 
-[lme_sound_stim_pass,tbl_sound_stim_pass,~,~,context_all_sound_stim_pass,corr_mean_sound_stim_pass, corr_all_sound_stim_pass,corr_stats_sound_stim_pass] = ...
+[lm_sound_stim_pass,tbl_sound_stim_pass,~,~,context_all_sound_stim_pass,corr_mean_sound_stim_pass, corr_all_sound_stim_pass,corr_stats_sound_stim_pass] = ...
     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
 
 %% scatter plots of trials and linear regression lines
-plot_linear_regression_lines(lme_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir,'Engagement',[corr_mean,corr_stats.p]);
-plot_linear_regression_lines(lme_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir,'Engagement',[corr_mean_stim,corr_stats_stim.p]);
-plot_linear_regression_lines(lme_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir2,'Stim',[corr_mean_sound_stim,corr_stats_sound_stim.p]);
-plot_linear_regression_lines(lme_sound_stim_pass,tbl_sound_stim_pass,context_all_sound_stim_pass,'Sound Projection',save_dir2,'Stim',[corr_mean_sound_stim_pass,corr_stats_sound_stim_pass.p]);
+% plot_linear_regression_lines(lme_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir,'Engagement',[corr_mean,corr_stats.p]);
+plot_linear_regression_lines(lm_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir,'Engagement');
+plot_linear_regression_lines(lm_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir,'Engagement');
+plot_linear_regression_lines(lm_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir2,'Stim',[],[-2,4],[-4,4],'topright');
+plot_linear_regression_lines(lm_sound_stim_pass,tbl_sound_stim_pass,context_all_sound_stim_pass,'Sound Projection',save_dir2,'Stim',[],[-2,4],[-4,4]);
 
+%within context comparisons for engagement vs stim/sound
+for ctx = 1:2
+    [lm_sound,tbl_sound,~,~,context_all_sound,~, ~, ~] = ...
+        linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[ctx]);
+    [lm_stim,tbl_stim,~,~,context_all_stim,~, ~,~] = ...
+        linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[ctx]);
+    plot_linear_regression_lines(lm_sound,tbl_sound,context_all_sound,'Sound Projection',strcat(save_dir,plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+    plot_linear_regression_lines(lm_stim,tbl_stim,context_all_stim,'Stim Projection',strcat(save_dir,plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+end
+% %% compare to lme!
+% [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
+%     linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
+% %stim(predicted) vs engagement axis
+% [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
+%     linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
+% 
+% % % %sound(predicted) vs stim
+% [~,~,~,~,context_all_sound_stim,~, ~,~,lme_sound_stim,tbl_sound_stim_lme] = ...
+%     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
+% 
+% [~,~,~,~,context_all_sound_stim_pass,~, ~,~,lme_sound_stim_pass,tbl_sound_stim_pass_lme] = ...
+%     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
+% 
+% plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme'),'Engagement');
+% plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme'),'Engagement');
+% plot_linear_regression_lines(lme_sound_stim,tbl_sound_stim_lme,context_all_sound_stim,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4],'topright');
+% plot_linear_regression_lines(lme_sound_stim_pass,tbl_sound_stim_pass_lme,context_all_sound_stim_pass,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4]);
+% 
+% for ctx = 1:2
+%     [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
+%         linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[ctx]);
+%     [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
+%         linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[ctx]);
+%     plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+%     plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+% end
 %% performance vs engagment!
 nDatasets = 24;
 for d = 1:nDatasets
@@ -105,23 +142,23 @@ frame_range_post = 63:93;
 example_split = 1;
 
 %sound (predicted) vs engagement axis
-[lme_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound] = ...
+[lm_sound,tbl_sound,proj_all_sound,engagement_proj_all_sound,context_all_sound] = ...
     linear_regression_corr_model(proj_norm_ctrl(example_split,:,:,:), 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
 %stim(predicted) vs engagement axis
-[lme_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim,corr_mean_stim] = ...
+[lm_stim,tbl_stim,proj_all_stim,engagement_proj_all_stim,context_all_stim,corr_mean_stim] = ...
     linear_regression_corr_model(proj_norm(example_split,:,:,:), 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
 
 % % %sound(predicted) vs stim
-[lme_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim] = ...
+[lm_sound_stim,tbl_sound_stim,proj_all_sound_stim,engagement_proj_all_sound_stim,context_all_sound_stim] = ...
     linear_regression_corr_model(proj_norm(example_split,:,:,:),'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
 
-[lme_sound_stim_pass,tbl_sound_stim_pass,~,~,context_all_sound_stim_pass,corr_mean_sound_stim_pass] = linear_regression_corr_model(proj_norm(example_split,:,:,:),'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
+[lm_sound_stim_pass,tbl_sound_stim_pass,~,~,context_all_sound_stim_pass,corr_mean_sound_stim_pass] = linear_regression_corr_model(proj_norm(example_split,:,:,:),'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
 
 % scatter plots of trials and linear regression lines for example session
-plot_linear_regression_lines(lme_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir);
-plot_linear_regression_lines(lme_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir);
-plot_linear_regression_lines(lme_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir2,'Stim');
-plot_linear_regression_lines(lme_sound_stim_pass,tbl_sound_stim_pass,context_all_sound_stim_pass,'Sound Projection',save_dir2,'Stim');
+plot_linear_regression_lines(lm_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir);
+plot_linear_regression_lines(lm_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir);
+plot_linear_regression_lines(lm_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir2,'Stim');
+plot_linear_regression_lines(lm_sound_stim_pass,tbl_sound_stim_pass,context_all_sound_stim_pass,'Sound Projection',save_dir2,'Stim');
 
 colors_medium = [0.37 0.75 0.49 %green
                 0.17 0.35 0.8  %blue

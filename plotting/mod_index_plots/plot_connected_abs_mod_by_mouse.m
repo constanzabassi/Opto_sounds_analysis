@@ -116,6 +116,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             mod_stats.stats(celltype,context).p_val_vs_zero = p_val_vs_zero;
 
             if isfield(plot_info,'zero_star') && plot_info.zero_star == 1%only plot if requested
+                yline(0,'color',[0.5,0.5,0.5],'LineStyle','--')
                 if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
 %                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
 %                         'Color', plot_info.colors_celltypes(celltype,:), ...

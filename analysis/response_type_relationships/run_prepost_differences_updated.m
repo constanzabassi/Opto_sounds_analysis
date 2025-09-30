@@ -89,27 +89,30 @@ response_types_info = { ...
     struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)'), ...
     struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
 };
-[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], save_dir, plot_info);
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], current_save_dir, plot_info);
 %% comparing pre vs post
-modl_fit.prepost_stim = wrapper_scatter_index_contexts([],avg_pre, diff_stim, pooled_cell_types, plot_info, save_dir, 'Pre', 'Post (\Delta Stim)',0,1,[-.6,2]);
-modl_fit.prepost_sound = wrapper_scatter_index_contexts([],avg_ctrl_pre, avg_ctrl_post, pooled_cell_types, plot_info, save_dir, 'Pre', 'Post (Sound)',0,1,[-.6,2]);
+modl_fit.prepost_stim = wrapper_scatter_index_contexts([],avg_pre, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit.prepost_sound = wrapper_scatter_index_contexts([],avg_ctrl_pre, avg_ctrl_post, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (Sound)',0,1,[-.6,2]);
 
 %% comparing opto vs sound
 %within context significance
 n_contexts = 2;
-[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, n_contexts);
-modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types, plot_info, save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
-[stats.delta_stim_sound, corr_results.delta_stim_sound] = wrapper_plot_corr_means([],pooled_cell_types, avg_ctrl_post, diff_stim, avg_post, save_dir, plot_info, [-1,1], 'Corr all (Sound vs Δ Stim)', [1:24], [1:4]) %1:4 is functional subtimes from pooled
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'both','opto','sound'},[1:24],plot_info, 1);
+modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+
+
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1);
+[stats.delta_stim_sound, corr_results.delta_stim_sound] = wrapper_plot_corr_means([],pooled_cell_types, avg_ctrl_post, diff_stim, avg_post, current_save_dir, plot_info, [-1,1], 'Corr (Sound vs Δ Stim)', [1:24], [1:3]) %1:4 is functional subtimes from pooled
 
 %% separate into modulated and unmodulated
 [pooled_cell_types_modulated,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','modulated'},[1:24],plot_info, 2);
 current_save_dir2 ='V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\modulated';
 
-[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types_modulated, [1:24], save_dir, plot_info);
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types_modulated, [1:24], current_save_dir2, plot_info);
 celltypes_to_plot = 2; %modulated
 response_types_to_plot =  1:2; %{1 ='Sound',2 ='Stim + Sound',3 ='Delta Stim}
-[stats, corr_results] = wrapper_plot_means_std([],pooled_cell_types_modulated, avg_ctrl_post,  diff_stim, avg_post, save_dir, plot_info, {[0.1,.3],[0,.25]}, {'Mean Population Activity','Std. Population Activity'}, [1:24], celltypes_to_plot, response_types_to_plot);
-modl_fit.delta_stim_sound_modulated = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types_modulated, plot_info, save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+[stats, corr_results] = wrapper_plot_means_std([],pooled_cell_types_modulated, avg_ctrl_post,  diff_stim, avg_post, current_save_dir2, plot_info, {[0.1,.3],[0,.25]}, {'Mean Population Activity','Std. Population Activity'}, [1:24], celltypes_to_plot, response_types_to_plot);
+modl_fit.delta_stim_sound_modulated = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types_modulated, plot_info, current_save_dir2, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
 
 %% EXAMINATION OF COVARIANCE BETWEEN BASELINE SOUND VS SOUND+STIM-SOUND RESPONSE
 
@@ -117,8 +120,8 @@ modl_fit.delta_stim_sound_modulated = wrapper_scatter_index_contexts([],avg_ctrl
 save_dir_corr = [current_save_dir '/correlations/'];
 % have to be the same functional groups across contexts!
 [pooled_cell_types_across_contexts,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','both','opto','unmodulated'},[1:24],plot_info, 1);
-[cos_corr_stats, cos_results] = wrapper_plot_cosine_sim_corr([],pooled_cell_types_across_contexts, avg_ctrl_post, diff_stim, save_dir, plot_info, {[0,1],[0.5,1]}, [1:24], [1:4]);
-[~, corr_results_across_ctx] = wrapper_plot_corr_means([],pooled_cell_types_across_contexts, avg_ctrl_post, diff_stim, avg_post, save_dir, plot_info, [-1,1], 'Corr all (Sound vs Δ Stim)', [1:24], [1:4]) %1:4 is functional subtimes from pooled
+[cos_corr_stats, cos_results] = wrapper_plot_cosine_sim_corr([],pooled_cell_types_across_contexts, avg_ctrl_post, diff_stim, save_dir_corr, plot_info, {[0,1],[0.5,1]}, [1:24], [1:4]);
+[~, corr_results_across_ctx] = wrapper_plot_corr_means([],pooled_cell_types_across_contexts, avg_ctrl_post, diff_stim, avg_post, save_dir_corr, plot_info, [-1,1], 'Corr all (Sound vs Δ Stim)', [1:24], [1:4]) %1:4 is functional subtimes from pooled
 
 % cdf of responses like delta stim across active and passive (pooling all
 % neurons across datasets!) - ALSO HAS TO BE SAME FUNCTIONAL GROUPS ACROSS
