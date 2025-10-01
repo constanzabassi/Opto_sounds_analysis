@@ -32,6 +32,9 @@ hist_stats =  histogram_axis_across_contexts_splits([1:24],proj_norm_ctrl, 'Soun
 frames_to_avg = 63:93;
 bin_edges = [-1.5:0.4:2.5];%
 hist_stats =  histogram_axis_across_contexts_splits([1:24],proj_norm, 'Stim',celltype, bin_edges,frames_to_avg,[0,0,0;.5,.5,.5],{'Active','Passive'},save_dir);
+
+%axis stability across folds
+plot_mean_axis_stability_across_splits(weights,celltype,save_dir);
 %% model
 celltype = 4;
 frame_range_pre= 50:59;
@@ -158,7 +161,7 @@ for celltype = 1:3 %celltype of variable used to make predictions
 
 end
 
-bar_plot_coefficients({lm_sound_celltypes{2};lm_stim_celltypes{2}}, {lm_sound_celltypes{3};lm_stim_celltypes{3}}, save_dir, plot_info.colors_celltypes(2:3,:), "Corr",{'Sound','Photostim'},'SOMPV');
+bar_plot_coefficients({lm_sound_celltypes{2};lm_stim_celltypes{2}}, {lm_sound_celltypes{3};lm_stim_celltypes{3}}, save_dir, plot_info.colors_celltypes(2:3,:), "Slope",{'Sound','Photostim'},'SOMPV');
 %% from random have to choose example split
 celltype = 4;
 frame_range_pre= 50:59;

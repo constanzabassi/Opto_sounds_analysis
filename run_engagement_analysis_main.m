@@ -45,6 +45,9 @@ overlap_labels = {'Act - Pass'}; %{'Active', 'Passive','Both'}; % {'Active', 'Pa
 [~, ~, ~, ~, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
 
+[~, ~, ~, ~, pooledtypes_ids] = ...
+    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, pooled_cell_types,plot_info.celltype_names);
+
 %% make plots!
 plot_info.y_lims = [-.3, .3];
 params.plot_info = plot_info;
@@ -99,7 +102,8 @@ end
 
 % % significance based on union active/passive for sound, spontaneous for stim
 % [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
-[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','sound_neg','opto','both','unmodulated'},[1:24],plot_info, 1,sig_cells{2});
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','sound_neg','opto','both','unmodulated'},[1:24],plot_info, 1,sig_cells{2});
+mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, pooled_cell_types, params, mod_params.savepath, celltypes_ids,plot_info.y_lims);
 
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated','sound_neg'},[1:24],plot_info, 1,sig_cells{2});
 

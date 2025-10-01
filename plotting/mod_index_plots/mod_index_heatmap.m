@@ -5,6 +5,10 @@ figure(94);clf;
 % colormap(colorList) % redblue
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 mod_to_plot = stim_mod(:,1:length(plot_info.behavioral_contexts));
+if 1 == length(plot_info.behavioral_contexts)
+    %halve positions
+    positions(1,3) = positions(1,3) * 0.2;  % width is 3rd element
+end
 colormap redblue
 meancontextmod = nanmean(mod_to_plot(:,:) , 2);%nanmean(stim_mod(chosen_cels,:) , 2);
 
@@ -22,7 +26,11 @@ else
 end
 colorbar
 xticks([1:size(mod_to_plot,2)]);
+if length(plot_info.behavioral_contexts) > 1
 xticklabels(plot_info.behavioral_contexts);
+else
+    xticklabels('');
+end
 ylabel('Neurons','FontSize',7)
 set(heatmap_plot,'AlphaData',~isnan(mod_to_plot(id,:))); %,~isnan(stim_mod(chosen_cels(id),:)))
 set(gca,'color',[.7 .7 .7],'fontsize',7);

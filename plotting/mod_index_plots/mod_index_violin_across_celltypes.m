@@ -2,12 +2,18 @@ function [stats] = mod_index_violin_across_celltypes(save_dir,stim_mod,behaviora
 
 figure(97);clf
 % t = tiledlayout(1,length(celltypes_ids),'TileSpacing','Compact','Padding','Compact');
-positions = utils.calculateFigurePositions(1, 6, .5, []);
+positions = utils.calculateFigurePositions(1, 7, .3, []);
+if 1 == length(behavioral_contexts)
+    %increase height
+    positions = utils.calculateFigurePositions(1, 9, .2, []);
+    positions(:,2) = positions(:,2) -0.5;  % width is 3rd element
+    positions(:,4) = positions(:,4) * 1.5;  % width is 3rd element
+end
 p_stim = [];
 for cel_type = 1:length(celltypes_ids)
     %     nexttile
     subplot(1,length(celltypes_ids),cel_type)
-    title(celltypes_ids{2,cel_type},'FontSize',8,'FontName','arial','FontWeight','normal');
+    title(celltypes_ids{2,cel_type},'FontSize',7,'FontName','arial','FontWeight','normal');
     for context = 1:length(behavioral_contexts)
 
         stats.stats{cel_type} = get_basic_stats(stim_mod(celltypes_ids{1,cel_type},context));
@@ -20,9 +26,11 @@ for cel_type = 1:length(celltypes_ids)
     end
     
         
-        if cel_type == 1
+        if cel_type == 1 && length(behavioral_contexts) > 1
             ylabel('Modulation Index')
-        elseif cel_type == 2
+        elseif cel_type == 1 && length(behavioral_contexts) == 1
+            ylabel('Engagement Index')
+%         elseif cel_type == 2
 %             xlabel('Modulation Index')
         end
 
@@ -52,12 +60,17 @@ for cel_type = 1:length(celltypes_ids)
     if nargin >7
         ylim(varargin{1,1});
     else
-        ylim([-.5 1.2]);
+        ylim([-1 1]);
     end
     xticks([1:length(behavioral_contexts)])
-    xticklabels(behavioral_contexts)
+    if length(behavioral_contexts) == 1
+        xticklabels(celltypes_ids{2,cel_type})
+        title('')
+    else
+        xticklabels(behavioral_contexts)
+    end
 
-    set(gca,'fontsize',12,'Units','Inches','Position',positions(cel_type,:));
+    set(gca,'fontsize',7,'Units','Inches','Position',positions(cel_type,:));
     stats.p_all{cel_type} = p_stim;
 %     utils.set_current_fig;
 end
@@ -73,7 +86,7 @@ figure(98);clf
 for cel_type = 1:length(celltypes_ids)
 %     nexttile
     subplot(1,length(celltypes_ids),cel_type)
-    title(celltypes_ids{2,cel_type},'FontSize',8,'FontName','arial','FontWeight','normal');
+    title(celltypes_ids{2,cel_type},'FontSize',7,'FontName','arial','FontWeight','normal');
     for context = 1:length(behavioral_contexts)
 
         %make plots
@@ -87,10 +100,12 @@ for cel_type = 1:length(celltypes_ids)
         hh = findobj('LineStyle','--','LineWidth',1); 
         set(h(1:6), 'LineStyle','-','LineWidth',1.5);
         
-        if cel_type == 1
+        if cel_type == 1 && length(behavioral_contexts) > 1
             ylabel('Modulation Index')
-        elseif cel_type == 2
-            %xlabel('Modulation Index')
+        elseif cel_type == 1 && length(behavioral_contexts) == 1
+            ylabel('Engagement Index')
+%         elseif cel_type == 2
+%             xlabel('Modulation Index')
         end
 
         stim_contexts{context} = stim_mod(celltypes_ids{1,cel_type},context);
@@ -119,12 +134,17 @@ for cel_type = 1:length(celltypes_ids)
     if nargin >7
         ylim(varargin{1,1});
     else
-        ylim([-.5 1.2]);
+        ylim([-1 1]);
     end
     xticks([1:length(behavioral_contexts)])
-    xticklabels(behavioral_contexts)
+    if length(behavioral_contexts) == 1
+        xticklabels(celltypes_ids{2,cel_type})
+        title('')
+    else
+        xticklabels(behavioral_contexts)
+    end
     xlim([0 length(behavioral_contexts)+1])
-    set(gca,'fontsize',12,'box','off','Units','Inches','Position',positions(cel_type,:));
+    set(gca,'fontsize',7,'box','off','Units','Inches','Position',positions(cel_type,:));
     stats.p_all{cel_type} = p_stim;
 %     utils.set_current_fig;
 end
