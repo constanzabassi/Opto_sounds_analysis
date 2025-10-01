@@ -2,8 +2,8 @@ function plot_scatter_pred_vs_obs(lme,axis_type,save_dir,varargin)
 
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 
-residuals_values = residuals(lme);
-fitted_values = fitted(lme);
+residuals_values = lme.Residuals.Raw; %residuals(lme);
+fitted_values = lme.Fitted; %fitted(lme);
 figure(803);clf;
 scatter(fitted_values, residuals_values,5,[0.4 0.4 0.4], 'filled', 'MarkerFaceAlpha',1)
 xlabel('Fitted Values');
@@ -13,7 +13,7 @@ h = refline(0,0);  % horizontal line at 0
 h.LineWidth = 2;
 h.Color = 'k';
 %adjust figure
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
 
 
@@ -27,9 +27,9 @@ h.LineWidth = 2;
 h.Color = 'k';
 
 %adjust figure
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
-utils.place_text_labels({['R² = ' num2str(round(lme.Rsquared.Adjusted,2))]},'k',.05,8,'topleft')
+utils.place_text_labels({['R² = ' num2str(round(lme.Rsquared.Adjusted,2))]},'k',.05,7,'topleft')
 
 
 if ~isempty(save_dir)

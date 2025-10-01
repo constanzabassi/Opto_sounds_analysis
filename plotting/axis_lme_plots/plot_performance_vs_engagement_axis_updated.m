@@ -315,7 +315,7 @@ xlabel({'Engagement Projection';'(z-scored)'});
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 
 box off
-%%
+%% plot based on engagement bins (no overlap!)
 % Unique animals/sessions
 animal_ids = unique(animal_id_all);
 
@@ -326,10 +326,10 @@ session_success = {};
 session_engagement = {};
 
 % Define engagement bins (you can change number of bins)
-n_bins = 5;
-edges = linspace(0, 2, n_bins + 1); % assumes engagement is normalized [0,1]
+n_bins = 6;
+edges = linspace(-1, 2, n_bins + 1); % assumes engagement is normalized [0,1]
 bin_centers = movmean(edges, 2, 'Endpoints', 'discard');
-
+animal_success_by_bin_nooverlap = NaN(length(animal_ids), n_bins);
 for a = 1:length(animal_ids)
     idx = animal_id_all == animal_ids(a);
     perf = performance_active(idx);         % Binary performance (0/1)
@@ -346,7 +346,7 @@ for a = 1:length(animal_ids)
 
     for b = 1:n_bins
         bin_trials = bin_idx == b;
-        if sum(bin_trials) < 10
+        if sum(bin_trials) < 5
             continue
         end
         mean_eng = mean(engagement(bin_trials));
@@ -359,6 +359,7 @@ for a = 1:length(animal_ids)
         % Store pooled
         all_engagement(end+1,1) = mean_eng;
         all_success(end+1,1) = mean_perf;
+        animal_success_by_bin_nooverlap(a, b) = mean_perf;
     end
 
     session_engagement{a} = temp_e;
@@ -383,10 +384,18 @@ plot(xvals, yhat, 'k-', 'LineWidth', 1.5);
 bin_edges = linspace(edge_input(1),edge_input(2), window_bins(2)+1);%prctile(engagement_active, linspace(0, 100, 6));%linspace(0,2, 6); %prctile(engagement_active, linspace(0, 100, 6));  % 5 bins
 bin_centers = movmean(edges, 2, 'Endpoints','discard');
 
+for b = 1:n_bins
+    plot(bin_centers(b), mean(animal_success_by_bin_nooverlap(:, b),'omitnan') ,  'o', ...
+        'MarkerFaceColor', [0.3 0.3 0.3], ... %[0 0.2 0.6]
+        'MarkerEdgeColor', 'none', ...
+        'MarkerSize', 3);
+
+end
 
 % Annotations
 text(.5, 0.45, ...
     sprintf('P = %.3g\nR = %.2f', p2, r2), 'FontSize', 6);
+
 
 ylabel('Fraction Correct');
 xlabel({'Engagement Projection';'(z-scored)'});
@@ -429,7 +438,7 @@ for a = 1:length(animal_ids)
 %         inds = find(engagement >= (bins(b) - window/2) & engagement < (bins(b) + window/2));
         inds = find(engagement >= (bins(b-1)) & engagement < (bins(b) + window));
 
-        if isempty(inds) || length(inds) < 10 %at least 10 trials
+        if isempty(inds) || length(inds) < 5%10 %at least 10 trials
             continue
         end
 
@@ -520,7 +529,7 @@ if ~isempty(save_dir)
     exportgraphics(figure(404),fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(405),fullfile(new_savedir,strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(407),fullfile(new_savedir,strcat('scatter_nonoverlap_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
-    exportgraphics(figure(408),fullfile(new_savedir,strcat('scatter_nonoverlap_engagement_vs_performance_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
+    exportgraphics(figure(408),fullfile(new_savedir,strcat('scatter_nonoverlap_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(409),fullfile(new_savedir,strcat('scatter_binned_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(106),fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
 

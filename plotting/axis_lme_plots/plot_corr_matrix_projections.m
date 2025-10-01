@@ -1,5 +1,7 @@
 function plot_corr_matrix_projections(proj,celltype,frames_pre,frames_post,save_dir)
 
+proj = concat_splits_proj(proj);
+
 all_sound = [];
 all_eng = [];
 all_stim = [];
@@ -16,7 +18,7 @@ proj_matrix = [all_eng; all_sound; all_stim]';  % [trials x 3]
 [corr_mat,p_vals] = corrcoef(proj_matrix);
 
 figure(801);clf;
-colormap parula
+colormap redblue
 imagesc(corr_mat);
 colorbar;
 xticks(1:3); xticklabels({'Engagement','Sound','Stim'});
@@ -24,6 +26,7 @@ yticks(1:3); yticklabels({'Engagement','Sound','Stim'});
 
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+caxis([-1 1])
 utils.set_current_fig;
 
 if ~isempty(save_dir)

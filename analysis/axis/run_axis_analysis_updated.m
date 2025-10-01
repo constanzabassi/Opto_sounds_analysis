@@ -66,33 +66,37 @@ for ctx = 1:2
     plot_linear_regression_lines(lm_sound,tbl_sound,context_all_sound,'Sound Projection',strcat(save_dir,plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
     plot_linear_regression_lines(lm_stim,tbl_stim,context_all_stim,'Stim Projection',strcat(save_dir,plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
 end
-% %% compare to lme!
-% [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
-%     linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
-% %stim(predicted) vs engagement axis
-% [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
-%     linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
-% 
-% % % %sound(predicted) vs stim
-% [~,~,~,~,context_all_sound_stim,~, ~,~,lme_sound_stim,tbl_sound_stim_lme] = ...
-%     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
-% 
-% [~,~,~,~,context_all_sound_stim_pass,~, ~,~,lme_sound_stim_pass,tbl_sound_stim_pass_lme] = ...
-%     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
-% 
-% plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme'),'Engagement');
-% plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme'),'Engagement');
-% plot_linear_regression_lines(lme_sound_stim,tbl_sound_stim_lme,context_all_sound_stim,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4],'topright');
-% plot_linear_regression_lines(lme_sound_stim_pass,tbl_sound_stim_pass_lme,context_all_sound_stim_pass,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4]);
-% 
-% for ctx = 1:2
-%     [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
-%         linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[ctx]);
-%     [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
-%         linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[ctx]);
-%     plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
-%     plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
-% end
+
+plot_corr_matrix_projections(proj_norm,celltype,frame_range_pre,frame_range_post,save_dir);%concatenates across contexts
+plot_scatter_pred_vs_obs(lm_sound,'Sound',save_dir);
+plot_scatter_pred_vs_obs(lm_stim,'Stim',save_dir);
+% % %% compare to lme!
+% % [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
+% %     linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[1:2]);
+% % %stim(predicted) vs engagement axis
+% % [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
+% %     linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[1:2]);
+% % 
+% % % % %sound(predicted) vs stim
+% % [~,~,~,~,context_all_sound_stim,~, ~,~,lme_sound_stim,tbl_sound_stim_lme] = ...
+% %     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
+% % 
+% % [~,~,~,~,context_all_sound_stim_pass,~, ~,~,lme_sound_stim_pass,tbl_sound_stim_pass_lme] = ...
+% %     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
+% % 
+% % plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme'),'Engagement');
+% % plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme'),'Engagement');
+% % plot_linear_regression_lines(lme_sound_stim,tbl_sound_stim_lme,context_all_sound_stim,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4],'topright');
+% % plot_linear_regression_lines(lme_sound_stim_pass,tbl_sound_stim_pass_lme,context_all_sound_stim_pass,'Sound Projection',strcat(save_dir2,'lme'),'Stim',[],[-2,4],[-4,4]);
+% % 
+% % for ctx = 1:2
+% %     [~,~,~,~,context_all_sound,~, ~,~,lme_sound,tbl_sound_lme] = ...
+% %         linear_regression_corr_model(proj_norm_ctrl, 'Sound',celltype,frame_range_pre,frame_range_post,[ctx]);
+% %     [~,~,~,~,context_all_stim,~, ~,~,lme_stim,tbl_stim_lme] = ...
+% %         linear_regression_corr_model(proj_norm, 'Stim',celltype,frame_range_pre,frame_range_post,[ctx]);
+% %     plot_linear_regression_lines(lme_sound,tbl_sound_lme,context_all_sound,'Sound Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+% %     plot_linear_regression_lines(lme_stim,tbl_stim_lme,context_all_stim,'Stim Projection',strcat(save_dir,'lme\',plot_info.behavioral_contexts{ctx}),'Engagement',[],[-4,4],[-4,4]);
+% % end
 %% performance vs engagment!
 nDatasets = 24;
 for d = 1:nDatasets
@@ -134,7 +138,27 @@ frame_range_post = 63:93;
     linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[1],'Stim');
 
 [~,~,~,~,~,corr_mean_sound_stim_pass, corr_all_sound_stim_pass, corr_stats_sound_stim_pass] = linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_range_post,frame_range_post,[2],'Stim');
+%% comparison across cell types- to define engagement axis
+celltype_of_predicted_var = 4;
+lm_sound_celltypes = {}; lm_stim_celltypes = {};
+for celltype = 1:3 %celltype of variable used to make predictions
+    save_dir_celltype = strcat(save_dir,upper(plot_info.celltype_names{celltype}),'_engagement')
+    
+    [lm_sound,tbl_sound,~,~,context_all_sound,corr_mean, ~, ~] = ...
+    linear_regression_corr_model(proj_norm_ctrl, 'Sound',[celltype_of_predicted_var,celltype],frame_range_pre,frame_range_post,[1:2]);
+    %stim(predicted) vs engagement axis
+    [lm_stim,tbl_stim,~,~,context_all_stim,~, ~,~] = ...
+        linear_regression_corr_model(proj_norm, 'Stim',[celltype_of_predicted_var,celltype],frame_range_pre,frame_range_post,[1:2]);
+    %save across celltypes
+    lm_sound_celltypes{celltype} = lm_sound;
+    lm_stim_celltypes{celltype} = lm_stim;
+    %make plots across celltypes
+    plot_linear_regression_lines(lm_sound,tbl_sound,context_all_sound,'Sound Projection',save_dir_celltype,'Engagement');
+    plot_linear_regression_lines(lm_stim,tbl_stim,context_all_stim,'Stim Projection',save_dir_celltype,'Engagement');
 
+end
+
+bar_plot_coefficients({lm_sound_celltypes{2};lm_stim_celltypes{2}}, {lm_sound_celltypes{3};lm_stim_celltypes{3}}, save_dir, plot_info.colors_celltypes(2:3,:), "Corr",{'Sound','Photostim'},'SOMPV');
 %% from random have to choose example split
 celltype = 4;
 frame_range_pre= 50:59;
