@@ -101,11 +101,15 @@ end
 % [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','both','opto','sound'},[1:24],plot_info, 2);
 
 % % significance based on union active/passive for sound, spontaneous for stim
-% [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
-[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','sound_neg','opto','both','unmodulated'},[1:24],plot_info, 1,sig_cells{2});
-mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, pooled_cell_types, params, mod_params.savepath, celltypes_ids,plot_info.y_lims);
+% [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','sound_neg','opto','both','unmodulated'},[1:24],plot_info, 1,sig_cells{2});
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1);
+
+params.plot_info = plot_info;
+mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, pooled_cell_types, params, [mod_params.savepath '/functional_pools_nounmod/'], celltypes_ids,plot_info.y_lims);
 
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated','sound_neg'},[1:24],plot_info, 1,sig_cells{2});
+[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1,sig_cells{2});
 
 savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\functional_celltype_traces\separate_sounds'];
 mod_params.chosen_mice = [1:24]; %1 less for opto control
@@ -128,15 +132,18 @@ for i = 1:length(param_sets)
         [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params_plot, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), pooled_cell_types, []);
 end
-bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
+bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, [mod_params.savepath '/functional_pools/'],plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
 
+plot_info = plotting_config();
+proportions_celltypes = plot_celltype_pies(all_celltypes, pooled_cell_types,'vertical',[mod_params.savepath '/functional_pools/'],plot_info.colors_celltypes);
 %% relate to other modulation indices
-savepath1 = [mod_params.savepath '\other_modulation_indices\'];
+savepath1 = [mod_params.savepath '\other_modulation_indices_sig\'];
 %sound
 other_index = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat').mod_indexm;
-modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
-modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Active',0,1,[-1,1]);
+% modl_fit = scatter_index_sigcells_histogram_optional([]  , all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional(sound.sig_cells  , all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional(sound.sig_cells  , all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Active',0,1,[-1,1]);
 %opto
 other_index = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat').mod_indexm;
-modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Passive',0,1,[-1,1]);
-modl_fit = scatter_index_sigcells_histogram_optional([], all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Active',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional(opto.sig_cells, all_celltypes(1:24), [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Passive',0,1,[-1,1]);
+modl_fit = scatter_index_sigcells_histogram_optional(opto.sig_cells, all_celltypes(1:24), [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Active',0,1,[-1,1]);

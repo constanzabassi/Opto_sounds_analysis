@@ -37,7 +37,10 @@ chosen_pyr = [];
 chosen_mcherry = []; 
 chosen_tdtom = [];
 celltypes_ids = {};
+chosen_cells_all = struct();  % Store chosen cells per field
 
+%possible fields
+cell_fields = fieldnames(all_celltypes{1,1});
 % Compute total cell counts for each chosen dataset using context 1 modulation indices.
 % (Assuming mod_index{m,1} is a vector for dataset m.)
 all_cellCounts = cellfun(@(x) length(x), mod_index(chosen_mice, 1));
@@ -91,53 +94,97 @@ for current_dataset = chosen_mice
     context_modulation_index{current_dataset} = current_dataset_mod_index;
     
     % ORGANIZE CELL TYPE INDICES
+     % Organize cell type indices
+    fields = fieldnames(all_celltypes{1, current_dataset});
+    for f = 1:numel(fields)
+        field_name = fields{f};
+        cell_indices = all_celltypes{1, current_dataset}.(field_name);
+        
+        if ~isempty(sig_mod_boot)
+            idx = find(ismember(mod_cells, cell_indices));
+        else
+            idx = cell_indices;
+        end
+        
+        % Add offset for subsequent datasets
+        if current_dataset ~= chosen_mice(1)
+            if ~isempty(sig_mod_boot)
+                offset = sum(num_sig_cells(previous_dataset_cellCount));
+            else
+                offset = sum(all_cellCounts(previous_dataset_cellCount));
+            end
+            idx = idx + offset;
+        end
+        
+        % Accumulate in struct
+        if isfield(chosen_cells_all, field_name)
+            chosen_cells_all.(field_name) = [chosen_cells_all.(field_name), idx];
+        else
+            chosen_cells_all.(field_name) = idx;
+        end
+    end
     % For each dataset, we want to assign indices to different cell types.
     % If bootstrap significance exists, we only use cells that are in mod_cells.
     % Otherwise, we use the full list from all_celltypes.
-    if ~isempty(sig_mod_boot)
-        if current_dataset == chosen_mice(1)
-            % For the first dataset, no offset is needed.
-            chosen_pyr = [chosen_pyr, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pyr_cells))] ;
-            chosen_mcherry = [chosen_mcherry, find(ismember(mod_cells,all_celltypes{1,current_dataset}.som_cells))] ;
-            chosen_tdtom = [chosen_tdtom, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pv_cells))] ;
-        else
-            % For subsequent datasets, add an offset equal to the total cell count from previous datasets.
-            temp =sum( num_sig_cells(previous_dataset_cellCount));
-            chosen_pyr = [chosen_pyr, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pyr_cells))+temp] ;
-            chosen_mcherry = [chosen_mcherry, find(ismember(mod_cells,all_celltypes{1,current_dataset}.som_cells))+temp] ;
-            chosen_tdtom = [chosen_tdtom, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pv_cells))+temp] ;
-        end
-    else
-        % If no bootstrap significance is provided, use the original cell indices.
-        if current_dataset == chosen_mice(1)
-            chosen_pyr = [chosen_pyr, all_celltypes{1,current_dataset}.pyr_cells'];
-            chosen_mcherry = [chosen_mcherry, all_celltypes{1,current_dataset}.som_cells'];
-            chosen_tdtom = [chosen_tdtom, all_celltypes{1,current_dataset}.pv_cells'];
-        else
-            temp = sum(all_cellCounts(previous_dataset_cellCount));
-            chosen_pyr = [chosen_pyr, all_celltypes{1,current_dataset}.pyr_cells' + temp];
-            chosen_mcherry = [chosen_mcherry, all_celltypes{1,current_dataset}.som_cells' + temp];
-            chosen_tdtom = [chosen_tdtom, all_celltypes{1,current_dataset}.pv_cells' + temp];
-        end
-    end
+%     if ~isempty(sig_mod_boot)
+%         if current_dataset == chosen_mice(1)
+%             % For the first dataset, no offset is needed.
+%             chosen_pyr = [chosen_pyr, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pyr_cells))] ;
+%             chosen_mcherry = [chosen_mcherry, find(ismember(mod_cells,all_celltypes{1,current_dataset}.som_cells))] ;
+%             chosen_tdtom = [chosen_tdtom, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pv_cells))] ;
+%         else
+%             % For subsequent datasets, add an offset equal to the total cell count from previous datasets.
+%             temp =sum( num_sig_cells(previous_dataset_cellCount));
+%             chosen_pyr = [chosen_pyr, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pyr_cells))+temp] ;
+%             chosen_mcherry = [chosen_mcherry, find(ismember(mod_cells,all_celltypes{1,current_dataset}.som_cells))+temp] ;
+%             chosen_tdtom = [chosen_tdtom, find(ismember(mod_cells,all_celltypes{1,current_dataset}.pv_cells))+temp] ;
+%         end
+%     else
+%         % If no bootstrap significance is provided, use the original cell indices.
+%         if current_dataset == chosen_mice(1)
+%             chosen_pyr = [chosen_pyr, all_celltypes{1,current_dataset}.pyr_cells'];
+%             chosen_mcherry = [chosen_mcherry, all_celltypes{1,current_dataset}.som_cells'];
+%             chosen_tdtom = [chosen_tdtom, all_celltypes{1,current_dataset}.pv_cells'];
+%         else
+%             temp = sum(all_cellCounts(previous_dataset_cellCount));
+%             chosen_pyr = [chosen_pyr, all_celltypes{1,current_dataset}.pyr_cells' + temp];
+%             chosen_mcherry = [chosen_mcherry, all_celltypes{1,current_dataset}.som_cells' + temp];
+%             chosen_tdtom = [chosen_tdtom, all_celltypes{1,current_dataset}.pv_cells' + temp];
+%         end
+%     end
     
     % Update the list of previous datasets for offset computation.
     previous_dataset_cellCount = [previous_dataset_cellCount, current_dataset];
 end
 
-% Save cell type indices in a cell array.
-celltypes_ids{1} = chosen_pyr;
-celltypes_ids{2} = chosen_mcherry;
-celltypes_ids{3} = chosen_tdtom;
+% % Save cell type indices in a cell array.
+% celltypes_ids{1} = chosen_pyr;
+% celltypes_ids{2} = chosen_mcherry;
+% celltypes_ids{3} = chosen_tdtom;
+% 
+% 
+% % Set cell type names for labeling (e.g., PYR, SOM, PV).
+% celltypes_ids{2,1} = celltype_names{1}; % PYR cells
+% celltypes_ids{2,2} = celltype_names{2}; % SOM cells
+% celltypes_ids{2,3} = celltype_names{3}; % PV cells
 
-
-% Set cell type names for labeling (e.g., PYR, SOM, PV).
-celltypes_ids{2,1} = celltype_names{1}; % PYR cells
-celltypes_ids{2,2} = celltype_names{2}; % SOM cells
-celltypes_ids{2,3} = celltype_names{3}; % PV cells
+% Convert chosen_cells_all struct to cell array for output
+field_names = fieldnames(chosen_cells_all);
+for f = 1:numel(field_names)
+    celltypes_ids{1, f} = chosen_cells_all.(field_names{f});
+    if nargin >= 5 && f <= numel(celltype_names)
+        celltypes_ids{2, f} = celltype_names{f};
+    else
+        celltypes_ids{2, f} = field_names{f};  % fallback to field name
+    end
+end
 
 % Concatenate the modulation indices from all datasets.
 % This creates an array where each row corresponds to a dataset's cells
 % (stacked vertically) and columns correspond to the contexts.
 context_mod_all = cat(1, context_modulation_index{:});
+
+chosen_pyr = chosen_cells_all.(field_names{1});
+chosen_mcherry = chosen_cells_all.(field_names{2});
+chosen_tdtom = chosen_cells_all.(field_names{3});
 end
