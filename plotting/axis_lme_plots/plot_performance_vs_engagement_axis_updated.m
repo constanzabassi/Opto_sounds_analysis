@@ -393,7 +393,7 @@ for b = 1:n_bins
 end
 
 % Annotations
-text(.5, 0.45, ...
+text(.5, 0.5, ...
     sprintf('P = %.3g\nR = %.2f', p2, r2), 'FontSize', 6);
 
 

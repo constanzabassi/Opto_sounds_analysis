@@ -1,4 +1,4 @@
-function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat] = find_axis_updated_specify_splits(dff_st, chosen_mice, all_celltypes,sig_mod_boot,split_params,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials] = find_axis_updated_specify_splits(dff_st, chosen_mice, all_celltypes,sig_mod_boot,split_params,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -14,6 +14,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             aframes = 63:93;  % After stimulus
             bframes = 50:59;   % Before stimulus
         end
+
+        %save test trials for other analysis
+        test_trials = {};
    
         %separate into folds
         divisions = split_params.divisions; %4;
@@ -373,18 +376,23 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 %save correct trials
                 %get from control trials first
                 all_correct_trials = [all_trial_info(current_dataset).ctrl(:).correct];
-                percent_correct{split,current_dataset} = all_correct_trials(ismember(test_ctrl_all,ctrl_splits{current_dataset,1}(split).test));
+                percent_correct{split,current_dataset} = all_correct_trials(ctrl_splits{current_dataset,1}(split).test);
     
                 %concatenate ctrl and stim to have more trials (performance
                 %only)
                 all_correct_trials_stim = [all_trial_info(current_dataset).opto(:).correct];
-                percent_correct_concat{split,current_dataset} = [percent_correct{split,current_dataset},all_correct_trials_stim(ismember(test_stim_all,stim_splits{current_dataset,1}(split).test))];
+                percent_correct_concat{split,current_dataset} = [percent_correct{split,current_dataset},all_correct_trials_stim(stim_splits{current_dataset,1}(split).test)];
                 z_real_activity_stim = normalize_aligned_data_2d(real_activity_stim,'zscore',[]);
                 z_real_activity_ctrl = normalize_aligned_data_2d(real_activity_ctrl,'zscore',[]);
                 real_activity_all{split,current_dataset,celltype,1} = [z_real_activity_ctrl(ismember(test_ctrl_all,ctrl_splits{current_dataset,1}(split).test),:);z_real_activity_stim(ismember(test_stim_all,stim_splits{current_dataset,1}(split).test),:)];
                 engagement_concat{split,current_dataset,celltype} = [proj_ctrl_norm{split,current_dataset,celltype,1}.context;proj_norm{split,current_dataset,celltype,1}.context];
     
+                
             end %celltypes
+            %save test trials (relative to imaging virmen trials?)
+            all_ctrl_trials = [all_trial_info(current_dataset).ctrl(:).trial_id];
+            all_stim_trials = [all_trial_info(current_dataset).opto(:).trial_id];
+            test_trials{split,current_dataset} = [all_ctrl_trials(ctrl_splits{current_dataset,1}(split).test),all_stim_trials(stim_splits{current_dataset,1}(split).test)];
         end %datasets
    end %splits
 end
