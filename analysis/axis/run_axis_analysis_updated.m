@@ -116,7 +116,7 @@ for d = 1:nDatasets
     test_trials_all{d} = horzcat(test_trials{:,d}); 
 end
 plot_performance_vs_engagement_axis_updated(percent_correct_all,engagement_all,[20,5],save_dir,[0,2]);
-plot_performance_vs_activity(percent_correct_all,activity_all,[20,5],save_dir,[-1,1.5]);
+plot_performance_vs_activity(percent_correct_all,activity_all,[20,5],[save_dir '/performance_plots/activity/'],[-1,1.5]);
 
 %save for pupil comparisons
 engagement_proj_all = engagement_all;

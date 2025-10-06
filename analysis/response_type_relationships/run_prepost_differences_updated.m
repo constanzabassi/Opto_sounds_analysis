@@ -89,7 +89,7 @@ response_types_info = { ...
     struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)'), ...
     struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
 };
-[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], current_save_dir, plot_info);
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], current_save_dir, plot_info, []);
 %% comparing pre vs post
 modl_fit.prepost_stim = wrapper_scatter_index_contexts([],avg_pre, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (\Delta Stim)',0,1,[-.6,2]);
 modl_fit.prepost_sound = wrapper_scatter_index_contexts([],avg_ctrl_pre, avg_ctrl_post, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (Sound)',0,1,[-.6,2]);
@@ -108,7 +108,7 @@ modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, dif
 [pooled_cell_types_modulated,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','modulated'},[1:24],plot_info, 2);
 current_save_dir2 ='V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\modulated';
 
-[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types_modulated, [1:24], current_save_dir2, plot_info);
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types_modulated, [1:24], current_save_dir2, plot_info, []);
 celltypes_to_plot = 2; %modulated
 response_types_to_plot =  1:2; %{1 ='Sound',2 ='Stim + Sound',3 ='Delta Stim}
 [stats, corr_results] = wrapper_plot_means_std([],pooled_cell_types_modulated, avg_ctrl_post,  diff_stim, avg_post, current_save_dir2, plot_info, {[0.1,.3],[0,.25]}, {'Mean Population Activity','Std. Population Activity'}, [1:24], celltypes_to_plot, response_types_to_plot);
@@ -130,9 +130,25 @@ cdf_data = squeeze(corr_results_across_ctx.data_datasets(:,:,1:3,3));%using all 
 plot_cdf_celltypes([], cdf_data, 1:24, plot_info,'\Delta Stim',[-.1,0.3],0);
 % mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'\Delta Stim',[-.1,0.3],0);
 %% REPEAT ANALYSIS BUT USING PYR/SOM/PV as the celltypes
-celltype_save_dir = [save_dir '\celltypes']; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
+celltype_save_dir = [current_save_dir '\celltypes']; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
 
 [~, corr_results_across_ctx] = wrapper_plot_corr_means([],all_celltypes, avg_ctrl_post, diff_stim, avg_post, celltype_save_dir, plot_info, [-1,1], 'Corr all (Sound vs Δ Stim)', [1:24], [1:3]) %1:4 is functional subtimes from pooled
 response_types_info{1, 1}(1, 1).range = [0.1,0.3];response_types_info{1, 2}(1, 1).range = [-0.05,.15];response_types_info{1, 3}(1, 1).range = [0.1,0.4]; %update ylims
-[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, all_celltypes, [1:24], celltype_save_dir, plot_info);
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, all_celltypes, [1:24], celltype_save_dir, plot_info, []);
 
+
+% --- Defaults for responses ---
+response_types_info = { ...
+    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)'), ...
+    struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
+};
+[stats_all_ct_stim, responses_by_dataset_ct_stim] = wrapper_plot_response_means({diff_stim,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells);
+[stats_allcellsstim,~] = wrapper_plot_response_means_allcells({diff_stim,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells); %pooling across datasets
+
+% --- Defaults for responses ---
+response_types_info = { ...
+    struct('name','pre',       'data', avg_ctrl_post,   'range', [0,0.4], 'label', 'Mean Pop. Activity (Sound)'), ...
+    struct('name','post',      'data', avg_post, 'range', [0,0.4],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
+};
+[stats_all_ct, responses_by_dataset_ct] = wrapper_plot_response_means({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/sound_sig/'], plot_info, sound.sig_cells);
+[stats_allcells,~] = wrapper_plot_response_means_allcells({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/sound_sig/'], plot_info, sound.sig_cells); %pooling across datasets
