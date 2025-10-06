@@ -118,7 +118,7 @@ for cel_type = 1:length(celltypes_ids)
         ct = 0;
         
         for t = 1:size(possible_tests,1)
-            [p_stim(t), observeddifference, effectsize] = permutationTest_updatedcb(stim_mod(celltypes_ids{1,cel_type},possible_tests(t,1)), stim_mod(celltypes_ids{1,cel_type},possible_tests(t,2)), 10000,'paired',1);
+            [p_stim(t), observeddifference, effectsize] = permutationTest_updatedcb(stim_mod(celltypes_ids{1,possible_tests(t,1)}), stim_mod(celltypes_ids{1,possible_tests(t,2)}), 10000);
 
             if p_stim(t) < 0.05/length(celltypes_ids)
                 xline_vars(1) = possible_tests(t,1); 
@@ -127,6 +127,15 @@ for cel_type = 1:length(celltypes_ids)
                 utils.plot_pval_star(xval, .7+ct, p_stim(t), xline_vars,0.01)
                 ct = ct+0.1;
             end
+
+        end
+    elseif length(behavioral_contexts) == 1 && size(celltypes_ids,2) > 1
+        possible_tests = nchoosek(1:size(celltypes_ids,2),2);
+        
+        ct = 0;
+        
+        for t = 1:size(possible_tests,1)
+            [p_stim(t), observeddifference, effectsize] = permutationTest_updatedcb(stim_mod(celltypes_ids{1,possible_tests(t,1)}), stim_mod(celltypes_ids{1,possible_tests(t,2)}), 10000);
 
         end
     end

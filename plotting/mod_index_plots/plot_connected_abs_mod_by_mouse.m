@@ -24,7 +24,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     end
     abs_logic = 1;
     if nargin > 5
-        abs_logic = 0;
+        abs_logic = varargin{1,2};
     end
     
     for celltype = 1:n_celltypes
@@ -200,6 +200,82 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     xticks(x_lines(2:end-1))
     xticklabels(repmat(plot_info.behavioral_contexts, 1, n_celltypes))
 
+    %do statsitical testing across celltypes if only one context present!
+    if num_contexts == 1 && n_celltypes > 2
+        possible_tests = nchoosek(1:n_celltypes,2);
+        % Suppose mod_stats.stats is a structure array
+        nStats = numel(mod_stats.stats);
+        maxLen = max(arrayfun(@(s) numel(s.valid_means), mod_stats.stats));
+
+        data_padded = NaN(maxLen, nStats);
+        
+        for i = 1:nStats
+            vals = mod_stats.stats(i).valid_means(:);
+            data_padded(1:numel(vals), i) = vals;
+        end
+        
+        % Flatten into vector form
+        Y = data_padded(:);
+        group = repelem(1:nStats, maxLen)';
+        
+        % Remove NaNs before running test
+        valid_idx = ~isnan(Y);
+        Y = Y(valid_idx);
+        group = group(valid_idx);
+        
+        % Run Kruskal–Wallis test without plotting
+        [KW.p_val,KW.tbl, KW.stats_cell] = kruskalwallis(Y, group,  'off');
+
+        ct = 0;
+        for t = 1:size(possible_tests,1)
+            data1 = mod_stats.stats(possible_tests(t,1)).valid_means;
+            data2 = mod_stats.stats(possible_tests(t,2)).valid_means;
+            
+            % Align datasets if lengths differ (use intersection of valid datasets if available)
+                    if length(data1) ~= length(data2)
+                        if isfield(mod_stats.stats(possible_tests(t,1)), 'valid_datasets') && ...
+                           isfield(mod_stats.stats(possible_tests(t,2)), 'valid_datasets')
+                           
+                           % Intersect dataset indices from both contexts
+                           common_datasets = intersect(mod_stats.stats(possible_tests(t,1)).valid_datasets, ...
+                                                       mod_stats.stats(possible_tests(t,2)).valid_datasets);
+                
+                           [~, idx1] = ismember(common_datasets, mod_stats.stats(possible_tests(t,1)).valid_datasets);
+                           [~, idx2] = ismember(common_datasets, mod_stats.stats(possible_tests(t,2)).valid_datasets);
+                
+                           data1 = data1(idx1);
+                           data2 = data2(idx2);
+                        else
+                           % Skip if we can't align data
+                           continue;
+                        end
+                    end
+
+            if ~isempty(data1)
+%                 [KW.p_val{t},KW.tbl{t}, KW.stats_cell{t}] = kruskalwallis(T(:,:),[1:nStats],'off');
+                [p_val_mod_cells(t), ~, effectsize_cells(t)] = permutationTest_updatedcb(...
+                    data1, data2, 10000, 'paired', 1); %paired since Im comparing values from each dataset to each other
+            else
+                p_val_mod_cells(t) = 1;
+            end
+
+%             get y values
+            if max(mean_cell_all) > 0.1
+                y_val = max(mean_cell_all) + 0.03;
+            else
+                y_val = max(mean_cell_all);
+            end
+
+            if p_val_mod_cells(t) < 0.05 && KW.p_val < 0.05
+                xline_vars = possible_tests(t,:);
+                ct = ct + y_val*0.3;
+                utils.plot_pval_star(0, y_val+ct, p_val_mod_cells(t), xline_vars, ...
+                    0.01, [0,0,0])
+            end
+        end
+
+    end
+
     if abs_logic == 1;
         ylabel({'Absolute Modulation';'Index'},'FontSize',7)
     else
@@ -212,7 +288,10 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     
     % Set axis limits
     if nargin > 4
-        ylim(ylims);
+        yli = ylim;
+        if yli(2) < ylims(2)
+            ylim(ylims);
+        end
     else
         yli = ylim;
         ylim([0,yli(2)]);
@@ -237,6 +316,22 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         mod_stats.effectsize = effectsize;
         mod_stats.n_mice = n_mice;
     end
+
+    if num_contexts == 1 && n_celltypes > 2
+        mod_stats.tests = possible_tests;
+        mod_stats.p_test = 'paired permutation across mice';
+        mod_stats.p_val_mod = p_val_mod_cells;
+        mod_stats.effectsize = effectsize_cells;
+        mod_stats.n_mice = n_mice;
+        mod_stats.KW = KW;
+        axis normal
+        positions(:,3) = positions(:,3)*(2/3);
+        positions(:,4) = positions(:,4)*1;
+        positions(:,2) = positions(:,2) - 1;
+        set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+        xticklabels(repmat(plot_info.celltype_names, 1, n_celltypes))
+        
+    end
     
     % Save results
     if ~isempty(save_dir)
@@ -249,6 +344,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             save_string = strrep(save_string, '/', '');
             save_string = strrep(save_string, '(', '');
             save_string = strrep(save_string, ')', '');
+            if iscell(save_string)
+                save_string = strjoin(save_string, '_'); %convert cell to string
+            end
             if any(contains(save_string,'Δ')) || any(contains(save_string,'elta'))
                 save_string = [save_string 'deltastim']
             end
