@@ -1,4 +1,4 @@
-function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials] = find_axis_updated_specify_splits(dff_st, chosen_mice, all_celltypes,sig_mod_boot,split_params,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials] = find_axis_updated_specify_splits(dff_st,choose_params, all_celltypes,sig_mod_boot,split_params,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -22,6 +22,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         divisions = split_params.divisions; %4;
         random_or_not = split_params.random_or_not; %0;
         splits = split_params.splits; %10;
+
+        chosen_mice = choose_params.chosen_datasets;
+        chosen_celltypes = choose_params.chosen_celltypes;
         for current_dataset = chosen_mice
             % Example: Randomly split trials into train (80%) and test (20%)
             total_trials_stim = [size(dff_st{1, current_dataset}.stim,1),size(dff_st{2, current_dataset}.stim,1)]; %get total # trials across contexts
@@ -36,6 +39,8 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         end
 
     proj = {}; proj_ctrl = {}; proj_norm = {}; proj_ctrl_norm = {};
+    target = []; target_norm = [];
+
    for split = 1:splits
        split
         % Loop through the selected mice datasets
@@ -50,9 +55,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             test_ctrl_all   = [ctrl_splits{current_dataset,1}(split).test,ctrl_splits{current_dataset,2}(split).test];
     
     
-            for celltype = 1:4
+            for celltype = chosen_celltypes
     
-                if celltype == 4
+                if celltype == chosen_celltypes(end)
                     mod_cells = 1:size(dff_st{1, current_dataset}.stim,2);
                     if ~isempty(sig_mod_boot)
                         mod_cells = sig_mod_boot{current_dataset};
@@ -62,6 +67,9 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                     if ~isempty(sig_mod_boot)
                         mod_cells = mod_cells(find(ismember(mod_cells,sig_mod_boot{ current_dataset})));
                     end
+                end
+                if isempty(mod_cells)
+                    continue;
                 end
                 % Get the data for the stim and control contexts
                 stim_matrix = [dff_st{1, current_dataset}.stim(:,mod_cells,:); dff_st{2, current_dataset}.stim(:,mod_cells,:)]; % stim + sound (active and passive)
@@ -254,7 +262,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 ctrl_sources_norm = cellfun(@(x) normalize_aligned_data_2d(x,'zscore',[]), ctrl_sources, 'UniformOutput', false);
                 
                 field_names = {'sound','sound_post','sound_pre','stim_pre','stim_post', ...
-                               'stim','context','noise_timeseries','noise'};
+                               'stim','context','noise_timeseries'};%,'noise'
 
                 for cond = ["stim","ctrl"]
                     % Assign all fields (raw and normalized versions)
@@ -309,7 +317,7 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                     ctrl_sources_norm = cellfun(@(x) normalize_aligned_data_2d(x,'zscore',[]), ctrl_sources, 'UniformOutput', false);
                     
                     field_names = {'sound','sound_post','sound_pre','stim_pre','stim_post', ...
-                                   'stim','context','noise_timeseries','noise'};
+                                   'stim','context','noise_timeseries'}; %,'noise'
                     
                     % --- Step 2: Loop over conditions (stim/ctrl), context, etc. ---
                     for cond = ["stim","ctrl"]

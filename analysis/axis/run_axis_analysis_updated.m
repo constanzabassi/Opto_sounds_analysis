@@ -7,6 +7,7 @@ keep context_data all_celltypes plot_info
 % [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm] = find_axis_updated(context_data.dff, [1:24], all_celltypes,[]); %,{50:59,63:73}
 
 split_params.divisions = 4; split_params.random_or_not = 0; split_params.splits = 4;
+choose_params.chosen_celltypes = 1:4; choose_params.chosen_datasets = 1:24;
 [proj,proj_ctrl,proj_norm,proj_norm_ctrl, weights,trial_corr_context,percent_correct,act,act_norm_ctrl,act_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials] = ...
     find_axis_updated_specify_splits(context_data.dff, [1:24], all_celltypes,[],split_params); %,{50:59,63:73}
 
