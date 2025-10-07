@@ -136,14 +136,28 @@ celltype_save_dir = [current_save_dir '\celltypes']; %'V:\Connie\results\opto_so
 response_types_info{1, 1}(1, 1).range = [0.1,0.3];response_types_info{1, 2}(1, 1).range = [-0.05,.15];response_types_info{1, 3}(1, 1).range = [0.1,0.4]; %update ylims
 [stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, all_celltypes, [1:24], celltype_save_dir, plot_info, []);
 
+n_contexts = 2;
+modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, all_celltypes, plot_info, celltype_save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+
+
 
 % --- Defaults for responses ---
 response_types_info = { ...
-    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)'), ...
-    struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
+    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)')%, ...
+%     struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
 };
 [stats_all_ct_stim, responses_by_dataset_ct_stim] = wrapper_plot_response_means({diff_stim,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells);
 [stats_allcellsstim,~] = wrapper_plot_response_means_allcells({diff_stim,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells); %pooling across datasets
+
+%stim+sound and sound only responses across 3 contexts!
+plot_info.behavioral_contexts = {'Active','Passive','Spontaneous'};
+% --- Defaults for responses ---
+response_types_info = { ...
+    struct('name','pre',       'data', avg_ctrl_post,   'range', [0,0.4], 'label', 'Mean Pop. Activity (Sound)'), ...
+    struct('name','post',      'data', avg_post, 'range', [0,0.6],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
+};
+[stats_all_ct_stim, responses_by_dataset_ct_stim] = wrapper_plot_response_means({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells);
+[stats_allcellsstim,~] = wrapper_plot_response_means_allcells({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells); %pooling across datasets
 
 % --- Defaults for responses ---
 response_types_info = { ...

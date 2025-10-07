@@ -169,6 +169,26 @@ for celltype = 1:3 %celltype of variable used to make predictions
 end
 
 bar_plot_coefficients({lm_sound_celltypes{2};lm_stim_celltypes{2}}, {lm_sound_celltypes{3};lm_stim_celltypes{3}}, save_dir, plot_info.colors_celltypes(2:3,:), "Slope",{'Sound','Photostim'},'SOMPV');
+%% timecouse
+time_to_test = [63:10:123];
+
+celltype = 4;
+% frame_range_pre= 50:59;
+for times = 1:length(time_to_test)-1
+    frames_to_test_post = time_to_test(times):time_to_test(times+1)-1
+%     frame_to_test_post= 63:93;
+    [lm_sound_stim,~,~,~,~,~, ~,~] = ...
+        linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_to_test_post,frames_to_test_post,[1],'Stim');
+    
+    [lm_sound_stim_pass,~,~,~,~,~, ~,~] = ...
+        linear_regression_corr_model(proj_norm,'Sound' ,celltype,frame_to_test_post,frames_to_test_post,[2],'Stim');
+
+    save_dir3 = strcat(save_dir2, num2str(frames_to_test_post(1)),'to',num2str(frames_to_test_post(end)),'/');
+%     plot_linear_regression_lines(lm_sound_stim,tbl_sound_stim,context_all_sound_stim,'Sound Projection',save_dir3,'Stim',[],[-2,4],[-4,4],'topright');
+%     plot_linear_regression_lines(lm_sound_stim_pass,tbl_sound_stim_pass,context_all_sound_stim_pass,'Sound Projection',save_dir3,'Stim',[],[-2,4],[-4,4]);
+    bar_plot_coefficients({lm_sound_stim}, {lm_sound_stim_pass}, save_dir3, [0,0,0;0.5,0.5,0.5], "Slope",{'Active','Passive'},'act_pass',[-.2,.2]);
+
+end
 %% from random have to choose example split
 celltype = 4;
 frame_range_pre= 50:59;

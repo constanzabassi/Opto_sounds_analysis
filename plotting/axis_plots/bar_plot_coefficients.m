@@ -1,4 +1,4 @@
-function bar_plot_coefficients(lme, lme2, save_dir, colors, labels,xlabels, save_string)
+function bar_plot_coefficients(lme, lme2, save_dir, colors, labels,xlabels, save_string,varargin)
 % bar_plot_coefficients(lme, lme2, save_dir, colors, labels, save_string)
 % Handles one or multiple LMEs (in cell array form).
 % If multiple LMEs are passed (e.g., {lme1, lme2}), they will be concatenated.
@@ -151,6 +151,9 @@ end
 % Formatting
 ylabel(ylabels)
 yline(0, '--k')
+if nargin > 7
+    ylim(varargin{1,1})
+end
 set(gca, 'XTick', xticks_tracker, 'XTickLabel', repmat(xlabels,1,length(x)), 'XTickLabelRotation', 45)
 
 % legend([b1 b2], {'Model 1', 'Model 2'}, 'Location', 'Best')

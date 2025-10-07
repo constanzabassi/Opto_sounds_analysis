@@ -56,8 +56,14 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             
             % Plot connected line for this mouse
             if num_contexts > 1
-                plot([x_pos(1)+.2,x_pos(2)-.2], mouse_means, '-', 'Color', ...
-                    [plot_info.colors_celltypes(celltype,:), 0.3], 'LineWidth', 1)
+                for c = 1:(num_contexts - 1)
+                    plot([x_pos(c) + 0.2, x_pos(c+1) - 0.2], ...
+                         [mouse_means(c), mouse_means(c+1)], ...
+                         '-', 'Color', [plot_info.colors_celltypes(celltype,:), 0.3], ...
+                         'LineWidth', 1);
+                end
+%                 plot([x_pos(1)+.2,x_pos(2)-.2], mouse_means, '-', 'Color', ...
+%                     [plot_info.colors_celltypes(celltype,:), 0.3], 'LineWidth', 1)
             end
             hold on
             
