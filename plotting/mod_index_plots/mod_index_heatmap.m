@@ -1,4 +1,15 @@
 function mod_index_heatmap(save_dir,stim_mod,plot_info,chosen_mice,varargin)
+% Plots a heatmap of modulation indices across behavioral contexts.
+%
+% Inputs:
+%   save_dir   - Directory to save figures (string, can be empty).
+%   stim_mod   - [neurons x contexts] matrix of modulation indices.
+%   plot_info  - Struct with field 'behavioral_contexts' (cell array of labels).
+%   chosen_mice - Vector or cell array of mouse IDs used for labeling/saving.
+%   varargin   - Optional:
+%                   {1}: color axis limits, e.g. [-0.4 0.4]
+%                   {2}: custom neuron sorting order (vector of indices)
+
 figure(94);clf;
 % cd 'C:\Code\Github\+colormaps'
 % colorList= (colormaps.slanCM('coolwarm',100));
@@ -37,12 +48,6 @@ set(gca,'color',[.7 .7 .7],'fontsize',7);
 % set(gcf,'position',[100,100,200,200])
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 movegui(gcf, 'center')
-
-% axis square
-% box off
-% set(gcf,'position',[100,100,300,180])
-% movegui(gcf, 'center')
-% utils.set_current_fig;
 
 if ~isempty(save_dir)
     mkdir(save_dir)

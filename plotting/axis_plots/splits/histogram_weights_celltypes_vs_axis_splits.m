@@ -33,6 +33,7 @@ for celltype = 1:3
         weights = data_split_means(current_cells); %zscore(data); % mean across cells
         all_weight_means = [all_weight_means, weights];
         all_weight_means_datasets(celltype,dataset) = mean(abs(weights));
+        all_weight_means_datasets_noabs(celltype,dataset) = mean(weights);
         dataset_means(dataset) = mean(weights); % <- compute dataset-level average
     end
 
@@ -270,6 +271,87 @@ if isfield(errorbar_weight_datasets_ct_stats, 'p_values') && ~isempty(errorbar_w
     end
 end
 
+%%
+%% separate by dataset
+% Bar plot of mean ± SEM per cell type
+figure(809); clf;
+hold on;
+means = nan(1, 3);
+sems = nan(1, 3);
+
+for ct = 1:3
+    weights = all_weight_means_datasets_noabs(ct,:);
+    means(ct) = mean(weights);
+    sems(ct) = std(weights) / sqrt(length(weights));
+end
+
+for ct = 1:3
+    e = errorbar(ct, means(ct), sems(ct), 'o', ...
+        'LineWidth', 1, ...
+        'MarkerSize', 3, ...
+        'CapSize', 3, ...
+        'MarkerEdgeColor', colorss(ct,:), ...
+        'MarkerFaceColor', colorss(ct,:));
+    e.Color = colorss(ct,:);  % Set line color manually
+end
+
+xticks(1:3);
+clean_labels = cellfun(@(s) strrep(s, '_cells', ''), possible_celltypes(1:3), 'UniformOutput', false);
+xticklabels(upper(clean_labels));
+if strcmpi(axis_type2,'Context')
+    ylabel(['Engagement Weight']);
+else
+    ylabel([axis_type2 ' Weight']);
+end
+xli = xlim;
+xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
+
+% title('Mean Weight ± SEM');
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+
+%do statistical analysis
+for c = 1:num_combos
+    ct1 = celltype_combos(c, 1);
+    ct2 = celltype_combos(c, 2);
+
+    x = all_weight_means_datasets(ct1,:);
+    y = all_weight_means_datasets(ct2,:);
+%     valid = ~isnan(x) & ~isnan(y);
+
+    errorbar_weight_datasets_ct_stats_noabs.stats{ct1} = utils.get_basic_stats(x);
+    errorbar_weight_datasets_ct_stats_noabs.stats{ct2} = utils.get_basic_stats(y);
+    p_values( c) = permutationTest(x, y, 10000); % unpaired
+
+%     if any(valid)
+%         p_values( c) = permutationTest(x, y, 10000); % unpaired
+%     end
+end
+
+
+% Store results
+errorbar_weight_datasets_ct_stats_noabs.p_values = p_values;
+errorbar_weight_datasets_ct_stats_noabs.test = 'unpaired permutation across bins and celltype pairs';
+errorbar_weight_datasets_ct_stats_noabs.combos = celltype_combos;
+errorbar_weight_datasets_ct_stats_noabs.significant = find(p_values < 0.05 / (num_combos)); % Bonferroni correction
+
+%add significant stars
+if isfield(errorbar_weight_datasets_ct_stats_noabs, 'p_values') && ~isempty(errorbar_weight_datasets_ct_stats_noabs.p_values)
+    ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
+    offset = 0.0005; % vertical spacing between stars
+    ct_count = 0;
+    for c = 1:size(ct_combos, 1)
+        p = errorbar_weight_datasets_ct_stats_noabs.p_values(c);
+        if p < 0.05 / 3  % Bonferroni correction
+            
+            y = ylim;
+            star_y = y(2) + (ct * offset);
+            utils.plot_pval_star(0, star_y, p, [ct_combos(c,1), ct_combos(c,2)], offset/2);
+            ct = ct+1*.2;
+        end
+    end
+end
+
+
 % Save results
 if ~isempty(save_dir)
     mkdir(save_dir)
@@ -287,7 +369,11 @@ if ~isempty(save_dir)
     saveas(808,strcat('barplot_weights_datasets_celltypes_',axis_type2,'.fig'));
     exportgraphics(figure(808),strcat('barplot_weights_datasets_celltypes_',axis_type2,'.pdf'), 'ContentType', 'vector');
 
+    saveas(809,strcat('barplot_noabs_weights_datasets_celltypes_',axis_type2,'.fig'));
+    exportgraphics(figure(809),strcat('barplot_noabs_weights_datasets_celltypes_',axis_type2,'.pdf'), 'ContentType', 'vector');
+
     save(strcat('errorbar_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.mat'),'errorbar_weight_datasets_ct_stats');
+    save(strcat('errorbar_noabs_weights_celltypes_vs_axis_',num2str(axis_type2),'_stats_n',num2str(length(chosen_datasets)),'_edges_',num2str(edge_values),'.mat'),'errorbar_weight_datasets_ct_stats_noabs');
 
 
 end

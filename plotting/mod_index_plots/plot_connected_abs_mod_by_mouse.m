@@ -1,11 +1,16 @@
 function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, mouseID, plot_info, varargin)
-    % Plot modulation index with connected lines for each mouse
+    % Plot modulation index with connected lines for each mouse/dataset
     % Inputs:
-    %   save_dir - directory to save results
-    %   mod_index_by_dataset - cell array {dataset, context, celltype}
-    %   mouseID - array indicating mouse ID for each dataset
-    %   plot_info - structure with plotting parameters
-    
+    %   save_dir            - Directory to save figures and stats (string, can be empty).
+    %   mod_index_by_dataset - Cell array {dataset x context x celltype} of modulation values.
+    %   mouseID             - Numeric array mapping each dataset to a mouse ID.
+    %   plot_info           - Struct with plotting info (fields: behavioral_contexts, colors_celltypes, celltype_names, etc.).
+    %   varargin            - Optional:
+    %                           {1}: y-axis limits, e.g. [0 0.4]
+    %                           {2}: abs_logic flag (1 = absolute values, 0 = signed)
+    %                           {3}: custom save string for figure names
+
+
     figure(700);clf
     positions = utils.calculateFigurePositions(1, 5, .5, []);
     if size( mod_index_by_dataset,2) > 2
