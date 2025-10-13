@@ -1,4 +1,4 @@
-function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials] = find_axis_updated_specify_splits(dff_st,choose_params, all_celltypes,sig_mod_boot,split_params,varargin)
+function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,percent_correct,real_activity_all,real_activity_all_ctrl,real_activity_all_norm,percent_correct_concat,proj_concat,proj_concat_norm,engagement_concat,test_trials,test_trials_relative] = find_axis_updated_specify_splits(dff_st,choose_params, all_celltypes,sig_mod_boot,split_params,varargin)
         total_trials = {};
         possible_celltypes = fieldnames(all_celltypes{1,1});
 
@@ -401,6 +401,10 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
             all_ctrl_trials = [all_trial_info(current_dataset).ctrl(:).trial_id];
             all_stim_trials = [all_trial_info(current_dataset).opto(:).trial_id];
             test_trials{split,current_dataset} = [all_ctrl_trials(ctrl_splits{current_dataset,1}(split).test),all_stim_trials(stim_splits{current_dataset,1}(split).test)];
+
+            all_ctrl_trials_relative = [all_trial_info(current_dataset).ctrl(:).matched_id];
+            all_stim_trials_relative = [all_trial_info(current_dataset).opto(:).matched_id];
+            test_trials_relative{split,current_dataset} = [all_ctrl_trials_relative(ctrl_splits{current_dataset,1}(split).test),all_stim_trials_relative(stim_splits{current_dataset,1}(split).test)];
         end %datasets
    end %splits
 end
