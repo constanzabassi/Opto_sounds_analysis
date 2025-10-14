@@ -71,8 +71,8 @@ end
 
 %% Make plots
 %make scatter plots and save them!
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (Δ Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{diff_pre_stim{:,1}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (Δ Stim)',0,1,[-.6,2]);
 
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Active Post (sound)',0,1,[-.6,2]);
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{diff_pre_ctrl{:,1}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Pre Diff (active - passive)', 'Passive Post (sound)',0,1,[-.6,2]);
@@ -80,25 +80,32 @@ modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{di
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,1}}',{avg_ctrl_post{:,1}}'], plot_info, current_save_dir, 'Active Pre (sound)', 'Active Post (sound)',0,1,[-.6,2]);
 modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types, [{avg_ctrl_pre{:,2}}',{avg_ctrl_post{:,2}}'], plot_info, current_save_dir, 'Passive Pre (sound)', 'Passive Post (sound)',0,1,[-.6,2]);
 
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (\Delta Stim)',0,1,[-.6,2]);
-modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,1}}',{diff_stim{:,1}}'], plot_info, current_save_dir, 'Active Pre', 'Active Post (Δ Stim)',0,1,[-.6,2]);
+modl_fit = scatter_index_sigcells_histogram_optional([], pooled_cell_types_stim, [{avg_pre{:,2}}',{diff_stim{:,2}}'], plot_info, current_save_dir, 'Passive Pre', 'Passive Post (Δ Stim)',0,1,[-.6,2]);
 
 % --- Defaults for responses ---
 response_types_info = { ...
-    struct('name','pre',       'data', avg_pre,   'range', [0.1,0.4], 'label', 'Pre Mean (\DeltaF/F)'), ...
-    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)'), ...
+    struct('name','pre',       'data', avg_pre,   'range', [0.1,0.4], 'label', 'Pre Mean (ΔF/F)'), ...
+    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (Δ Stim)'), ...
     struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
 };
 [stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], current_save_dir, plot_info, []);
+
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+
+response_types_info = { ...
+    struct('name','pre',       'data', avg_pre,   'range', [0.1,0.4], 'label', 'Pre Mean (ΔF/F)')};
+[stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, pooled_cell_types, [1:24], 'W:\Connie\results\Bassi2025\fig4', plot_info, []);
+
 %% comparing pre vs post
-modl_fit.prepost_stim = wrapper_scatter_index_contexts([],avg_pre, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (\Delta Stim)',0,1,[-.6,2]);
+modl_fit.prepost_stim = wrapper_scatter_index_contexts([],avg_pre, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (Δ Stim)',0,1,[-.6,2]);
 modl_fit.prepost_sound = wrapper_scatter_index_contexts([],avg_ctrl_pre, avg_ctrl_post, pooled_cell_types, plot_info, current_save_dir, 'Pre', 'Post (Sound)',0,1,[-.6,2]);
 
 %% comparing opto vs sound
 %within context significance
 n_contexts = 2;
 [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'both','opto','sound'},[1:24],plot_info, 1);
-modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types, plot_info, current_save_dir, 'Post (Sound)', 'Post (Δ Stim)',0,0,[-1,2]);
 
 
 [pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1);
@@ -112,7 +119,7 @@ current_save_dir2 ='V:\Connie\results\opto_sound_2025\context\mod_index_specifie
 celltypes_to_plot = 2; %modulated
 response_types_to_plot =  1:2; %{1 ='Sound',2 ='Stim + Sound',3 ='Delta Stim}
 [stats, corr_results] = wrapper_plot_means_std([],pooled_cell_types_modulated, avg_ctrl_post,  diff_stim, avg_post, current_save_dir2, plot_info, {[0.1,.3],[0,.25]}, {'Mean Population Activity','Std. Population Activity'}, [1:24], celltypes_to_plot, response_types_to_plot);
-modl_fit.delta_stim_sound_modulated = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types_modulated, plot_info, current_save_dir2, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+modl_fit.delta_stim_sound_modulated = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, pooled_cell_types_modulated, plot_info, current_save_dir2, 'Post (Sound)', 'Post (Δ Stim)',0,0,[-1,2]);
 
 %% EXAMINATION OF COVARIANCE BETWEEN BASELINE SOUND VS SOUND+STIM-SOUND RESPONSE
 
@@ -127,8 +134,8 @@ save_dir_corr = [current_save_dir '/correlations/'];
 % neurons across datasets!) - ALSO HAS TO BE SAME FUNCTIONAL GROUPS ACROSS
 % CONTEXTS (TO DO PAIRED STATS)
 cdf_data = squeeze(corr_results_across_ctx.data_datasets(:,:,1:3,3));%using all cell types (4th # 1 = sound,2 sound+3, 3 delta stim)
-plot_cdf_celltypes([], cdf_data, 1:24, plot_info,'\Delta Stim',[-.1,0.3],0);
-% mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'\Delta Stim',[-.1,0.3],0);
+plot_cdf_celltypes([], cdf_data, 1:24, plot_info,'Δ Stim',[-.1,0.3],0);
+% mod_stats = plot_cdf_celltypes('V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff\', cdf_data, 1:24, plot_info,'Δ Stim',[-.1,0.3],0);
 %% REPEAT ANALYSIS BUT USING PYR/SOM/PV as the celltypes
 celltype_save_dir = [current_save_dir '\celltypes']; %'V:\Connie\results\opto_sound_2025\context\mod_index_specified_cells\differences_pre_post\dff';
 
@@ -137,13 +144,13 @@ response_types_info{1, 1}(1, 1).range = [0.1,0.3];response_types_info{1, 2}(1, 1
 [stats_all, responses_by_dataset] = wrapper_plot_response_means({avg_pre,diff_stim,avg_post},response_types_info, all_celltypes, [1:24], celltype_save_dir, plot_info, []);
 
 n_contexts = 2;
-modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, all_celltypes, plot_info, celltype_save_dir, 'Post (Sound)', 'Post (\Delta Stim)',0,0,[-1,2]);
+modl_fit.delta_stim_sound = wrapper_scatter_index_contexts([],avg_ctrl_post, diff_stim, all_celltypes, plot_info, celltype_save_dir, 'Post (Sound)', 'Post (Δ Stim)',0,0,[-1,2]);
 
 
 
 % --- Defaults for responses ---
 response_types_info = { ...
-    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (\Delta Stim)')%, ...
+    struct('name','diff_stim', 'data', diff_stim,'range', [-0.1,0.5],'label', 'Mean Pop. Activity (Δ Stim)')%, ...
 %     struct('name','post',      'data', avg_post, 'range', [0,0.8],   'label', 'Mean Pop. Activity (Stim+Sound)') ...
 };
 [stats_all_ct_stim, responses_by_dataset_ct_stim] = wrapper_plot_response_means({diff_stim,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/photostim_sig/'], plot_info,opto.sig_cells);
