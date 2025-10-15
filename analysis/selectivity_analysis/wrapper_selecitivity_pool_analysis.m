@@ -32,8 +32,10 @@ function [selectivity_results_by_dataset_all,selectivity_results_all] = wrapper_
         mod_params = param_sets{i};
         if contains(data_type, 'sound')
             mod_params.chosen_mice = 1:25;
+            params.chosen_mice = 1:25;
         else
             mod_params.chosen_mice = 1:24;
+            params.chosen_mice = 1:24;
         end
         
         selectivity_params.savepath = mod_params.savepath;

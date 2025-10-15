@@ -66,8 +66,14 @@ function plot_avg_heatmap_direction_comparison(avg_results, selectivity_results,
             % Y axis ticks: positions vs labels
             set(gca,'YDir','reverse')
             tick_step = 100;  % tick spacing
-            active_tick_pos  = 0:tick_step:nA;
-            passive_tick_pos = nA + gap +100+(0:tick_step:nP);
+            if nA > 500
+                tick_step = 500;
+                active_tick_pos  = 0:tick_step:nA;
+            passive_tick_pos = nA + gap +500+(0:tick_step:nP);
+            else
+                active_tick_pos  = 0:tick_step:nA;
+                passive_tick_pos = nA + gap +100+(0:tick_step:nP);
+            end
             % Labels as multiples of tick_step
             active_tick_lab  = active_tick_pos;     % shows 100, 200, 300...
             passive_tick_lab = active_tick_pos(2:end);     % if you want same scale as active
