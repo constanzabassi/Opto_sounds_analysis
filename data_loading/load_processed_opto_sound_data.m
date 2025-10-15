@@ -33,6 +33,8 @@ function [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials,stim_tr
     sound.sig_mod_boot     = load(fullfile(base_dir, 'sounds\mod\prepost_sound\',mode{2},'\sig_mod_boot.mat'), 'sig_mod_boot').sig_mod_boot;
     sound.mod              = load(fullfile(base_dir, 'sounds\mod\prepost_sound\',mode{2},'\mod_indexm.mat'), 'mod_indexm').mod_indexm;
     sound.results          = load(fullfile(base_dir, 'sounds\mod\prepost_sound\',mode{2},'\mod_index_results.mat'), 'results').results;
+    sound.avg              = load(fullfile(base_dir, 'sounds\avg\trial_averaged_results_sounds.mat'),'avg_results_sounds').avg_results_sounds;
+    sound.stim_avg              = load(fullfile(base_dir, 'sounds\avg\trial_averaged_results_sounds_stim.mat'), 'avg_results').avg_results;
 
     % sig cells taking the union of active (1) and passive (2)
     [sound.sig_cells, ~]   = union_sig_cells(...

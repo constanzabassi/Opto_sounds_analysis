@@ -5,7 +5,7 @@ function scatter_selectivity_vs_modulation(selectivity_results, mod_index_result
     
     contexts = {'Active', 'Passive'};
 
-    positions = utils.calculateFigurePositions(1,3,0.8,[]);
+    positions = utils.calculateFigurePositions(1,5,0.5,[]);
     positions(:,2) = positions(:,2)-1.5;
     
     % Create dummy points for legend
@@ -74,8 +74,8 @@ function scatter_selectivity_vs_modulation(selectivity_results, mod_index_result
         plot([-1 1], [-1 1], 'k--', 'HandleVisibility', 'off');
         
         % Format plot
-        xlabel('Left trial modulation');
-        ylabel('Right trial modulation');
+        xlabel('Left trial Mod');
+        ylabel('Right trial Mod');
         title([contexts{ctx} ' Context'],'FontWeight','normal');
         axis square;
         grid on;
@@ -87,8 +87,8 @@ function scatter_selectivity_vs_modulation(selectivity_results, mod_index_result
     end
     
     % Add single legend to the figure
-    legend(dummy_h, 'Location', [0.78551832733277,0.228000002324581,0.204999996423721,0.175999995350838]) %'eastoutside');
-    sgtitle('Modulation Index by Sound Direction and Selectivity');
+    legend(dummy_h, 'Location', [0.474999999552965,0.554666668991251,0.174999997317791,0.175999995350838],'Fontsize',6); %[0.78551832733277,0.228000002324581,0.204999996423721,0.175999995350838]) %'eastoutside');
+%     sgtitle('Modulation Index by Sound Direction and Selectivity');
 
     % Save figure if path provided
         if ~isempty(savepath)

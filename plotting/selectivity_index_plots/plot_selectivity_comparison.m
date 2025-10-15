@@ -1,6 +1,7 @@
 function plot_selectivity_comparison(selectivity_results_all, savepath)
     % Plot active vs passive modulation for each selectivity pool
-    
+    positions = utils.calculateFigurePositions(1, 5, .7, []);
+    positions(:,[2,4]) = positions(:,[2,4])-.02;
     % Setup
     pool_types = {'left', 'right', 'nonsel'};
     directions = {'left_mod', 'right_mod'};
@@ -12,7 +13,7 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
         pool = pool_types{p_idx};
         
         % Create figure
-        fig = figure('Position', [100 100 900 400]);
+        fig = figure('Position', [100 100 400 400]);
         
         % Create subplots for left and right modulation
         for d_idx = 1:length(directions)
@@ -38,29 +39,33 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
             end
             
             % Create heatmap
-            make_heatmap_sorted(heatmap_data, ...
-                contexts, ...                    % x-label (contexts)
-                'Neurons', ...                   % y-label
-                [-0.4,0.4], ...     % color limits
-                sorting_ids);                    % sorting indices
+            colormap redblue
+            plot_info.xlabel = contexts;
+            plot_info.ylabel = 'Neurons';
+            plot_info.min_max = [-.4,.4];
+            plot_info.colormap = 'redblue'
+            make_heatmap_sorted(heatmap_data, plot_info,sorting_ids);                    % sorting indices
             
             % Format plot
-            title(plot_titles{d_idx});
-            colorbar;
+            title(plot_titles{d_idx}, 'FontWeight','normal','FontSize',7);
             
-            % Add statistics if needed
-            [~, p] = ttest2(active_data, passive_data);
-            if p < 0.05
-                text(0.5, -0.1, sprintf('p = %.3f', p), ...
-                    'Units', 'normalized', 'HorizontalAlignment', 'center');
-            end
+            set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(d_idx, :));
+            
+%             % Add statistics if needed
+%             [~, p] = ttest2(active_data, passive_data);
+%             if p < 0.05
+%                 text(0.5, -0.1, sprintf('p = %.3f', p), ...
+%                     'Units', 'normalized', 'HorizontalAlignment', 'center');
+%             end
 
         end
         
         % Add overall title
         sgtitle(sprintf('%s Selective Cells (n=%d)', ...
             upper(pool), length(selectivity_results_all.both.(pool).cell_indices)), ...
-            'FontSize', 14);
+            'FontSize', 8,'fontweight','normal');
+
+        
         
         % Save figure if path provided
         if ~isempty(savepath)

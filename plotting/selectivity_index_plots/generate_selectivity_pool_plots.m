@@ -1,9 +1,9 @@
 function flagged_neurons = generate_selectivity_pool_plots(selectivity_results,selectivity_indexm,mod_index_results,avg_results,all_celltypes,sig_cells, params, savepath,varargin)
 % scatter of selectivity index across contexts (significant neurons only)
-modl_fit = scatter_index_sigcells(sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], params.plot_info, savepath, 'Active Selectivity', 'Passive Selectivity');
+modl_fit = scatter_index_sigcells_histogram_optional(sig_cells, all_celltypes, [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], params.plot_info, savepath, 'Active Selectivity', 'Passive Selectivity',0,1);
 
 % histogram of selectivity index (significant neurons only)
-[p_val_mod] = histogram_diff_index_sig_cells(sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], params.plot_info, savepath, 'Abs(active) - Abs(passive');
+[p_val_mod] = histogram_diff_index_sig_cells(sig_cells, all_celltypes,  [{selectivity_indexm{:,1}}',{selectivity_indexm{:,2}}'], params.plot_info, savepath, 'Abs(active) - Abs(passive',1); %horizontalmode or vertical mode
 
 %heatmap separated by selectivity
 plot_selectivity_comparison(selectivity_results, savepath); 

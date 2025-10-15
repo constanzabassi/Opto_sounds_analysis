@@ -1,7 +1,8 @@
 function flagged_neurons = plot_side_preference(selectivity_results_all, params,savepath)
     pool_types = {'left', 'right'};
     
-    figure('Position', [100 100 700 200]);
+    figure('Position', [100 100 400 400]);
+    positions = utils.calculateFigurePositions(1, 5, .7, []);
     flagged_neurons = struct();
     
     for p_idx = 1:length(pool_types)
@@ -53,7 +54,7 @@ function flagged_neurons = plot_side_preference(selectivity_results_all, params,
         subplot(1, 2, p_idx);
         imagesc(conf_mat);
         colorbar;
-        title([upper(pool) ' Selective']);
+        title([upper(pool) ' Selective'],'FontWeight','normal');
         xlabel('Passive Preferred');
         ylabel('Active Preferred');
         set(gca, 'XTick', 1:2, 'XTickLabel', sides);
@@ -65,9 +66,11 @@ function flagged_neurons = plot_side_preference(selectivity_results_all, params,
         else
             caxis([1,500])
         end
-        utils.set_current_fig;
+        
         colorList= (colormaps.slanCM('plasma',100));
         colormap(colorList) % redblue
+        set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(p_idx, :));
+        utils.set_current_fig;
     end
     % Save figure if path provided
         if ~isempty(savepath)

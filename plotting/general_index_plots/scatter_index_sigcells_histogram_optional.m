@@ -110,8 +110,8 @@ if nargin > 9
     index2_updated = all_y_across_celltypes;
 
     % Finalize plot
-    xlabel(mainAx, string1);
-    ylabel(mainAx, string2);
+    xlabel(mainAx, string1, 'Interpreter', 'tex');
+    ylabel(mainAx, string2, 'Interpreter', 'tex');
     xlim(mainAx, minmax);
     ylim(mainAx, minmax);
     box(mainAx, 'off');
@@ -126,9 +126,13 @@ if nargin > 9
 
     box(rightAx, 'off');
     set(mainAx, 'FontSize', 7)
+
+    % Use painters renderer (vector-safe)
+    set(gcf, 'Renderer', 'painters');
+    
 %     set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
     set(mainAx, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-
+    set(groot, 'defaultAxesFontName', 'Arial');
     
 
 
@@ -138,10 +142,33 @@ if nargin > 9
         if ~exist(save_path, 'dir')
             mkdir(save_path);
         end
+        string1 = strrep(string1, '\Delta', 'Δ');
+        string2 = strrep(string2, '\Delta', 'Δ');
+
         string2 = strrep(string2, '\', '');
         string1 = strrep(string1, '\', '');
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
-        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+%         exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+% %         set(gcf, 'Renderer', 'opengl');
+% %         print(gcf, '-dpdf', '-opengl', fullfile(save_path, ...
+% %             ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']));
+%         exportgraphics(gcf, fullfile(save_path, ...
+%             ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), ...
+%             'ContentType', 'vector', ...
+%             'FontMode', 'fixed', ... % prevents font substitution
+%             'BackgroundColor', 'none', ...
+%             'BoundingBox', 'tight');
+
+set(gcf, 'Units', 'inches');
+pos = get(gcf, 'Position');
+set(gcf, 'PaperPositionMode', 'Auto', 'PaperUnits', 'inches', ...
+    'PaperSize', [pos(3), pos(4)]);
+print(gcf, fullfile(save_path, ...
+    ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), ...
+    '-dpdf', '-painters');
+
+
+
     end
 end

@@ -8,10 +8,12 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     
     % Create figure with 2 rows (left/right selective) x 2 columns (left/right sounds)
     figure('Position', [100 100 900 800]);
+    positions = utils.calculateFigurePositions(5,5,0.5,[]);
 
         params.colors.active = [0,0,0];
     params.colors.passive = [0.5,0.5,0.5];
     params.stim_onset = 61;
+    params.positions = positions;
 
     if nargin > 3
         % Plot left selective population
@@ -34,7 +36,7 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     end
 
     
-    sgtitle('Population Responses by Selectivity', 'FontWeight', 'normal');
+%     sgtitle('Population Responses by Selectivity', 'FontWeight', 'normal','Fontsize',7);
     
     function save_name = plot_population(pool_type, row,varargin)
         parts = strsplit(pool_type, '.');
@@ -85,7 +87,7 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             save_name = regexprep(save_name, '[^\w_]', '');  % Remove non-alphanumeric characters except underscores
 
 
-            title(sprintf('%s Sound (n=%d)', directions{dir}, length(cell_indices)));
+            title(sprintf('%s Sound (n=%d)', directions{dir}, length(cell_indices)),'FontSize',7,'FontWeight','normal');
             
             % Add axis ticks
             [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(...
@@ -100,8 +102,8 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
 %                 utils.place_text_labels({'Active', 'Passive'}, [params.colors.active;params.colors.passive],.3);
             end
 
-            
-            
+            idx = (row-1)*5 + dir;   % same index you were using
+            set(gca,'Units', 'inches', 'Position', params.positions(idx, :))
             utils.set_current_fig;
             
             if nargin > 2 && numel(varargin)>0
@@ -118,10 +120,10 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             row_label = sprintf('%s Selective', parts{2});
         end
         
-        % Add row label
-        annotation('textbox', [0.01, 1.05 - row * 0.33, 0.1, 0.1], ...
-            'String', row_label, ...
-            'EdgeColor', 'none', 'FontSize', 12);
+%         % Add row label
+%         annotation('textbox', [0.01, 1.05 - row * 0.33, 0.1, 0.1], ...
+%             'String', row_label, ...
+%             'EdgeColor', 'none', 'FontSize', 7);
 
         
     end

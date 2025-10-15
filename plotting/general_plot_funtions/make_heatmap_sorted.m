@@ -1,6 +1,11 @@
 function make_heatmap_sorted(data,plot_info,varargin)
 
-colormap viridis%redblue
+if isfield('colormap',plot_info)
+    colormap viridis%redblue
+else
+    colors = plot_info.colormap;
+    colormap redblue
+end
 data_to_plot= squeeze(data);
 
 if nargin > 2
@@ -28,7 +33,15 @@ end
 
 caxis([plot_info.min_max]);
 colorbar;
-xlim([0 size(data,2)]);
-ylim([0 size(data,1)]);
-xlabel(plot_info.xlabel);
+xlim([1 size(data,2)]);
+ylim([1 size(data,1)]);
+if length(plot_info.xlabel) > 1
+    xticks([1:size(data,2)]);
+    xlim([0.5 size(data,2)+0.5]);
+    xtickangle(45);
+    xticklabels(plot_info.xlabel);
+
+else
+    xlabel(plot_info.xlabel);
+end
 ylabel(plot_info.ylabel);

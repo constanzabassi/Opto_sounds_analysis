@@ -6,13 +6,16 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
 
     figure(2325); clf; % Create and clear figure
     
+
     if ~isempty(chosen_cells) % Check if chosen_cells is not empty
         fieldss = fields(all_celltypes{1,1}); % Extract field names from first cell type structure
         for cell_type = 1:length(fieldss) % Loop over all cell types
             difference = []; % Initialize difference array
             if horizontalmode == 1
+                positions = utils.calculateFigurePositions(1, 5, .5, []);
                 subplot(1, length(fieldss),  cell_type) % Create subplot for each cell type
             else
+                positions = utils.calculateFigurePositions(5,1 , .5, []);
                 subplot(length(fieldss), 1, cell_type) % Create subplot for each cell type
             end
             
@@ -35,7 +38,10 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             y_limits = ylim;
             xlim([-.5 .5]);
             plot(mean_diff, y_limits(2), 'v', 'MarkerSize', 6, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
-            
+            set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(cell_type, :));
+            if cell_type == 2
+                xlabel(string,'FontSize',7);
+            end
             utils.set_current_fig; % Apply figure settings
             box off;
             
@@ -71,7 +77,7 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             mean_diff = mean(difference);
             y_limits = ylim;
             plot(mean_diff, y_limits(2), 'v', 'MarkerSize', 6, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
-            
+            set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(cell_type, :));
             utils.set_current_fig;
             if nargin > 7
                 xlim(varargin{1,1});
@@ -94,24 +100,23 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
     
     hold off;
     
-    % Set figure size
-    if horizontalmode == 1
-        % Create invisible axes for shared label
-        % Set figure height higher to leave space for label
-        set(gcf, 'units', 'points', 'position', [10, 100, 400, 120]);
-        
-        % Create invisible axes for global x-label
-        han = axes('units', 'points', 'Position', [10, 30, 400, 100], 'Visible', 'off');
-        han.XLabel.Visible = 'on';
-        xlabel(han, string, 'FontSize', 12);
-
-
-    else
-        set(gcf, 'units', 'points', 'position', [15, 100, 176, 400]);
-        han = axes('units', 'points', 'Position',[15, 40, 138, 400],'Visible','off');
-        han.XLabel.Visible = 'on';
-        xlabel(han, string,'FontSize',12);
-    end
+%     % Set figure size
+%     if horizontalmode == 1
+%         % Create invisible axes for shared label
+% %         % Set figure height higher to leave space for label
+% %         set(gcf, 'units', 'points', 'position', [10, 100, 400, 320]);
+% %         
+% %         % Create invisible axes for global x-label
+% %         han = axes('units', 'points', 'Position', [10, 30, 400, 100], 'Visible', 'off');
+% %         han.XLabel.Visible = 'on';
+% %         xlabel(han, string, 'FontSize', 7);
+% 
+% 
+%     else
+% %         set(gcf, 'units', 'points', 'position', [15, 100, 176, 400]);
+% %         han = axes('units', 'points', 'Position',[15, 40, 138, 400],'Visible','off');
+% %           xlabel(han, string, 'FontSize', 7);
+%     end
     
     % Save figure if save_path is provided
     if ~isempty(save_path)
