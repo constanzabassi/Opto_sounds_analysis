@@ -23,6 +23,8 @@ function [data,context_tr,extra,extra2] = load_experimental_data(server, dataset
     if multiple_contexts
         %has the trials relative to bad frames and stim/ctrl for each context
         context_tr = load_mat_file(exp_path, 'context_tr.mat');
+    else
+        context_tr = [];
     end
 
     % Load extra data if requested

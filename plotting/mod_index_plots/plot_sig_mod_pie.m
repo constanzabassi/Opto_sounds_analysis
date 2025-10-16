@@ -80,10 +80,10 @@ else
     % Combine the significantly modulated cells and store in the structure.
 
     % Determine the number of cell types so that we can arrange subplots .
-    numTypes = 3;
+    
     all_celltypes = varargin{1,1};
     possible_celltypes = fieldnames(all_celltypes{1,1});
-    
+    numTypes = length(possible_celltypes);
     current_total = zeros(numTypes,length(sig_mod_boot));
     pos_percent = zeros(numTypes,length(sig_mod_boot));
     neg_percent = zeros(numTypes,length(sig_mod_boot));
@@ -122,6 +122,9 @@ else
     
     % Get all field names from the sorted_cells structure.
     cellTypeNames = {'PYR','SOM','PV'};
+    if numTypes == 1
+        cellTypeNames = {'All'};
+    end
     
     %get positions
     if strcmp(plot_mode,'vertical')
@@ -181,6 +184,7 @@ else
                 leg_pos = fixed_positions(numTypes+1,:);
                 leg.Position = leg_pos; %subtract to make it a rectangle
             end
+            leg.ItemTokenSize = [10, 10];
         end
         % Use the field name (converted to uppercase) as the title.
         if strcmp(plot_mode,'vertical')

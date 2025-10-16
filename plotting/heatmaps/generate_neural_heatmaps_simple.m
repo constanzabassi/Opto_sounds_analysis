@@ -38,6 +38,11 @@ for context = context_to_plot
             mod_cells = 1:cellCount;
             save_name = 'all_cells';
         end
+        % Skip if data is empty
+        if isempty(mod_cells)
+            continue  % or optionally: data = nan(1, expected_length);
+        end
+
         temp = [temp;squeeze(mean(neural_structure{1,dataset_index}.z_stim(stim_trials_context{1,dataset_index}{1,context},mod_cells,:)))];
         temp2 = [temp2;squeeze(mean(neural_structure{1,dataset_index}.z_ctrl(ctrl_trials_context{1,dataset_index}{1,context},mod_cells,:)))];
 

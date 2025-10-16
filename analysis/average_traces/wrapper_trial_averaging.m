@@ -1,4 +1,4 @@
-function [avg_results, avg_results_by_dataset , avg_results_ctrl,  avg_results_by_dataset_ctrl] = wrapper_trial_averaging(info, neural_structure,stim_trials_context,ctrl_trials_context, params, savepath)
+function [avg_results, avg_results_by_dataset , avg_results_ctrl,  avg_results_by_dataset_ctrl] = wrapper_trial_averaging(info, neural_structure,stim_trials_context,ctrl_trials_context, params, savepath, varargin)
 % Wrapper function to compute trial-averaged responses across datasets and contexts
 %
 % Inputs:
@@ -22,7 +22,13 @@ if strcmpi(params.trial_type,'stim')
     nContexts = 3;
 end
 
-avg_results_by_dataset = cell(nDatasets, nContexts);
+if nargin > 6
+    context_to_run = varargin{1,1};
+else
+    context_to_run = 1:nContexts;
+end
+
+avg_results_by_dataset = cell(nDatasets, length(context_to_run));
 
 % Load context-specific trial info
 % Load trial information (adjust paths as needed) -virmen trial info left turns/sound condition/is stim
@@ -34,7 +40,7 @@ for current_dataset = 1:nDatasets
     fprintf('Processing dataset %d/%d...\n', current_dataset, nDatasets);
     
     % Loop through contexts
-    for context = 1:nContexts
+    for context = context_to_run
         fprintf('Current context %d...\n', context);
         
         % Get condition labels from trial info 

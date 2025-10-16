@@ -1,6 +1,6 @@
 function [all_celltypes, dff_st, deconv_st, stim_info, ...
           mouse_context_tr, deconv_st_interp, alignment_frames_all] = ...
-    pool_activity(mouse_date, server, path_string, multiple_contexts, before_after_frames)
+    pool_activity(mouse_date, server, path_string, multiple_contexts, before_after_frames, load_celltypes)
 % This function pools neural activity data from multiple mice/datasets.
 % It loads various datasets, processes deconvolved and dF/F signals,
 % aligns activity to experimental conditions, and categorizes cells
@@ -18,9 +18,8 @@ function [all_celltypes, dff_st, deconv_st, stim_info, ...
         % Process context data
         % has the trials relative to bad frames and stim/ctrl for each context
         % Store context trials
-        if multiple_contexts
-            mouse_context_tr{dataset_id} = context_tr;
-        end
+        mouse_context_tr{dataset_id} = context_tr;
+
 
         % Store stimulus info
         stim_info(dataset_id,:) = {data.bad_frames, data.exp, data.nonexp};
@@ -36,7 +35,16 @@ function [all_celltypes, dff_st, deconv_st, stim_info, ...
     end
     
     % Process cell types
-    all_celltypes = process_cell_types(mouse_date, server, deconv_st, dff_st);
+    if load_celltypes ==1
+        all_celltypes = process_cell_types(mouse_date, server, deconv_st, dff_st);
+    else
+        all_celltypes = {};
+        for i = 1:numel(dff_st)
+            
+            % Assign all_cells (e.g., 1:n for each neuron)
+            all_celltypes{i}.all_cells = 1:size(dff_st{i}.stim, 2);
+        end
+    end
 end
 
 function [dff_st, deconv_st, deconv_st_interp , stim_info, alignment_frames_all] = initialize_outputs(mouse_date)

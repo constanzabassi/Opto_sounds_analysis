@@ -30,5 +30,5 @@ end
 % Loop through each dataset
 for d = 1:numDatasets
     % Convert local indices to global indices by adding the offset
-    globalIndices = [globalIndices, current_var{d} + offset_values(d)];
+    globalIndices = [globalIndices, reshape(current_var{d}, 1, []) + offset_values(d)];
 end
