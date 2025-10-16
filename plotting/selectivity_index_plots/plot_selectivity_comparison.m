@@ -1,12 +1,16 @@
-function plot_selectivity_comparison(selectivity_results_all, savepath)
+function plot_selectivity_comparison(selectivity_results_all, savepath,varargin)
     % Plot active vs passive modulation for each selectivity pool
     positions = utils.calculateFigurePositions(1, 5, .7, []);
+    if nargin > 2
+        positions = utils.calculateFigurePositions(1, varargin{1,1}, .5, []);
+        positions(:,3) = positions(:,3)-0.2;
+    end
     positions(:,[2,4]) = positions(:,[2,4])-.02;
     % Setup
     pool_types = {'left', 'right', 'nonsel'};
     directions = {'left_mod', 'right_mod'};
-    plot_titles = {'Left Sound Modulation', 'Right Sound Modulation'};
-    contexts = {'active', 'passive'};
+    plot_titles = {'Left Sound', 'Right Sound'};
+    contexts = {'Active', 'Passive'};
     
     % Create figure for each pool type
     for p_idx = 1:length(pool_types)
@@ -14,6 +18,9 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
         
         % Create figure
         fig = figure('Position', [100 100 400 400]);
+        if nargin > 2
+            fig = figure('Position', [100 100 300 420]);
+        end
         
         % Create subplots for left and right modulation
         for d_idx = 1:length(directions)
@@ -63,17 +70,24 @@ function plot_selectivity_comparison(selectivity_results_all, savepath)
         % Add overall title
         sgtitle(sprintf('%s Selective Cells (n=%d)', ...
             upper(pool), length(selectivity_results_all.both.(pool).cell_indices)), ...
-            'FontSize', 8,'fontweight','normal');
+            'FontSize', 7,'fontweight','normal');
 
         
-        
-        % Save figure if path provided
-        if ~isempty(savepath)
+        if nargin >2
+            if ~isempty(savepath)
             mkdir(savepath)
             saveas(fig, fullfile(savepath, ...
-                sprintf('modulation_comparison_%s_selective.png', pool)));
-            saveas(fig, fullfile(savepath, ...
-                sprintf('modulation_comparison_%s_selective.fig', pool)));
+                sprintf('modulation_comparison_%s_selective_tinyfig.fig', pool)));
+            exportgraphics(fig, fullfile(savepath, sprintf('modulation_comparison_%s_selective_tinyfig.pdf',pool)), 'ContentType', 'vector');
+            end
+        else
+            % Save figure if path provided
+            if ~isempty(savepath)
+                mkdir(savepath)
+                saveas(fig, fullfile(savepath, ...
+                    sprintf('modulation_comparison_%s_selective.fig', pool)));
+                exportgraphics(fig, fullfile(savepath, sprintf('modulation_comparison_%s_selective.pdf',pool)), 'ContentType', 'vector');
+            end
         end
     end
 end

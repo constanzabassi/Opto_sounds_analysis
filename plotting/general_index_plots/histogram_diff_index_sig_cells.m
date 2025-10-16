@@ -125,7 +125,7 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
         safe_string = regexprep(string, '[^\w\d_-]', '_');
 
         saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.png']);
-        saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.svg']);
+%         saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.svg']);
         exportgraphics(gcf, ['histogram_diff_index_sig_cells_' safe_string '.pdf'], 'ContentType', 'vector'); % Save as PDF
     end
 end

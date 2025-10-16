@@ -149,7 +149,7 @@ if nargin > 9
         string1 = strrep(string1, '\', '');
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
-%         exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+        exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
 % %         set(gcf, 'Renderer', 'opengl');
 % %         print(gcf, '-dpdf', '-opengl', fullfile(save_path, ...
 % %             ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']));
@@ -160,13 +160,13 @@ if nargin > 9
 %             'BackgroundColor', 'none', ...
 %             'BoundingBox', 'tight');
 
-set(gcf, 'Units', 'inches');
-pos = get(gcf, 'Position');
-set(gcf, 'PaperPositionMode', 'Auto', 'PaperUnits', 'inches', ...
-    'PaperSize', [pos(3), pos(4)]);
-print(gcf, fullfile(save_path, ...
-    ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), ...
-    '-dpdf', '-painters');
+%         set(gcf, 'Units', 'inches');
+%         pos = get(gcf, 'Position');
+%         set(gcf, 'PaperPositionMode', 'Auto', 'PaperUnits', 'inches', ...
+%             'PaperSize', [pos(3), pos(4)]);
+%         print(gcf, fullfile(save_path, ...
+%             ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), ...
+%             '-dpdf', '-painters');
 
 
 

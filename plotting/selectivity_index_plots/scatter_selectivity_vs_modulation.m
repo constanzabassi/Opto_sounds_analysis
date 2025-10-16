@@ -93,8 +93,8 @@ function scatter_selectivity_vs_modulation(selectivity_results, mod_index_result
     % Save figure if path provided
         if ~isempty(savepath)
             mkdir(savepath)
-            saveas(gcf, fullfile(savepath, ...
-                'scatter_selective_vs_modulation.png'));
+%             saveas(gcf, fullfile(savepath, ...
+%                 'scatter_selective_vs_modulation.png'));
             saveas(gcf, fullfile(savepath, ...
                  'scatter_selective_vs_modulation.fig'));
             exportgraphics(gcf,'scatter_selective_vs_modulation.pdf', 'ContentType', 'vector');

@@ -7,7 +7,7 @@ plot_info = plotting_config(); %plotting params
 params.plot_info = plot_info;
 %% load mod indices/ significant neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
-selectivity_mode = 'ctrl'; %or ctrl
+selectivity_mode = 'ctrl'; %or prepost_ctrl or ctrl (just difference between left and right sounds)
 selectivity_base = ['V:\Connie\results\opto_sound_2025\context\sounds\selectivity\' selectivity_mode];
 selectivity_indexm = load([selectivity_base '\mod_indexm.mat']).mod_indexm;
 selectivity_results = load([selectivity_base '\mod_index_results.mat']).results; %has significant neurons too!
@@ -24,11 +24,11 @@ params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect
 base = ['W:\Connie\results\Bassi2025\fig3\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
-[selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound (ΔF/F)');
+[selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Avg. Sound (ΔF/F)');
 % results organized as selectivity{i} where i is +, -, or all modulatedneurons
 save('selectivity_pool_results','selectivity_pool_results_by_dataset', 'selectivity_pool_results');
 save('selectivity_pool_results','selectivity_pool_results');
-wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, sound.stim_avg, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Sound+Stim (ΔF/F)');
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, sound.stim_avg, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Avg. Sound+Stim (ΔF/F)');
 %% Analyze modulation indices by selectivity pools
 %OPTO!
 mod_indexm = opto.mod;
@@ -44,10 +44,10 @@ mkdir(base);
 save('selectivity_pool_results','selectivity_pool_results_by_dataset', 'selectivity_pool_results');
 
 avg_results = opto.avg;
-wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto.mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Stim+Sound ΔF/F');
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto.mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Avg. Stim+Sound ΔF/F');
 
 avg_results = sound.avg;
-wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto_mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Sound ΔF/F');
+wrapper_selecitivity_pool_analysis(base, params, mod_indexm, opto.mod_prepost, sig_mod_boot, mod_index_results, selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[-.2,.5],'Avg. Sound ΔF/F');
 
 %% compare the overlap of opto neurons and sound neurons
 

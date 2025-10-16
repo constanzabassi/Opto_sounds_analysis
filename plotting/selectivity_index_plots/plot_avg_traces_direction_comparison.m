@@ -1,5 +1,5 @@
 
-function plot_avg_traces_direction_comparison(avg_results, selectivity_results,save_dir,varargin)
+function plot_avg_traces_direction_comparison(avg_results, selectivity_results,orientation,save_dir,varargin)
     % Plot average responses for both left and right selective populations
     
     
@@ -7,15 +7,22 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
 
     
     % Create figure with 2 rows (left/right selective) x 2 columns (left/right sounds)
-    figure('Position', [100 100 900 800]);
-    positions = utils.calculateFigurePositions(5,5,0.5,[]);
+    if strcmp(orientation,'vertical')
+        figure('Position', [100 100 900 800]);
+        positions = utils.calculateFigurePositions(5,5,0.5,[]);
+        
+    else
+        figure('Position', [100 100 800 900]);
+        positions = utils.calculateFigurePositions(1,7,0.4,[]);
+    end
 
         params.colors.active = [0,0,0];
     params.colors.passive = [0.5,0.5,0.5];
     params.stim_onset = 61;
     params.positions = positions;
+    params.orientation = orientation;
 
-    if nargin > 3
+    if nargin > 4
         % Plot left selective population
         save_name = plot_population('both.left', 1, varargin);
         
@@ -46,10 +53,14 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             cell_indices = selectivity_results.(parts{1}).(parts{2}).cell_indices;
         end
         directions = {'Left', 'Right'};
-        
+        hold on;
         for dir = 1:2
-            subplot(3, 2, (row-1)*2 + dir);
-            hold on;
+            if strcmp(params.orientation, 'horizontal')
+                subplot(1,6, (row-1)*2 + dir);
+            else
+                subplot(3, 2, (row-1)*2 + dir);
+            end
+            
             
             % Get responses for this direction in both contexts
             active_responses = avg_results{1,1}.(lower(directions{dir})).neuron_mean(cell_indices,:);
@@ -86,8 +97,17 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             save_name = strrep(ylabel_text, ' ', '_');  % Replace spaces with underscores
             save_name = regexprep(save_name, '[^\w_]', '');  % Remove non-alphanumeric characters except underscores
 
-
-            title(sprintf('%s Sound (n=%d)', directions{dir}, length(cell_indices)),'FontSize',7,'FontWeight','normal');
+            if strcmp(params.orientation, 'horizontal')
+                title(sprintf('%s Sound', directions{dir}),'FontSize',7,'FontWeight','normal');
+            else
+                % Add legend only once
+                if row == 1 && dir == 1
+                    legend([h1.mainLine, h2.mainLine], {'Active', 'Passive'}, ...
+                        'Location', 'southeast', 'box', 'off');
+    %                 utils.place_text_labels({'Active', 'Passive'}, [params.colors.active;params.colors.passive],.3);
+                end
+                title(sprintf('%s Sound (n=%d)', directions{dir}, length(cell_indices)),'FontSize',7,'FontWeight','normal');
+            end
             
             % Add axis ticks
             [xticks_in, xticks_lab] = utils.x_axis_sec_aligned(...
@@ -95,15 +115,15 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
             xticks(xticks_in);
             xticklabels(xticks_lab);
             
-            % Add legend only once
-            if row == 1 && dir == 1
-                legend([h1.mainLine, h2.mainLine], {'Active', 'Passive'}, ...
-                    'Location', 'southeast', 'box', 'off');
-%                 utils.place_text_labels({'Active', 'Passive'}, [params.colors.active;params.colors.passive],.3);
+            
+%             
+            if strcmp(params.orientation,'vertical')
+                idx = (row-1)*5 + dir;   % same index you were using
+                set(gca,'Units', 'inches', 'Position', params.positions(idx, :));
+            else
+                idx = (row-1)*2 + dir;   % same index you were using
+                set(gca,'Units', 'inches', 'Position', params.positions(idx, :));
             end
-
-            idx = (row-1)*5 + dir;   % same index you were using
-            set(gca,'Units', 'inches', 'Position', params.positions(idx, :))
             utils.set_current_fig;
             
             if nargin > 2 && numel(varargin)>0
@@ -131,9 +151,9 @@ function plot_avg_traces_direction_comparison(avg_results, selectivity_results,s
     % Save plots with the ylabel in the filename
     if ~isempty(save_dir)
         mkdir(save_dir);
-        saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.png']));
-        saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.fig']));
-        exportgraphics(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.pdf']), 'ContentType', 'vector');
+%         saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '.png']));
+        saveas(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '_' params.orientation '.fig']));
+        exportgraphics(gcf, fullfile(save_dir, ['avg_traces_direction_comparison_' save_name '_' params.orientation '.pdf']), 'ContentType', 'vector');
     end
 end
 

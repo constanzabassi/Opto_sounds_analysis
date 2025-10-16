@@ -27,7 +27,9 @@ function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_
     % Define the labels.
     labels = overlap_labels;
     %define positions 
-    positions = utils.calculateFigurePositions(1, 6, .2,[]); %rows and number of columns wanted followed by spacing between them (0.4)
+    positions = utils.calculateFigurePositions(1, 7, .2,[]); %rows and number of columns wanted followed by spacing between them (0.4)
+    positions(:,2) = positions(:,2)-.5;
+    
     % Create a new figure.
     f = figure(73); clf;
     hold on;
@@ -38,8 +40,8 @@ function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_
     nLabels = numel(labels);
     for iHandle = 2:2:2*nLabels
         hText = hPie(iHandle);
-        hText.Position = 0.4 * hText.Position;  % shift labels inward by half
-        hText.FontSize = 8;
+        hText.Position = .9 * hText.Position;  % shift labels inward by half
+        hText.FontSize = 7;
         hText.FontName = 'Arial';
     end
     % Set a custom colormap.
@@ -70,14 +72,16 @@ function plot_sig_overlap_pie(percent_cells, overlap_labels, savepath, contexts_
     % set_current_fig;
 
     % Create a legend and position it outside the pie chart.       
-    leg = legend(labels,'FontSize', 8,  'box', 'off'); %'Location', 'eastoutside',
+    leg = legend(labels,'FontSize', 6,  'box', 'off'); %'Location', 'eastoutside',
     % Set legend units to normalized so that you can adjust its position relative to the figure.
     leg.Units = 'Inches';
     % Adjust the legend position manually.
     % [x y width height] -- tweak these numbers until the legend is placed as desired.
     leg_pos = positions(2,:);
     leg_pos(4) = leg_pos(4)/2;
-%     leg.ItemTokenSize = [10, 10]; % [width height] in points (adjust as needed)
+%             leg_pos(2) = leg_pos(2) - leg_pos(4) + 0.1;
+%             leg_pos(4) = leg_pos(4)/3;
+    leg.ItemTokenSize = [10, 10]; % [width height] in points (adjust as needed)
     leg.Position = leg_pos; %subtract to make it a rectangle
 
     % If a save path is provided, save the figure.

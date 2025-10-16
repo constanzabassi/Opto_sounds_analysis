@@ -7,6 +7,7 @@ modl_fit = scatter_index_sigcells_histogram_optional(sig_cells, all_celltypes(pa
 
 %heatmap separated by selectivity
 plot_selectivity_comparison(selectivity_results, savepath); 
+plot_selectivity_comparison(selectivity_results, savepath,7); 
 
 %scatter of mod separated by selectivity
 plot_selectivity_consistency(selectivity_results, savepath); 
@@ -19,10 +20,10 @@ scatter_selectivity_vs_modulation(selectivity_results, mod_index_results, savepa
 
 %average plots separated by selectivity
 if nargin > 8
-    plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath,varargin);
-    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results, savepath,varargin);
+    plot_avg_traces_direction_comparison(avg_results, selectivity_results,'horizontal', savepath,varargin);
+    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results,'horizontal', savepath,varargin);
 else
-    plot_avg_traces_direction_comparison(avg_results, selectivity_results, savepath);
-    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results, savepath);
+    plot_avg_traces_direction_comparison(avg_results, selectivity_results,'horizontal', savepath);
+    plot_avg_heatmap_direction_comparison(avg_results, selectivity_results,'horizontal', savepath);
 end
 
