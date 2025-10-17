@@ -51,14 +51,19 @@ if nargin < 6
 
     % Define the labels for the pie slices
     labels = {'Positively modulated', 'Negatively modulated', 'Not modulated'};
-    
+
+    % --- NEW CODE: remove zero-percent categories ---
+    nonzero_idx = percent_cells > 0;             % keep only categories with non-zero %
+    percent_cells = percent_cells(nonzero_idx);
+    labels = labels(nonzero_idx);
+    customColormap = [1 1 1; 0 0 0; 0.5 0.5 0.5];
+    customColormap = customColormap(nonzero_idx, :);
+
     % Plot the pie chart
     pie(percent_cells);
     
     % Set a custom colormap: first row = white, second = black, third = grey
-    colormap([1 1 1; 
-              0 0 0; 
-              0.5 0.5 0.5]);
+    colormap(customColormap);
           
     % Set title and hide axes for a cleaner look
     title('All Cells', 'Units', 'normalized', 'Position', [0.5, 1.2, 0]);
@@ -123,12 +128,12 @@ else
     % Get all field names from the sorted_cells structure.
     cellTypeNames = {'PYR','SOM','PV'};
     if numTypes == 1
-        cellTypeNames = {'All'};
+        cellTypeNames = {'All cell types'};
     end
     
     %get positions
     if strcmp(plot_mode,'vertical')
-        positions = utils.calculateFigurePositions(7, 1, .5,.1);
+        positions = utils.calculateFigurePositions(8, 1, .5,.1);
         figure_position = [100, 10, 500, 800];
     else
         positions = utils.calculateFigurePositions(1,7, .5,.1);
@@ -154,6 +159,13 @@ else
 
         percent_cells = [mean(pos_percent(celltypes,:)), mean(neg_percent(celltypes,:)), mean(non_mod_percent(celltypes,:))];
 
+        % --- NEW CODE: remove zero-percent categories ---
+        nonzero_idx = percent_cells > 0;             % keep only categories with non-zero %
+        percent_cells = percent_cells(nonzero_idx);
+        labels = labels(nonzero_idx);
+        customColormap = [1 1 1; 0 0 0; 0.5 0.5 0.5];
+        customColormap = customColormap(nonzero_idx, :);
+    
         
         % Plot the pie chart. The handle h returns both patch and text objects.
         h = pie(percent_cells);
@@ -192,7 +204,7 @@ else
         else
             title_pos = [0,1.5];
         end
-        title(upper(cellType),'FontWeight', 'normal', 'FontName', 'Arial','FontSize',8,'Position',title_pos);
+        title(cellType,'FontWeight', 'normal', 'FontName', 'Arial','FontSize',8,'Position',title_pos);
 
         hold off;
         

@@ -185,6 +185,11 @@ end
 context_mod_all = cat(1, context_modulation_index{:});
 
 chosen_pyr = chosen_cells_all.(field_names{1});
-chosen_mcherry = chosen_cells_all.(field_names{2});
-chosen_tdtom = chosen_cells_all.(field_names{3});
+    if length(field_names)>1
+        chosen_mcherry = chosen_cells_all.(field_names{2});
+        chosen_tdtom = chosen_cells_all.(field_names{3});
+    else
+        chosen_mcherry = [];
+        chosen_tdtom = [];
+    end
 end

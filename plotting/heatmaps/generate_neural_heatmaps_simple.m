@@ -14,13 +14,16 @@ nContexts = length(context_to_plot); %size(stim_trials_context{1,1},2);
 data_by_context = cell(1,nContexts);  % To store for each context
 data_by_context_ctrl = cell(1,nContexts);  % To store 
 
-params = get_heatmap_params();
+params = get_heatmap_params(params.context_labels,params.savepath);
 positions = utils.calculateFigurePositions(1, 7, .5, []);
-
 if nargin > 8
     minmax = varargin{1,1};
 else
     minmax = [-.5,1];
+end
+
+if nargin > 9
+    positions = utils.calculateFigurePositions(1, varargin{1,2}, .5, []);
 end
 
 % Plot each context with specified sorting
@@ -40,6 +43,7 @@ for context = context_to_plot
         end
         % Skip if data is empty
         if isempty(mod_cells)
+            dataset_index
             continue  % or optionally: data = nan(1, expected_length);
         end
 
@@ -80,10 +84,10 @@ for context = 1:nContexts
     cb.Label.String = 'Z-scored ΔF/F';
     cb.Label.Rotation = 270;
     curr_position =  cb.Label.Position;
-    cb.Label.Position = [curr_position(1)+.5,curr_position(2:3)];
+    cb.Label.Position = [curr_position(1)+0.5,curr_position(2:3)];
     caxis(minmax);
     end
-    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(context, :));
+    set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(context, :));
 
     %adjust label position again after resizing plot
     if context == nContexts
@@ -92,6 +96,9 @@ for context = 1:nContexts
         to_add = 6;
     else
         to_add = 4;
+    end
+    if nargin > 9
+        to_add = 2;
     end
     cb.Label.Position = [curr_position(1)+to_add,curr_position(2:3)];
     end
@@ -126,10 +133,10 @@ for context = 1:nContexts
     cb.Label.String = 'Z-scored ΔF/F';
     cb.Label.Rotation = 270;
     curr_position =  cb.Label.Position;
-    cb.Label.Position = [curr_position(1)+.5,curr_position(2:3)];
+    cb.Label.Position = [curr_position(1)+0.5,curr_position(2:3)];
     caxis(minmax);
     end
-    set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(context, :));
+    set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(context, :));
 
     %adjust label position again after resizing plot
     if context == nContexts
@@ -138,6 +145,9 @@ for context = 1:nContexts
         to_add = 6; %3
     else
         to_add = 4; %2
+    end
+    if nargin > 9
+        to_add = 2;
     end
     cb.Label.Position = [curr_position(1)+to_add,curr_position(2:3)];
     end
