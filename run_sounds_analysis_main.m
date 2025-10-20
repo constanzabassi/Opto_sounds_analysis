@@ -85,6 +85,9 @@ mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
 
 %plot % modulated cells per context
+[percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, [1], mod_params.savepath, 'horizontal',all_celltypes);
+[percentage_stats_passive] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, [2], mod_params.savepath, 'horizontal',all_celltypes);
+
 sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,all_celltypes, mod_params.savepath);
 % sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
 
@@ -145,12 +148,14 @@ plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to 
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 params.plot_info = plot_info;
 params.info.chosen_mice = [1:25];
+params.string = 'Sounds';
 
 %save directory
 save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\sig_neurons';% '/spont_sig'];% '/spont_sig']; %[info.savepath '/mod/' mod_params.mod_type '/spont_sig']; % Set directory to save figures.
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr, all_celltypes, params, save_dir);
+save(fullfile(save_dir, 'mod_index_stats_neurons.mat'), 'mod_index_stats');
 
 
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice)

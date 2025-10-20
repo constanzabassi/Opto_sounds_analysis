@@ -118,7 +118,7 @@ for current_dataset = chosen_mice
         
         % Accumulate in struct
         if isfield(chosen_cells_all, field_name)
-            chosen_cells_all.(field_name) = [chosen_cells_all.(field_name), idx];
+            chosen_cells_all.(field_name) = [reshape(chosen_cells_all.(field_name), 1, []),  reshape(idx, 1, [])];
         else
             chosen_cells_all.(field_name) = idx;
         end

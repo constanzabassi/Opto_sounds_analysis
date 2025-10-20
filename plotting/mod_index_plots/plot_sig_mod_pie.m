@@ -98,16 +98,21 @@ else
         for dataset = 1:length(sig_mod_boot)
             current_total(celltype,dataset) = length(all_celltypes{dataset}.(possible_celltypes{celltype}));
             celltype_array{celltype,dataset} = all_celltypes{dataset}.(possible_celltypes{celltype})';
-
-            current_sig = find(ismember(sig_mod_boot{dataset,context},all_celltypes{dataset}.(possible_celltypes{celltype})));
-            pos_percent(celltype,dataset) = length(find(mod_index_all{dataset,context}(sig_mod_boot{dataset,context}(current_sig))>0))/current_total(celltype,dataset);
-            neg_percent(celltype,dataset) = length(find(mod_index_all{dataset,context}(sig_mod_boot{dataset,context}(current_sig))<0))/current_total(celltype,dataset);
-            non_mod_percent(celltype,dataset) = (current_total(celltype,dataset) - length(sig_mod_boot{dataset,context}(current_sig)))/current_total(celltype,dataset);
+            current_sig_cells = [sig_mod_boot{dataset,context}];
+            current_mod = mod_index_all{dataset,context};
+            current_sig = find(ismember([sig_mod_boot{dataset,context}],all_celltypes{dataset}.(possible_celltypes{celltype})));
+            pos_percent(celltype,dataset) = length(find(current_mod(current_sig_cells(current_sig))>0))/current_total(celltype,dataset);
+            neg_percent(celltype,dataset) = length(find(current_mod(current_sig_cells(current_sig))<0))/current_total(celltype,dataset);
+            non_mod_percent(celltype,dataset) = (current_total(celltype,dataset) - length(current_sig_cells(current_sig)))/current_total(celltype,dataset);
         end
             %save percentages
     percentage_stats.pos_percent{celltype} = utils.get_basic_stats(pos_percent(celltype,:));
     percentage_stats.neg_percent{celltype} = utils.get_basic_stats(neg_percent(celltype,:));
     percentage_stats.non_mod_percent{celltype} = utils.get_basic_stats(non_mod_percent(celltype,:));
+
+    percentage_stats.pos_percent_all{celltype} = pos_percent(celltype,:);
+    percentage_stats.neg_percent_all{celltype} = neg_percent(celltype,:);
+    percentage_stats.non_mod_percent_all{celltype} = non_mod_percent(celltype,:);
     end
     
     % perform Calculation but pooling across all neurons together

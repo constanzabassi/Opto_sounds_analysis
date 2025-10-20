@@ -57,3 +57,16 @@ save_dir = ['W:\Connie\results\Bassi2025\fig3\'];
 [percent_cells, percent_cells_per_dataset] = calculate_sig1_vs_sig2_overlap(opto.sig_cells(1:24,:), sound.sig_mod_boot_thr, opto.mod, contexts_to_compare);
 plot_sig_overlap_pie(mean(percent_cells_per_dataset), overlap_labels, save_dir, contexts_to_compare);
 
+%% compare sound vs photostim selectivity indices
+[mod_index_by_dataset,~] = unpack_modindexm(selectivity_indexm,sound.sig_cells,all_celltypes,[1:24]);
+[mod_index_by_dataset_opto,~] = unpack_modindexm(selectivity_indexm,opto.sig_cells,all_celltypes,[1:24]);
+
+ %by dataset
+ save_dir = ['W:\Connie\results\Bassi2025\fig3\selectivity_pools\'];
+% all_stats.abs_mod_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, [1:24],...
+%   params.plot_info, [0,.5]);
+abs_logic = 1;
+avg_contexts = 1;
+mod_stats = compare_mod_indices_across_conditions(save_dir, ...
+mod_index_by_dataset, mod_index_by_dataset_opto, ...
+[1:24], [1:24], params.plot_info, [0,.3],abs_logic,avg_contexts);

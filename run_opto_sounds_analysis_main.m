@@ -9,7 +9,7 @@ params.plot_info = plot_info;
 %% Pool activity across mice
 [all_celltypes, dff_st, deconv_st, stim_info, ...
  mouse_context_tr, deconv_st_interp, alignment_frames] = ...
-    pool_activity(params.info.mouse_date, params.info.serverid, params.info.path_string, true, [60,60]);
+    pool_activity(params.info.mouse_date, params.info.serverid, params.info.path_string, true, [60,60],1);
 
 % Save basic information
 % Save variables with consistent paths
