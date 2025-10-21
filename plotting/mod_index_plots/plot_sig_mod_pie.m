@@ -66,7 +66,7 @@ if nargin < 6
     colormap(customColormap);
           
     % Set title and hide axes for a cleaner look
-    title('All Cells', 'Units', 'normalized', 'Position', [0.5, 1.2, 0]);
+%     title('All Cells', 'Units', 'normalized', 'Position', [0.5, 1.2, 0]);
     set(gca, 'visible', 'off');
     set(gcf, 'Position', [150, 150, 500, 500]);
     hold off;
@@ -138,7 +138,7 @@ else
     
     %get positions
     if strcmp(plot_mode,'vertical')
-        positions = utils.calculateFigurePositions(8, 1, .5,.1);
+        positions = utils.calculateFigurePositions(9, 1, .5,.1);
         figure_position = [100, 10, 500, 800];
     else
         positions = utils.calculateFigurePositions(1,7, .5,.1);
@@ -209,7 +209,9 @@ else
         else
             title_pos = [0,1.5];
         end
-        title(cellType,'FontWeight', 'normal', 'FontName', 'Arial','FontSize',8,'Position',title_pos);
+        if numTypes > 1
+            title(cellType,'FontWeight', 'normal', 'FontName', 'Arial','FontSize',8,'Position',title_pos);
+        end
 
         hold off;
         

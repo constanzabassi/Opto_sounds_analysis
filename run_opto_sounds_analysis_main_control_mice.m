@@ -103,22 +103,31 @@ params.savepath = 'W:\Connie\results\Bassi2025\fig3\control_mice\';
 params.context_labels = {'Spont'};
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,[],[1:length(dff_st)], params, 'opto',context_num,[-.5,1],5); %sig_mod_boot_thr'
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
-savepath = 'W:\Connie\results\Bassi2025\fig3\celltype_traces\';
-% wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_deconv',plot_info,mod_indexm);
+savepath = 'W:\Connie\results\Bassi2025\fig3\control_mice\avg_traces\';
+
+context_num = 1; %only one context
+sig_all_cells = cellfun(@(x) x.all_cells , all_celltypes , 'UniformOutput' , false)'; %getting all neurons
+wrapper_avg_cell_type_traces_single_context(context_data.dff,all_celltypes,context_num,mod_indexm,sig_all_cells,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
 % wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,[],mod_params,[],'opto_dff',plot_info,mod_indexm);
-
-% % taking the differences
-% context_num = [1,2];
-% difference_params.type = 'stim_sub_ctrl_post'; % options: 'stim_sub_ctrl_all','stim_sub_ctrl_post','stim_sub_pre','ctrl_sub_pre'
-% difference_params.pre_frames = params.frames.before;
-% difference_params.post_frames = params.frames.after;
-% generate_neural_heatmaps_difference(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,3 )',[1:24], params, 'opto',context_num,difference_params);
-
 %%
 %plot % overlap of modulated cells across contexts!
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:length(dff_st)], mod_indexm, [], all_celltypes,{'All'});
+%% comparing with real photostim mice!
+[context_mod_all, ~, ~, ~, ~] = organize_sig_mod_index_contexts_celltypes(...
+        [1:8], mod_indexm, [], all_celltypes,params.plot_info.celltype_names);
+
+%load experimental stim mice!
+context_mod_stim_datasets = load('W:\Connie\results\Bassi2025\fig3\mod\prepost\separate\all_neurons\mod_index_data.mat').context_mod_all;
+mod_index_stim = load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\mod_indexm.mat').mod_indexm;
+save_dir1 = 'W:\Connie\results\Bassi2025\fig3\control_mice';
+mod_index_heatmap(save_dir1, context_mod_stim_datasets(:,3), params.plot_info, ...
+        [1:24], [-.4,.4]);
+[percentage_stats] = plot_sig_mod_pie(mod_params, mod_index_stim(:,3), [], 1, 'W:\Connie\results\Bassi2025\fig3\control_mice\', 'vertical',all_celltypes);
+%do CDF comparisons?
+[cdf_stats, KW_Test] = cdf_mod_index_stim_vs_ctrl_datasets(save_dir1,  context_mod_stim_datasets(:,3), context_mod_all, ...
+                       {'Spont'}, params.plot_info.colors_stimctrl, {'-','--'}, {'Photostim','Control'}, 'all',[-.2,.2]);
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice) 
 %USING ALL CELLS
 % Set y-axis limits for the plots.

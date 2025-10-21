@@ -42,12 +42,15 @@ for fig_idx = 1:length(data_modes)*2
                     continue
                 end
 
+                %take away any Infs
+                dat_struct.stim(isinf(dat_struct.stim)) = NaN;
+                dat_struct.ctrl(isinf(dat_struct.ctrl)) = NaN;
                 if stim_ctrl_idx(fig_idx) == 1
                     if ~isfield(dat_struct, 'stim') || isempty(dat_struct.stim)
                         continue
                     end
                     if length(size(dat_struct.stim))>2
-                        dat = squeeze(mean(dat_struct.stim));
+                        dat = squeeze(mean(dat_struct.stim,'omitnan'));
 %                         if contains(type,'deconv')
 %                             frame_window = 1:size(dat_struct.stim,3);
 %                             dat = squeeze(squeeze(sum(dat_struct.stim(:,:,frame_window),1))/(length(frame_window)/30));
@@ -60,7 +63,7 @@ for fig_idx = 1:length(data_modes)*2
                         continue
                     end
                     if length(size(dat_struct.stim))>2
-                        dat = squeeze(mean(dat_struct.ctrl));
+                        dat = squeeze(mean(dat_struct.ctrl,'omitnan'));
                     else
                         dat = dat_struct.ctrl;
                     end
@@ -74,9 +77,9 @@ for fig_idx = 1:length(data_modes)*2
                 dat = dat(:, frames);
 
                 if strcmp(data_modes{ceil(fig_idx/2)}, 'bs')
-                    baseline = mean(dat(:, 31:60), 2);
+                    baseline = mean(dat(:, 31:60), 2,'omitnan');
                     if nargin > 10
-                        baseline = mean(dat(:, varargin{1,1}), 2);
+                        baseline = mean(dat(:, varargin{1,1}), 2,'omitnan');
                     end
                     dat = dat - baseline;
                 end
@@ -84,7 +87,7 @@ for fig_idx = 1:length(data_modes)*2
                 if average_over_neurons
                     all_traces = [all_traces; dat];  % Pool all neurons
                 else
-                    mean_trace = mean(dat, 1);  % Average per dataset
+                    mean_trace = mean(dat, 1,'omitnan');  % Average per dataset
                     mouse_means = [mouse_means; mean_trace];
                 end
             end
@@ -112,6 +115,17 @@ for fig_idx = 1:length(data_modes)*2
         xlim(xlimss );
         xticks([31 61 91]);
         xticklabels([-1 0 1]);
+        yli = ylim;
+        if diff(yli) < 0.04
+            yli = [yli(1)-0.01,yli(2)+0.01];
+        end
+        
+            for f = 1:size(stim_frame,1)
+                x = [stim_frame(f,1), stim_frame(f,2), stim_frame(f,2), stim_frame(f,1)];
+                y = [yli(1), yli(1), yli(2), yli(2)];
+                patch(x, y, [1 0.8 0.3], 'EdgeColor', 'none', 'FaceAlpha', 1); %[.5 .5 .5]
+
+            end
         if nargin > 10
             xlimss = [1 61];
             xlim(xlimss );

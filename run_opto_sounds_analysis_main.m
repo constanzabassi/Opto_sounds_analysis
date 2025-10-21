@@ -98,6 +98,11 @@ sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm
 %PLOT MODULATED NEURONS in the spontaneous context
 context_num = 3;
 [percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, 'W:\Connie\results\Bassi2025\fig3\mod\', 'horizontal',all_celltypes);
+cell_indices = arrayfun(@(x) struct('all_cells', 1:x), num_cells(:)', 'UniformOutput', false); %;
+cell_indices_like_sig = arrayfun(@(x) 1:x, num_cells(:)', 'UniformOutput', false)'; %to plot ALL neurons (not just sig mod boot)
+wrapper_avg_cell_type_traces_single_context(context_data.dff(context_num,:),cell_indices,1,mod_indexm(:,context_num),sig_mod_boot_thr(:,context_num),mod_params,'W:\Connie\results\Bassi2025\fig3\celltype_traces\spont\','opto_dff',plot_info,mod_indexm);
+wrapper_avg_cell_type_traces_single_context(context_data.dff(context_num,:),cell_indices,1,mod_indexm(:,context_num),cell_indices_like_sig,mod_params,'W:\Connie\results\Bassi2025\fig3\celltype_traces\spont\all_cells\','opto_dff',plot_info,mod_indexm);
+
 %heatmap of mean
 generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context,sig_mod_boot_thr(:,context_num )',[1:24], params, 'opto',context_num);
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
@@ -127,6 +132,7 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm, sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
+
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice) 
 %USING ALL CELLS
 % Set y-axis limits for the plots.
