@@ -60,15 +60,20 @@ save_dir = ['W:/Connie/results/Bassi2025/fig3/running_updated/avg_traces'];%['V:
 speed_params.specified_frames = speed_params.stim_frame; %whichever frames to take average off (to write numbers down on paper)
 
 %calculate deltas and means for aligned velocity/speed
-[deltaLeft,deltaRight,avg_speed_axis_data,speeds_mean_sem,speeds_mean_sem_specified_frames] = process_aligned_vel_all_axis([1:25], mouse_vel_aligned_sounds, speed_params.trials_to_use, speed_params);
-
+[deltaLeft,deltaRight,avg_speed_axis_data,speeds_mean_sem,speeds_mean_sem_specified_frames,general_stats] = process_aligned_vel_all_axis([1:25], mouse_vel_aligned_sounds, speed_params.trials_to_use, speed_params);
+save(fullfile(save_dir,'stats_avg_trace_speed_acrosscontext_60-60_abs_1.mat'),'general_stats');
 % plot cdf of changes for function_params.frames_before_stim function_params.frames_after_stim across contexts// takes rank sum comparisons (comparison across all trials from one context to next)
 delta_speeds_p_vals = cdf_speed_delta_across_contexts(deltaLeft,deltaRight,speed_params,save_dir);
 
 %plot cdf of averaged running speeds across contexts// takes sign rank comparisons (comparison across datasets from one context to next)
-avg_speeds_p_vals = cdf_speed_avg_across_contexts(avg_speed_axis_data, speed_params,save_dir);
+general_stats.speed_cdf = cdf_speed_avg_across_contexts(avg_speed_axis_data, speed_params,save_dir);
 %plot average trace of runnning speeds across contexts
 plot_speed_avg_trace_across_contexts(speeds_mean_sem, speed_params,save_dir);
+
+supplementary_table_2 = struct2table_recursive(general_stats,'',{'bootstat','ci'});
+save(fullfile(save_dir, 'supplementary_table_2.mat'), 'supplementary_table_2');
+writetable(supplementary_table_2, fullfile(save_dir, 'supplementary_table_2.csv'));
+
 %% 4) MAKE PLOTS OF SPEED VS NEURAL CHANGES
 %set neural parameters
 speed_params.neural_abs = 1; %take the absolute value of neural change or not

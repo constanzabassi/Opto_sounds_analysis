@@ -1,4 +1,4 @@
-function [deltaLeft,deltaRight,avg_speed_axis_data, stats,stats_specified_frames] = process_aligned_vel_all_axis(chosen_mice, mouse_vel, trials, function_params)
+function [deltaLeft,deltaRight,avg_speed_axis_data, stats,stats_specified_frames,general_stats] = process_aligned_vel_all_axis(chosen_mice, mouse_vel, trials, function_params)
 % process_aligned_vel_all_axis - Process velocity data for multiple mice across active and passive contexts.
 %
 %   STATS = process_aligned_vel_all_axis(CHOSEN_MICE, MOUSE_VEL, TRIALS, FUNCTION_PARAMS)
@@ -106,7 +106,7 @@ function [deltaLeft,deltaRight,avg_speed_axis_data, stats,stats_specified_frames
     end
 
     %% Compute Mean and SEM for CDF plots
-    stats = compute_mean_sem(function_params,average_speeds_across_all);
+    [stats,general_stats] = compute_mean_sem(function_params,average_speeds_across_all);
     stats_specified_frames = compute_mean_sem(function_params,average_speeds_across_all(:,:, :, frames_for_mean));
 
 
@@ -147,7 +147,7 @@ function [deltaL, deltaR, avg_speeds] = compute_deltas_and_speeds(vel, trials_le
 end
 
 %% Helper Function: Compute Mean and SEM
-function stats = compute_mean_sem(function_params,avg_speeds_all)
+function [stats,general_stats] = compute_mean_sem(function_params,avg_speeds_all)
     num_datasets = size(avg_speeds_all, 2);
     contexts = function_params.contexts;
 
@@ -167,6 +167,8 @@ function stats = compute_mean_sem(function_params,avg_speeds_all)
             end
             stats.(ctx).(fieldName).mean = mean(values, 1);
             stats.(ctx).(fieldName).sem = std(values, 0, 1) / sqrt(num_datasets);
+            field_name = strcat('speed_context',num2str(ctx),'_movement',fieldName);
+            general_stats.(field_name) = get_basic_stats(mean(values,2));
         end
     end
 
@@ -180,6 +182,7 @@ function stats = compute_mean_sem(function_params,avg_speeds_all)
             % Store the overall mean and SEM
             stats.(ctx).(fieldName).overall_mean = overall_mean;
             stats.(ctx).(fieldName).overall_sem = overall_sem;
+            
         end
     end
 end

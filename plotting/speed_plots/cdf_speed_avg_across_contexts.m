@@ -1,4 +1,4 @@
-function p_values = cdf_speed_avg_across_contexts(avg_speed_axis_data, function_params,save_data_directory)
+function general_stats = cdf_speed_avg_across_contexts(avg_speed_axis_data, function_params,save_data_directory)
 %avg_speed_axis_data(context, speed axis) - ROLL = 1, PITCH = 2, BOTH = 3;
 % FRAMES WERE AVERAGE ACROSS LEFT AND RIGHT TRIALS!!!!!!
 
@@ -67,6 +67,8 @@ for move_type = 1:length(movement_types)
     
     set(gca, 'XTickLabelRotation', 90, 'FontSize', 7, 'Units', 'inches', 'Position', positions(move_type,:));
     hold off;
+    field_name = strcat('context',num2str(contextIdx),'_movement',num2str(move_type));
+    general_stats.(field_name) = get_basic_stats(avg_speed_axis_data{contextIdx, move_type});
 end
 
 %do statistical comparisons across distributions of changes across contexts
@@ -96,7 +98,8 @@ for c = 1:num_comparisons
     if ismember(c, matching_comparisons)
         for t = 1:size(possible_tests,1)
             % Perform rank-sum test within Roll or Pitch category
-            p_val = signrank(avg_speed_axis_data{possible_tests(t,1),c}, avg_speed_axis_data{possible_tests(t,2),c});
+%             p_val = signrank(avg_speed_axis_data{possible_tests(t,1),c}, avg_speed_axis_data{possible_tests(t,2),c});
+            p_val = permutationTest_updatedcb(avg_speed_axis_data{possible_tests(t,1),c}, avg_speed_axis_data{possible_tests(t,2),c},10000,'paired',1);
             % Store p-value and comparison string
             p_values{t,c,1} = p_val;  % Store p-value
             p_values{t,c,2} = sprintf('%s: Context %d vs %d', curr_comp, possible_tests(t,1), possible_tests(t,2)); % Store string
@@ -115,14 +118,16 @@ for c = 1:num_comparisons
         end
     end
 end
+general_stats.cdf_running_p_values = p_values;
+general_stats.cdf_running_test = 'paired permutation test';
 
 
 if ~isempty(save_data_directory)
     
-    exportgraphics(figure(662),['avg_speed_all_axis_cdf_acrosscontext_' strcat(num2str(function_params.frames_before_event),'-', num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs)) '.pdf'], 'ContentType', 'vector');
-    saveas(figure(662),['avg_speed_all_axis_cdf_acrosscontext_' strcat(num2str(function_params.frames_before_event),'-', num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs)) '.fig']);
+    exportgraphics(figure(662),fullfile(save_data_directory,['avg_speed_all_axis_cdf_acrosscontext_' strcat(num2str(function_params.frames_before_event),'-', num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs)) '.pdf']), 'ContentType', 'vector');
+    saveas(figure(662),fullfile(['avg_speed_all_axis_cdf_acrosscontext_' strcat(num2str(function_params.frames_before_event),'-', num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs)) '.fig']));
 
-    save_str=strcat("context_stats_avg_speed_all_axis_" ,num2str(function_params.frames_before_event),"-", num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs), ".mat");
-    save(save_str, 'p_values');
+    save_str=strcat("stats_cdf_context_stats_avg_speed_all_axis_" ,num2str(function_params.frames_before_event),"-", num2str(function_params.frames_after_event),'_abs_',num2str(function_params.abs), ".mat");
+    save(fullfile(save_data_directory,save_str), 'general_stats');
 
 end
