@@ -66,6 +66,8 @@ for context = 1:num_contexts
 
     cdf_stats(context).p_value = p_val;
     cdf_stats(context).effect_size = effect_size;
+    cdf_stats(context).stim = get_basic_stats(stim_mod(:, context));
+    cdf_stats(context).ctrl = get_basic_stats(ctrl_mod(:, context));
 
     % Annotate significance
     if p_val < 0.05

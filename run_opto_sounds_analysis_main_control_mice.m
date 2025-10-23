@@ -98,6 +98,9 @@ sig_mod_boot_thr = get_thresholded_sig_cells(params.info_ctrl, mod_params, mod_i
 %PLOT MODULATED NEURONS in the spontaneous context
 context_num = 1;
 [percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, 'W:\Connie\results\Bassi2025\fig3\control_mice\', 'vertical',all_celltypes);
+S = unwrap_cells_in_struct(percentage_stats)
+table_1 = struct2table_recursive(S,'',{'bootstat','ci'});
+
 %heatmap of mean
 params.savepath = 'W:\Connie\results\Bassi2025\fig3\control_mice\';
 params.context_labels = {'Spont'};
@@ -129,6 +132,10 @@ mod_index_heatmap(save_dir1, context_mod_stim_datasets(:,3), params.plot_info, .
 [cdf_stats, KW_Test] = cdf_mod_index_stim_vs_ctrl_datasets(save_dir1,  context_mod_stim_datasets(:,3), context_mod_all, ...
                        {'Spont'}, params.plot_info.colors_stimctrl, {'-','--'}, {'Photostim','Control'}, 'all',[-.2,.2]);
 save(fullfile(save_dir, 'stim_ctrl_cdf_stats.mat'), 'cdf_stats');
+S = unwrap_cells_in_struct(cdf_stats);
+table_2 = struct2table_recursive(S,'stim_ctr_cdf',{'bootstat','ci'});
+
+supplementary_table_3_stim_ctrl_mice = [table_1; table_2];
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice) 
 %USING ALL CELLS
 % Set y-axis limits for the plots.
