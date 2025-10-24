@@ -149,6 +149,16 @@ save_dir = 'W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate';
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  [], all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
+
+S = unwrap_cells_in_struct(mod_index_stats_datasets);
+% S2 = unwrap_cells_in_struct(mod_index_stats);
+table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat','ci'});
+% table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
+table_2 = struct2table_recursive(S,'datasets',{'bootstat','ci'});
+table_fig3 = [table_1; table_2];
+save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
+writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));
+
 %% Make plots of modulation index across contexts/cell types
 %load significant neurosn from prepost index
 load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat')

@@ -174,6 +174,17 @@ save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\s
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, [], all_celltypes, params,[]);
+save(fullfile(save_dir, 'mod_index_stats.mat'), 'mod_index_stats');
+
+S = unwrap_cells_in_struct(mod_index_stats_datasets);
+% S2 = unwrap_cells_in_struct(mod_index_stats);
+table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat','ci'});
+% table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
+table_2 = struct2table_recursive(S,'datasets',{'bootstat','ci'});
+table_fig3 = [table_1; table_2];
+save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
+writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));
 
 
 %% Save Results- save your modulation index data.

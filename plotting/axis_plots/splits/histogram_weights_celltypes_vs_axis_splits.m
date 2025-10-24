@@ -240,7 +240,8 @@ for c = 1:num_combos
 
     errorbar_weight_datasets_ct_stats.stats{ct1} = utils.get_basic_stats(x);
     errorbar_weight_datasets_ct_stats.stats{ct2} = utils.get_basic_stats(y);
-    p_values( c) = permutationTest(x, y, 10000); % unpaired
+%     p_values( c) = permutationTest(x, y, 10000); % unpaired
+    p_values( c) = permutationTest_updatedcb(x, y, 10000,'paired',1);
 
 %     if any(valid)
 %         p_values( c) = permutationTest(x, y, 10000); % unpaired
@@ -250,7 +251,7 @@ end
 
 % Store results
 errorbar_weight_datasets_ct_stats.p_values = p_values;
-errorbar_weight_datasets_ct_stats.test = 'unpaired permutation across bins and celltype pairs';
+errorbar_weight_datasets_ct_stats.test = 'paired permutation across datasets';
 errorbar_weight_datasets_ct_stats.combos = celltype_combos;
 errorbar_weight_datasets_ct_stats.significant = find(p_values < 0.05 / (num_combos)); % Bonferroni correction
 
@@ -320,8 +321,8 @@ for c = 1:num_combos
 
     errorbar_weight_datasets_ct_stats_noabs.stats{ct1} = utils.get_basic_stats(x);
     errorbar_weight_datasets_ct_stats_noabs.stats{ct2} = utils.get_basic_stats(y);
-    p_values( c) = permutationTest(x, y, 10000); % unpaired
-
+%     p_values( c) = permutationTest(x, y, 10000); % unpaired
+    p_values( c) = permutationTest_updatedcb(x, y, 10000,'paired',1);
 %     if any(valid)
 %         p_values( c) = permutationTest(x, y, 10000); % unpaired
 %     end
@@ -330,7 +331,7 @@ end
 
 % Store results
 errorbar_weight_datasets_ct_stats_noabs.p_values = p_values;
-errorbar_weight_datasets_ct_stats_noabs.test = 'unpaired permutation across bins and celltype pairs';
+errorbar_weight_datasets_ct_stats_noabs.test = 'paired permutation across datasets' ;
 errorbar_weight_datasets_ct_stats_noabs.combos = celltype_combos;
 errorbar_weight_datasets_ct_stats_noabs.significant = find(p_values < 0.05 / (num_combos)); % Bonferroni correction
 

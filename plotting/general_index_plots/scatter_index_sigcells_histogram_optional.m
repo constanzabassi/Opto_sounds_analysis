@@ -1,4 +1,4 @@
-function [modl_fit, index_updated,index2_updated] = scatter_index_sigcells_histogram_optional(sig_mod_boot, all_celltypes, index, plot_info, save_path, string1, string2,historno,unity_line, varargin)
+function [modl_fit, index_updated,index2_updated,stats] = scatter_index_sigcells_histogram_optional(sig_mod_boot, all_celltypes, index, plot_info, save_path, string1, string2,historno,unity_line, varargin)
 index_updated = {};
 index2_updated = {};
 positions = utils.calculateFigurePositions(1, 5, .5, []);
@@ -65,6 +65,8 @@ if nargin > 9
             x = index{dataset_index,1}(selected_cells);
             y = index{dataset_index,2}(selected_cells);
 
+            
+
             % Scatter plot
             scatter(mainAx, x, y, 'MarkerEdgeColor', plot_info.colors_celltypes(cell_type, :), ...
                 'MarkerEdgeAlpha', .7, 'LineWidth', 1, 'SizeData',10);
@@ -76,11 +78,35 @@ if nargin > 9
             all_y = [all_y; y(:)];
 
         end
-        
 
 
         if ~isempty(all_x)
             modl_fit{cell_type} = fitlm(all_x, all_y);
+            % Replace spaces and invalid characters with underscores
+            field_name = regexprep(string1, ' ', '');
+            field_name2 = regexprep(string2, ' ', '');
+            field_name = regexprep(field_name, '[^a-zA-Z0-9]', '_');
+            field_name2 = regexprep(field_name2, '[^a-zA-Z0-9]', '_');
+            field_name = regexprep(field_name, '_+', '_');
+            field_name2 = regexprep(field_name2, '_+', '_');
+            field_name = regexprep(field_name,  '^_|_$', '');
+            field_name2 = regexprep(field_name2,  '^_|_$', '');
+            field_name = regexprep(field_name,  'Δ', '');
+            field_name2 = regexprep(field_name2,  'Δ', '');
+            
+            
+            % Ensure it doesn’t start with a number
+            if ~isletter(field_name(1))
+                field_name = ['f_' field_name];
+            end
+            if ~isletter(field_name2(1))
+                field_name2 = ['f_' field_name2];
+            end
+            all_field_names = strcat(field_name,field_name2);
+            %get stats!
+            stats.(celltype_fields{cell_type}).(field_name) = get_basic_stats(all_x);
+            stats.(celltype_fields{cell_type}).(field_name2) = get_basic_stats(all_y);
+
 %             text(mainAx, minmax(1)+0.05, minmax(2) +0.1 - 0.2 * cell_type, ...
 %                 sprintf('R² = %.3f', modl_fit{cell_type}.Rsquared.Ordinary), ...
 %                 'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 6);
@@ -88,6 +114,8 @@ if nargin > 9
             text(mainAx, minmax(1)+0.05, minmax(2) +0.1 - 0.2 * cell_type, ...
                 sprintf('R = %.3f', r), ...
                 'Color', plot_info.colors_celltypes(cell_type, :), 'FontSize', 6);
+            stats.(celltype_fields{cell_type}).(all_field_names).r = r;
+            stats.(celltype_fields{cell_type}).(all_field_names).p_val = p_val;
 
             % Plot histograms
 %             histogram(topAx, all_x,'Normalization','probability','BinWidth', 0.05, 'BinLimits', minmax, 'FaceColor', plot_info.colors_celltypes(cell_type, :), ...
@@ -150,6 +178,10 @@ if nargin > 9
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.png']));
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
         exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
+        %save_stats!
+        save(fullfile(save_path,['stats_scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.mat']));
+
+
 % %         set(gcf, 'Renderer', 'opengl');
 % %         print(gcf, '-dpdf', '-opengl', fullfile(save_path, ...
 % %             ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']));

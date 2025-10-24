@@ -133,6 +133,31 @@ edges_values_weights = [-.1,.1];
 num_bins_weights = 20;
 [weight_all_celltype,weight_ct_stats] = histogram_weights_celltypes_vs_axis_splits([1:24],weights, 'Context' ,all_celltypes, edges_values_weights,num_bins_weights,colors_medium,save_dir);
 
+%% save stats into single table
+load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\stats_lm_contexts1  2Stim ProjectionEngagement.mat');
+lm_stats2 = load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\stats_lm_contexts1  2Sound ProjectionEngagement.mat').lm_stats;
+load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\performance_vs_engagement_stats.mat');
+Sweightsabs = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\errorbar_weights_celltypes_vs_axis_Context_stats_n24_edges_-0.1         0.1.mat').errorbar_weight_datasets_ct_stats);  
+Sweight_nosabs = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\errorbar_noabs_weights_celltypes_vs_axis_Context_stats_n24_edges_-0.1         0.1').errorbar_weight_datasets_ct_stats_noabs);  
+Scontext = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_contextstats_n24.mat').hist_stats);
+Sstim = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_Stimstats_n24.mat').hist_stats);
+Ssound = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_Soundstats_n24.mat').hist_stats);
+
+% S = unwrap_cells_in_struct(mod_index_stats_datasets);
+% S2 = unwrap_cells_in_struct(mod_index_stats);
+table_1 = struct2table_recursive(lm_stats,'stim_eng',{'bootstat','ci'});
+table_2 = struct2table_recursive(lm_stats2,'sound_eng',{'bootstat','ci'});
+table_3 = struct2table_recursive(performance_vs_engagement_stats,'performance_vs_eng',{'bootstat','ci'});
+table_4 = struct2table_recursive(Sweightsabs,'weights',{'bootstat','ci'});
+table_5 = struct2table_recursive(Sweight_nosabs,'weights_noabs',{'bootstat','ci'});
+table_6 = struct2table_recursive(Scontext,'hist_context',{'bootstat','ci'});
+table_7 = struct2table_recursive(Sstim,'hist_stim',{'bootstat','ci'});
+table_8 = struct2table_recursive(Ssound,'hist_sound',{'bootstat','ci'});
+
+
+table_fig4 = [table_1; table_2;table_3; table_4;table_5;table_6;table_7;table_8];
+save(fullfile(save_dir, strcat('table_fig4.mat')), 'table_fig4');
+writetable(table_fig4, fullfile(save_dir, strcat('table_fig4.csv')));
 %% using random splits (choose first one to show)
 % model correlations across splits
 celltype = 4;

@@ -102,5 +102,5 @@ if ~isempty(save_dir)
     saveas(800,strcat('hist_splits_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.svg'));
     saveas(800,strcat('hist_splits_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.fig'));
     exportgraphics(figure(800),strcat('hist_splits_axis_',num2str(axis_type),'_n_',num2str(length(chosen_datasets)),'.pdf'), 'ContentType', 'vector');
-    save(strcat('hist_splits_stats_n',num2str(length(chosen_datasets))),'hist_stats');
+    save(strcat('hist_splits_axis_',num2str(axis_type),'stats_n',num2str(length(chosen_datasets))),'hist_stats');
 end

@@ -9,7 +9,7 @@ params.plot_info = plot_info;
 %% Pool activity across mice
 [all_celltypes, dff_st, deconv_st, stim_info, ...
  mouse_context_tr, deconv_st_interp, alignment_frames] = ...
-    pool_activity(params.info.mouse_date, params.info.serverid, params.info.path_string, true, [60,60]);
+    pool_activity(params.info.mouse_date, params.info.serverid, params.info.path_string, true, [60,60],1);
 [num_cells, sorted_cells] = organize_pooled_celltypes(dff_st, all_celltypes); %gives index relative to all datasets
 [context_data.dff,stim_trials_context,ctrl_trials_context] = separate_structure_2context(dff_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
 [context_data.deconv] = separate_structure_2context(deconv_st,mouse_context_tr,stim_info);%  context.dff{context,mouse}
@@ -85,6 +85,16 @@ for i = 1:length(param_sets)
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), all_celltypes, []);
 end
 bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'Positive','Negative'});
+
+
+S = unwrap_cells_in_struct(mod_index_stats_datasets);
+% S2 = unwrap_cells_in_struct(mod_index_stats);
+table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat','ci'});
+% table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
+table_2 = struct2table_recursive(S,'datasets',{'bootstat','ci'});
+table_fig3 = [table_1; table_2];
+save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
+writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));
 
 %% compare engagement indices in opto or sound neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});

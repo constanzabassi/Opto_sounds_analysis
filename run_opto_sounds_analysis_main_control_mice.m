@@ -132,10 +132,15 @@ mod_index_heatmap(save_dir1, context_mod_stim_datasets(:,3), params.plot_info, .
 [cdf_stats, KW_Test] = cdf_mod_index_stim_vs_ctrl_datasets(save_dir1,  context_mod_stim_datasets(:,3), context_mod_all, ...
                        {'Spont'}, params.plot_info.colors_stimctrl, {'-','--'}, {'Photostim','Control'}, 'all',[-.2,.2]);
 save(fullfile(save_dir, 'stim_ctrl_cdf_stats.mat'), 'cdf_stats');
+
+%save stats into table
 S = unwrap_cells_in_struct(cdf_stats);
 table_2 = struct2table_recursive(S,'stim_ctr_cdf',{'bootstat','ci'});
 
 supplementary_table_3_stim_ctrl_mice = [table_1; table_2];
+save(fullfile(save_dir, strcat('supplementary_table_3_stim_ctrl_mice.mat')), 'supplementary_table_3_stim_ctrl_mice');
+writetable(supplementary_table_3_stim_ctrl_mice, fullfile(save_dir, strcat('supplementary_table_3_stim_ctrl_mice.csv')));
+
 %% Make plots of modulation index across contexts/cell types (separating into datasets or mice) 
 %USING ALL CELLS
 % Set y-axis limits for the plots.

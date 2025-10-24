@@ -1,4 +1,4 @@
-function plot_linear_regression_lines(lme,tbl,context_all,ylabel_string,save_dir,varargin)
+function lm_stats = plot_linear_regression_lines(lme,tbl,context_all,ylabel_string,save_dir,varargin)
 %extract table variables
 var_names = tbl.Properties.VariableNames;
 slope = lme.Coefficients.Estimate(2)
@@ -77,6 +77,11 @@ if nargin > 6 && ~isempty(varargin{1,2})
 end
 utils.set_current_fig;
 
+%save_stats
+lm_stats.n = n_total;
+lm_stats.r = r;
+lm_stats.p_val = p_val;
+
 % SECOND PLOT WITHOUT ANY SCATTER POINTS
 % Plot in figure 103
 figure(1003); clf; hold on;
@@ -125,5 +130,6 @@ if ~isempty(save_dir)
 
     saveas(1003,strcat('linear_lineonly_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.fig'));
     exportgraphics(figure(1003),strcat('linear_lineonly_regression_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated),'.pdf'), 'ContentType', 'vector');
-
+    
+    save(strcat('stats_lm_contexts',num2str(contexts_to_plot),num2str(ylabel_string_updated)),'lm_stats');
 end

@@ -330,6 +330,8 @@ n_bins = 6;
 edges = linspace(-1, 2, n_bins + 1); % assumes engagement is normalized [0,1]
 bin_centers = movmean(edges, 2, 'Endpoints', 'discard');
 animal_success_by_bin_nooverlap = NaN(length(animal_ids), n_bins);
+animal_eng_by_bin_nooverlap = NaN(length(animal_ids), n_bins);
+
 for a = 1:length(animal_ids)
     idx = animal_id_all == animal_ids(a);
     perf = performance_active(idx);         % Binary performance (0/1)
@@ -360,6 +362,7 @@ for a = 1:length(animal_ids)
         all_engagement(end+1,1) = mean_eng;
         all_success(end+1,1) = mean_perf;
         animal_success_by_bin_nooverlap(a, b) = mean_perf;
+        animal_eng_by_bin_nooverlap(a,b) = mean_eng;
     end
 
     session_engagement{a} = temp_e;
@@ -368,6 +371,15 @@ end
 
 all_success = [session_success{1,:}];
 [r2, p2] = corr(all_engagement,all_success');
+%get stats1
+for b = 1:n_bins
+    bin_name = strcat('bin',num2str(b));
+    performance_vs_engagement_stats.performance.(bin_name) = get_basic_stats(animal_success_by_bin_nooverlap(:,b));
+    performance_vs_engagement_stats.engagement_proj.(bin_name) = get_basic_stats(animal_eng_by_bin_nooverlap(:,b));
+end
+performance_vs_engagement_stats.r = r2;
+performance_vs_engagement_stats.p = p2;
+
 % Plot
 figure(408);clf; hold on;
 scatter(all_engagement, all_success,  20, ...
@@ -528,12 +540,13 @@ if ~isempty(save_dir)
     saveas(404,fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.fig')));
     exportgraphics(figure(404),fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(405),fullfile(new_savedir,strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
+    %408 is currently used in the paper
     exportgraphics(figure(407),fullfile(new_savedir,strcat('scatter_nonoverlap_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(408),fullfile(new_savedir,strcat('scatter_nonoverlap_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(409),fullfile(new_savedir,strcat('scatter_binned_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(106),fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
 
     exportgraphics(figure(804),fullfile(new_savedir,strcat('heatmap_ntrials_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
-
+    save(fullfile(new_savedir,'performance_vs_engagement_stats.mat'),'performance_vs_engagement_stats');
 
 end
