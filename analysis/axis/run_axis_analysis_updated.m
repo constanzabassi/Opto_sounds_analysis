@@ -142,6 +142,7 @@ Sweight_nosabs = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\u
 Scontext = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_contextstats_n24.mat').hist_stats);
 Sstim = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_Stimstats_n24.mat').hist_stats);
 Ssound = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_Soundstats_n24.mat').hist_stats);
+Sbar = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\stats_bar_coefficients_SOMPV_vs_engagement_axis.mat').bar_stats);
 
 % S = unwrap_cells_in_struct(mod_index_stats_datasets);
 % S2 = unwrap_cells_in_struct(mod_index_stats);
@@ -153,9 +154,9 @@ table_5 = struct2table_recursive(Sweight_nosabs,'weights_noabs',{'bootstat','ci'
 table_6 = struct2table_recursive(Scontext,'hist_context',{'bootstat','ci'});
 table_7 = struct2table_recursive(Sstim,'hist_stim',{'bootstat','ci'});
 table_8 = struct2table_recursive(Ssound,'hist_sound',{'bootstat','ci'});
+table_9 = struct2table_recursive(Sbar,'SOMPV',{'bootstat','ci'});
 
-
-table_fig4 = [table_1; table_2;table_3; table_4;table_5;table_6;table_7;table_8];
+table_fig4 = [table_1; table_2;table_3; table_4;table_5;table_6;table_7;table_8;table_9];
 save(fullfile(save_dir, strcat('table_fig4.mat')), 'table_fig4');
 writetable(table_fig4, fullfile(save_dir, strcat('table_fig4.csv')));
 %% using random splits (choose first one to show)

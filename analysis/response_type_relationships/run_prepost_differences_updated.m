@@ -113,17 +113,17 @@ n_contexts = 2;
 
 %save stats into a single table
 stats = {stats9,stats1, stats2, stats3, stats4, stats5, stats6,stats7,stats8};
-table_scatter_stats = [];
+table_pre_stats = [];
 for i = 1:numel(stats)
     S = stats{i};
     table = struct2table_recursive(S,'scatter',{'bootstat','ci'});
-    table_scatter_stats = [ table_scatter_stats;table];
+    table_pre_stats = [ table_pre_stats;table];
 end
 S = unwrap_cells_in_struct(stats_deltastimsound);
 table = struct2table_recursive(S,'corr',{'bootstat','ci'});
-table_fig5 = [table;table_scatter_stats];
-save(fullfile(current_save_dir, strcat('table_fig5.mat')), 'table_fig5');
-writetable(table_fig5, fullfile(current_save_dir, strcat('table_fig5.csv')));
+table_fig4_pre = [table;table_pre_stats];
+save(fullfile(current_save_dir, strcat('table_fig5.mat')), 'table_fig4_pre');
+writetable(table_fig4_pre, fullfile(current_save_dir, strcat('table_fig5.csv')));
 
 %% separate into modulated and unmodulated
 [pooled_cell_types_modulated,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_mod_boot_thr, opto.sig_mod_boot_thr_ctrl, opto.mod(1:24,:), {'unmodulated','modulated'},[1:24],plot_info, 2);
@@ -187,3 +187,34 @@ response_types_info = { ...
 };
 [stats_all_ct, responses_by_dataset_ct] = wrapper_plot_response_means({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/sound_sig/'], plot_info, sound.sig_cells);
 [stats_allcells,~] = wrapper_plot_response_means_allcells({avg_ctrl_post,avg_post},response_types_info, all_celltypes, [1:24], [celltype_save_dir '/sound_sig/'], plot_info, sound.sig_cells); %pooling across datasets
+
+%% pre responses
+%functional
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+params.plot_info = plot_info;
+[preavg_index_by_dataset,~] = unpack_modindexm(avg_pre,[],pooled_cell_types,[1:24]);
+preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse('W:\Connie\results\Bassi2025\fig4', preavg_index_by_dataset, [1:24],...
+          params.plot_info, [.1,.4],0,'Pre Mean (\DeltaF/F)');
+preavg_stats_celltypes_dataset = plot_connected_abs_mod_by_mouse([], preavg_index_by_dataset, [1:24],...
+          params.plot_info, [.1,.4],0,'Pre Mean (\DeltaF/F)');
+
+%celltypes
+plot_info.colors_celltypes = [0.37 0.75 0.49 %light green
+                            0.17 0.35 0.8  %blue
+                            0.82 0.04 0.04]; % red  
+params.plot_info = plot_info;
+[preavg_index_by_dataset_ct,~] = unpack_modindexm(avg_pre,[],all_celltypes,[1:24]);
+preavg_stats_celltypes_dataset_ct = plot_connected_abs_mod_by_mouse('W:\Connie\results\Bassi2025\fig4/celltypes', preavg_index_by_dataset_ct, [1:24],...
+          plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
+preavg_stats_celltypes_dataset_ct = plot_connected_abs_mod_by_mouse([], preavg_index_by_dataset_ct, [1:24],...
+          plot_info, [0,.3],0,'Pre Mean (ΔF/F)');
+
+stats = {preavg_stats_celltypes_dataset,preavg_stats_celltypes_dataset_ct};
+table_fig4_pre = [];labels = {'functional','celltype'};
+for i = 1:numel(stats)
+    S = unwrap_cells_in_struct(stats{i});
+    table = struct2table_recursive(S,labels{i},{'bootstat','ci'});
+    table_fig4_pre = [ table_fig4_pre;table];
+end
+save(fullfile('W:\Connie\results\Bassi2025\fig4\', strcat('table_fig4_pre.mat')), 'table_fig4_pre');
+writetable(table_fig4_pre, fullfile('W:\Connie\results\Bassi2025\fig4\', strcat('table_fig4_pre.csv')));

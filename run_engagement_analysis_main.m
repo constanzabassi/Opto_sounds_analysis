@@ -87,15 +87,6 @@ end
 bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'Positive','Negative'});
 
 
-S = unwrap_cells_in_struct(mod_index_stats_datasets);
-% S2 = unwrap_cells_in_struct(mod_index_stats);
-table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat','ci'});
-% table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
-table_2 = struct2table_recursive(S,'datasets',{'bootstat','ci'});
-table_fig3 = [table_1; table_2];
-save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
-writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));
-
 %% compare engagement indices in opto or sound neurons
 [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
 
@@ -117,6 +108,14 @@ end
 
 params.plot_info = plot_info;
 mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, pooled_cell_types, params, [mod_params.savepath '/functional_pools_nounmod/'], celltypes_ids,plot_info.y_lims);
+save(fullfile(mod_params.savepath, '/functional_pools_nounmod/mod_pooled_index_stats_datasets.mat'),'mod_pooled_index_stats_datasets');
+
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+params.plot_info = plot_info;
+mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, pooled_cell_types, params, [mod_params.savepath '/functional_pools/'], celltypes_ids,plot_info.y_lims);
+save(fullfile(mod_params.savepath, '/functional_pools/mod_pooled_index_stats_datasets.mat'),'mod_pooled_index_stats_datasets');
+
+
 
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated','sound_neg'},[1:24],plot_info, 1,sig_cells{2});
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1,sig_cells{2});
@@ -146,6 +145,16 @@ bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, [mod_params.sa
 
 plot_info = plotting_config();
 proportions_celltypes = plot_celltype_pies(all_celltypes, pooled_cell_types,'vertical',[mod_params.savepath '/functional_pools/'],plot_info.colors_celltypes);
+
+S_mod_celltypes = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_stats_datasets.mat').mod_index_stats_datasets);
+S_mod_functional = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools_nounmod\mod_index_stats_datasets.mat').mod_index_stats_datasets);
+
+table_1 = struct2table_recursive(S_mod_celltypes,'celltypes',{'bootstat','ci'});
+table_2 = struct2table_recursive(S_mod_functional,'functional',{'bootstat','ci'});
+table_fig4_engagement = [table_1; table_2];
+save(fullfile(save_dir, strcat('table_fig4_engagement.mat')), 'table_fig4_engagement');
+writetable(table_fig4_engagement, fullfile(save_dir, strcat('table_fig4_engagement.csv')));
+
 %% relate to other modulation indices
 savepath1 = [mod_params.savepath '\other_modulation_indices_sig\'];
 %sound
@@ -153,6 +162,7 @@ other_index = load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost
 % modl_fit = scatter_index_sigcells_histogram_optional([]  , all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
 modl_fit = scatter_index_sigcells_histogram_optional(sound.sig_cells  , all_celltypes, [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Passive',0,1,[-1,1]);
 modl_fit = scatter_index_sigcells_histogram_optional(sound.sig_cells  , all_celltypes, [mod_indexm',{other_index{:,1}}'], plot_info, savepath1, 'Engagement Mod', 'Sound Mod Active',0,1,[-1,1]);
+
 %opto
 other_index = load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat').mod_indexm;
 modl_fit = scatter_index_sigcells_histogram_optional(opto.sig_cells, all_celltypes(1:24), [mod_indexm',{other_index{:,2}}'], plot_info, savepath1, 'Engagement Mod', 'Stim Mod Passive',0,1,[-1,1]);

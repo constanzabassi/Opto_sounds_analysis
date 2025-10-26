@@ -98,6 +98,9 @@ figure(107); clf; hold on;
     %add pvalue stars
     % Extract p-values
     pvals1 = fe1.pValue;
+    bar_stats.(xlabels{1}).p_val = pvals1;
+    bar_stats.(xlabels{1}).est = fe_est1;
+    bar_stats.(xlabels{1}).se = fe_se1;
     % Add significance stars
     for i = 1:length(x)
         % Model 1
@@ -132,6 +135,9 @@ x = [1:nbars2]+n_bars;
     %add pvalue stars
     % Extract p-values
     pvals2 = fe2.pValue;
+    bar_stats.(xlabels{2}).p_val = pvals2;
+    bar_stats.(xlabels{2}).est2 = fe_est2;
+    bar_stats.(xlabels{2}).se2 = fe_se2;
     % Add significance stars
     for i = 1:length(x)
         % Model 2 (if used)
@@ -157,7 +163,6 @@ end
 set(gca, 'XTick', xticks_tracker, 'XTickLabel', repmat(xlabels,1,length(x)), 'XTickLabelRotation', 45)
 
 % legend([b1 b2], {'Model 1', 'Model 2'}, 'Location', 'Best')
-
 % Layout
 positions = utils.calculateFigurePositions(1, 5, .5, []);
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -177,6 +182,7 @@ if ~isempty(save_dir)
     cd(save_dir)
     saveas(107, strcat('bar_coefficients_',save_string,'_vs_engagement_axis.fig'));
     exportgraphics(figure(107), strcat('bar_coefficients_',save_string,'_vs_engagement_axis.pdf'), 'ContentType', 'vector');
+    save(strcat('stats_bar_coefficients_',save_string,'_vs_engagement_axis'),'bar_stats');
 end
 
 %
