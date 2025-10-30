@@ -25,7 +25,7 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
     [context_mod_all, ~, ~, ~, ~] = organize_sig_mod_index_contexts_celltypes(...
         chosen_dataset, mod_index, sig_mod_boot_thr', all_celltypes,params.plot_info.celltype_names);
     mod_index_heatmap(save_dir, context_mod_all, params.plot_info, ...
-        chosen_dataset, heatmap_ylims);
+        chosen_dataset, heatmap_ylims,[5,.5]);
         
     %     % Violin and Box plots (non abs) - can result in values closer to
     %     zero because we are taking means across + and - mod indices

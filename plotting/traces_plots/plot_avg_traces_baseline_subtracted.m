@@ -1,11 +1,11 @@
-function plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info,varargin)
+lfunction [final_data_means,final_mouse_ids_used] = plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info,varargin)
 
 if nargin < 9
     average_over_neurons = false;
 end
 
 positions = utils.calculateFigurePositions(1, 6, .4, []);
-if size(deconv_response,3) > 3
+if size(deconv_response,3) > 1
 %     positions = utils.calculateFigurePositions(1, 7, .3, []);
 % 
 %     %make skinnier and taller (good for 3)
@@ -24,7 +24,8 @@ end
 contexts = {'active', 'passive'};
 data_modes = plot_info.trace_modes;%{'raw', 'bs'}; % raw and baseline subtracted
 stim_ctrl_idx = [1, 0, 1, 0, 1, 0];
-
+final_data_means = {};
+final_mouse_ids_used = {};
 for fig_idx = 1:length(data_modes)*2
     figure(fig_idx); clf;
 
@@ -35,13 +36,14 @@ for fig_idx = 1:length(data_modes)*2
         for context = 1:size(deconv_response,1)
             all_traces = [];  % All neuron traces pooled
             mouse_means = []; % Mean trace per dataset
-
+            mouse_ids_used = [];
             for mouse = 1:size(deconv_response,2)
                 dat_struct = deconv_response{context,mouse,celtype};
                 if isempty(dat_struct) || size(dat_struct.stim,2) == 1
                     continue
                 end
-
+                mouse_ids_used = [mouse_ids_used,mouse];
+                
                 %take away any Infs
                 dat_struct.stim(isinf(dat_struct.stim)) = NaN;
                 dat_struct.ctrl(isinf(dat_struct.ctrl)) = NaN;
@@ -91,6 +93,13 @@ for fig_idx = 1:length(data_modes)*2
                     mouse_means = [mouse_means; mean_trace];
                 end
             end
+            if average_over_neurons                
+                final_data_means{celtype,context} = all_traces;
+            else
+                final_data_means{celtype,context} = mouse_means;
+            end
+
+            final_mouse_ids_used{celtype,context} = mouse_ids_used;
 
             if average_over_neurons && ~isempty(all_traces)
                 shadedErrorBar([], mean(all_traces,1), ...
@@ -119,11 +128,15 @@ for fig_idx = 1:length(data_modes)*2
         if diff(yli) < 0.04
             yli = [yli(1)-0.01,yli(2)+0.01];
         end
-        
+        if contains(plot_info.type,'sound')
+            onset_color = [0.5 0.5 0.5];
+        else
+            onset_color =[1 0.8 0.3];
+        end
             for f = 1:size(stim_frame,1)
                 x = [stim_frame(f,1), stim_frame(f,2), stim_frame(f,2), stim_frame(f,1)];
                 y = [yli(1), yli(1), yli(2), yli(2)];
-                patch(x, y, [1 0.8 0.3], 'EdgeColor', 'none', 'FaceAlpha', 1); %[.5 .5 .5]
+                patch(x, y, onset_color, 'EdgeColor', 'none', 'FaceAlpha', 1); %[.5 .5 .5]
 
             end
         if nargin > 10

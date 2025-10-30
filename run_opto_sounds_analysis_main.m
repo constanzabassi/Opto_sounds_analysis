@@ -98,6 +98,11 @@ sig_mod_boot_thr = get_thresholded_sig_cells(params.info, mod_params, mod_indexm
 %PLOT MODULATED NEURONS in the spontaneous context
 context_num = 3;
 [percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, context_num, 'W:\Connie\results\Bassi2025\fig3\mod\', 'horizontal',all_celltypes);
+table_percentages1= struct2table_recursive(unwrap_cells_in_struct(percentage_stats),'spont',{'bootstat','ci'});
+table_percentages = [table_percentages1];
+save(fullfile('W:\Connie\results\Bassi2025\fig3\mod\', strcat('table_percentages.mat')), 'table_percentages');
+writetable(table_percentages, fullfile('W:\Connie\results\Bassi2025\fig3\mod\', strcat('table_percentages.csv')));
+
 cell_indices = arrayfun(@(x) struct('all_cells', 1:x), num_cells(:)', 'UniformOutput', false); %;
 cell_indices_like_sig = arrayfun(@(x) 1:x, num_cells(:)', 'UniformOutput', false)'; %to plot ALL neurons (not just sig mod boot)
 wrapper_avg_cell_type_traces_single_context(context_data.dff(context_num,:),cell_indices,1,mod_indexm(:,context_num),sig_mod_boot_thr(:,context_num),mod_params,'W:\Connie\results\Bassi2025\fig3\celltype_traces\spont\','opto_dff',plot_info,mod_indexm);
@@ -108,7 +113,19 @@ generate_neural_heatmaps_simple(dff_st, stim_trials_context, ctrl_trials_context
 % MAKE AVG PLOTS OF TRACES (DOES NOT SEPARATE LEFT VS RIGHT AVG ACROSS ALL)
 savepath = 'W:\Connie\results\Bassi2025\fig3\celltype_traces\';
 wrapper_avg_cell_type_traces(context_data.deconv_interp,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_deconv',plot_info,mod_indexm);
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
+mod_params.mod_threshold = 0;
+mod_params.threshold_single_side =1;
+all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),3,1)';
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'opto_dff',plot_info,mod_indexm);
+
+evoked_stats = run_stats_on_traces(traces_mean, [], 63:92,{'PYR', 'SOM', 'PV'},[]);
+table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat','ci'});
+table_fig3_evoked = [table_];
+save(fullfile(mod_params.savepath,'\sig_neurons\evoked_stats.mat'),'evoked_stats');
+save(fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.mat')), 'table_fig3_evoked');
+writetable(table_fig3_evoked, fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.csv')));
+
 
 % taking the differences
 context_num = [1,2];

@@ -1,4 +1,4 @@
-function [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
+function [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids,chosen_fourth_ct] = ...
     organize_sig_mod_index_contexts_celltypes(chosen_mice, mod_index, sig_mod_boot, all_celltypes,celltype_names)
 % ORGANIZE_SIG_MOD_INDEX_CONTEXTS_CELLTYPES organizes modulation indices (across contexts)
 % and cell type indices across datasets.
@@ -188,8 +188,14 @@ chosen_pyr = chosen_cells_all.(field_names{1});
     if length(field_names)>1
         chosen_mcherry = chosen_cells_all.(field_names{2});
         chosen_tdtom = chosen_cells_all.(field_names{3});
+        if length(field_names)>3
+            chosen_fourth_ct = chosen_cells_all.(field_names{4});
+        else
+            chosen_fourth_ct = [];
+        end
     else
         chosen_mcherry = [];
         chosen_tdtom = [];
+        chosen_fourth_ct = [];
     end
 end

@@ -39,8 +39,11 @@ contexts_to_compare = [1]; %[1:3];%[1,2]; %[1,2]; %[1:3];
 overlap_labels = {'Act - Pass'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 
 % ORGANIZE MODULATION INDICES AND CELL TYPE INDICES ACROSS DATASETS
+[context_mod_all_nosig] = ...
+    organize_sig_mod_index_contexts_celltypes([1:25], mod_indexm',[], all_celltypes,plot_info.celltype_names);
+
 [context_mod_all, chosen_pyr, chosen_mcherry, chosen_tdtom, celltypes_ids] = ...
-    organize_sig_mod_index_contexts_celltypes([1:25], mod_indexm', sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
+    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
 
 [~, ~, ~, ~, celltypes_ids] = ...
     organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, all_celltypes,plot_info.celltype_names);
@@ -85,6 +88,11 @@ for i = 1:length(param_sets)
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), all_celltypes, []);
 end
 bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'Positive','Negative'});
+
+[sig_cdf_stats] = cdf_mod_index_across_celltypes_datasets(mod_params.savepath, context_mod_all, all_celltypes, ...
+                                        plot_info.colors_celltypes,'sig', 'Engagement Index',{chosen_pyr,chosen_mcherry,chosen_tdtom});
+[all_cdf_stats] = cdf_mod_index_across_celltypes_datasets(mod_params.savepath, context_mod_all_nosig, all_celltypes, ...
+                                        plot_info.colors_celltypes,'all', 'Engagement Index',[],[-.4,.4]);
 
 
 %% compare engagement indices in opto or sound neurons
@@ -146,12 +154,50 @@ bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, [mod_params.sa
 plot_info = plotting_config();
 proportions_celltypes = plot_celltype_pies(all_celltypes, pooled_cell_types,'vertical',[mod_params.savepath '/functional_pools/'],plot_info.colors_celltypes);
 
+
+%comparing single cells cdfs
+[pooled_cell_types,plot_info.celltype_names,plot_info.colors_celltypes] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:25,:), {'sound','opto','both','unmodulated'},[1:24],plot_info, 1);
+rename_map = struct('sound', 'S', 'opto', 'P', 'both', 'SP','unmodulated','U');
+
+for d = 1:length(pooled_cell_types)
+    old_fields = fieldnames(pooled_cell_types{d});
+    for f = 1:length(old_fields)
+        old_name = old_fields{f};
+        if isfield(rename_map, old_name)
+            new_name = rename_map.(old_name);
+            pooled_cell_types{d}.(new_name) = pooled_cell_types{d}.(old_name);
+            pooled_cell_types{d} = rmfield(pooled_cell_types{d}, old_name);
+        end
+    end
+end
+
+[context_mod_all_nosig] = ...
+    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm',[],pooled_cell_types,plot_info.celltype_names);
+
+[context_mod_all, chosen_ct1, chosen_ct2, chosen_ct3, ~, chosen_ct4] = ...
+    organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, pooled_cell_types,plot_info.celltype_names);
+[sig_cdf_stats_pooled] = cdf_mod_index_across_celltypes_datasets([mod_params.savepath '/functional_pools/'], context_mod_all, pooled_cell_types, ...
+                                        plot_info.colors_celltypes,'sig', 'Engagement Index',{ chosen_ct1, chosen_ct2, chosen_ct3, chosen_ct4});
+[all_cdf_stats_pooled] = cdf_mod_index_across_celltypes_datasets([mod_params.savepath '/functional_pools/'], context_mod_all_nosig, pooled_cell_types, ...
+                                        plot_info.colors_celltypes,'all', 'Engagement Index',[],[-.4,.4]);
+
+
 S_mod_celltypes = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_stats_datasets.mat').mod_index_stats_datasets);
-S_mod_functional = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools_nounmod\mod_index_stats_datasets.mat').mod_index_stats_datasets);
+S_mod_celltypes_all = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_cdf_acrosscelltypes_all.mat').all_stats);
+S_mod_celltypes_sig = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_cdf_acrosscelltypes_sig.mat').all_stats);
+
+S_mod_functional = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools_nounmod\mod_pooled_index_stats_datasets.mat').mod_pooled_index_stats_datasets);
+S_mod_functional_all = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools\mod_index_cdf_acrosscelltypes_all.mat').all_stats);
+S_mod_functional_sig = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools\mod_index_cdf_acrosscelltypes_sig.mat').all_stats);
 
 table_1 = struct2table_recursive(S_mod_celltypes,'celltypes',{'bootstat','ci'});
 table_2 = struct2table_recursive(S_mod_functional,'functional',{'bootstat','ci'});
-table_fig4_engagement = [table_1; table_2];
+table_3 = struct2table_recursive(S_mod_celltypes_all,'celltypes_all',{'bootstat','ci','values'});
+table_4 = struct2table_recursive(S_mod_celltypes_sig,'celltypes_sig',{'bootstat','ci','values'});
+table_5 = struct2table_recursive(S_mod_functional_all,'functional_all',{'bootstat','ci','values'});
+table_6 = struct2table_recursive(S_mod_functional_sig,'functional_sig',{'bootstat','ci','values'});
+
+table_fig4_engagement = [table_1; table_2;table_3; table_4;table_5; table_6];
 save(fullfile(save_dir, strcat('table_fig4_engagement.mat')), 'table_fig4_engagement');
 writetable(table_fig4_engagement, fullfile(save_dir, strcat('table_fig4_engagement.csv')));
 

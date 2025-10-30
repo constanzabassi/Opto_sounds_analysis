@@ -83,10 +83,17 @@ load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separat
 
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
+plot_info.type = 'sounds';
 
 %plot % modulated cells per context
 [percentage_stats] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, [1], mod_params.savepath, 'horizontal',all_celltypes);
 [percentage_stats_passive] = plot_sig_mod_pie(mod_params, mod_indexm, sig_mod_boot_thr, [2], mod_params.savepath, 'horizontal',all_celltypes);
+
+table_percentages1= struct2table_recursive(unwrap_cells_in_struct(percentage_stats),'active',{'bootstat','ci'});
+table_percentages2= struct2table_recursive(unwrap_cells_in_struct(percentage_stats_passive),'passive',{'bootstat','ci'});
+table_percentages = [table_percentages1;table_percentages2];
+save(fullfile(save_path, strcat('table_percentages.mat')), 'table_percentages');
+writetable(table_percentages, fullfile(save_path, strcat('table_percentages.csv')));
 
 sig_mod_boot_thr = plot_pie_thresholded_mod_index(params.info, mod_params, mod_indexm, sig_mod_boot, sorted_cells,all_celltypes, mod_params.savepath);
 % sig_mod_boot_thr_spont = plot_pie_thresholded_mod_index(info, mod_params, mod_indexm(:,3), sig_mod_boot(:,3), sorted_cells,fullfile(mod_params.savepath,'spont_sig'));
@@ -105,7 +112,19 @@ plot_sig_overlap_pie(percent_cells, overlap_labels, mod_params.savepath, context
 savepath = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\';
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_deconv',plot_info);
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
+evoked_stats = run_stats_on_traces(traces_mean, [], 63:92,{'PYR', 'SOM', 'PV'},[]);
+table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat','ci'});
+table_fig3_evoked = [table_];
+save(fullfile(mod_params.savepath,'\sig_neurons\evoked_stats.mat'),'evoked_stats');
+save(fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.mat')), 'table_fig3_evoked');
+writetable(table_fig3_evoked, fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.csv')));
+
+mod_params.mod_threshold = 0;
+mod_params.threshold_single_side =1;
+all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),2,1)';
+wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'sound_dff',plot_info,mod_indexm);
+
 load('V:\Connie\results\passive\data_info\pooled_cell_types.mat');
 wrapper_avg_pooled_type_traces(context_data.dff,pooled_cell_types,[],[1:24],savepath,'sound_dff_functional_types_-2to0_',plot_info,[1:10]);
 

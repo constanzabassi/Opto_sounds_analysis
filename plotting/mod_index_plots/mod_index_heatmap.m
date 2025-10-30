@@ -14,7 +14,16 @@ figure(94);clf;
 % cd 'C:\Code\Github\+colormaps'
 % colorList= (colormaps.slanCM('coolwarm',100));
 % colormap(colorList) % redblue
-positions = utils.calculateFigurePositions(1, 5, .5, []);
+save_string = [];
+default_size = 5;
+default_width = 1;
+if nargin > 5
+    default_size = varargin{1,2}(1);
+    default_width = varargin{1,2}(2);
+    save_string = 'adjusted_size';
+end
+positions = utils.calculateFigurePositions(1, default_size, .5, []);
+positions(1,3) = positions(1,3) *default_width;
 mod_to_plot = stim_mod(:,1:length(plot_info.behavioral_contexts));
 if 1 == length(plot_info.behavioral_contexts)
     %halve positions
@@ -24,7 +33,7 @@ colormap redblue
 meancontextmod = nanmean(mod_to_plot(:,:) , 2);%nanmean(stim_mod(chosen_cels,:) , 2);
 
 [~ ,id] = sort(meancontextmod,'descend');
-if nargin > 5
+if nargin > 6
      id = varargin{1,2};
 end
 heatmap_plot =imagesc(mod_to_plot(id,:)); %imagesc(stim_mod(chosen_cels(id),:));
@@ -52,8 +61,16 @@ movegui(gcf, 'center')
 if ~isempty(save_dir)
     mkdir(save_dir)
     cd(save_dir)
+    if ~isempty(save_string)
+            saveas(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),save_string,'_datasets.svg'));
+        saveas(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),save_string,'_datasets.fig'));
+        exportgraphics(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),save_string,'_datasets.pdf'), 'ContentType', 'vector');
+        save('sorting_id_heatmap','id');
+
+    else
     saveas(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),'_datasets.svg'));
     saveas(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),'_datasets.fig'));
     exportgraphics(figure(94),strcat('mod_index_heatmap_',num2str(length(chosen_mice)),'_datasets.pdf'), 'ContentType', 'vector');
     save('sorting_id_heatmap','id');
+    end
 end

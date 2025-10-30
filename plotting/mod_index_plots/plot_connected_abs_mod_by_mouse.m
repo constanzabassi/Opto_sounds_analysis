@@ -288,7 +288,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     end
 
     if abs_logic == 1;
-        ylabel({'Absolute Modulation';'Index'},'FontSize',7)
+        ylabel({'|Modulation Index|'},'FontSize',7)
     else
         ylabel({'Modulation Index'},'FontSize',7)
     end

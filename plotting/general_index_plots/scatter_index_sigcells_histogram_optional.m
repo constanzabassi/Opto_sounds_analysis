@@ -179,7 +179,7 @@ if nargin > 9
         saveas(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.svg']));
         exportgraphics(gcf, fullfile(save_path, ['scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.pdf']), 'ContentType', 'vector');
         %save_stats!
-        save(fullfile(save_path,['stats_scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.mat']));
+        save(fullfile(save_path,['stats_scatter_index_sigcells_histogram' num2str(sig_cel_string) '_' string1 '_' string2 '.mat']),'stats');
 
 
 % %         set(gcf, 'Renderer', 'opengl');
