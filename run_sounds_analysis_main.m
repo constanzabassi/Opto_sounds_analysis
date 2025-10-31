@@ -114,7 +114,7 @@ load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separat
 wrapper_avg_cell_type_traces(context_data.deconv,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_deconv',plot_info);
 [traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath,'sound_dff',plot_info);
 evoked_stats = run_stats_on_traces(traces_mean, [], 63:92,{'PYR', 'SOM', 'PV'},[]);
-table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat','ci'});
+table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat'});
 table_fig3_evoked = [table_];
 save(fullfile(mod_params.savepath,'\sig_neurons\evoked_stats.mat'),'evoked_stats');
 save(fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.mat')), 'table_fig3_evoked');
@@ -123,7 +123,12 @@ writetable(table_fig3_evoked, fullfile([mod_params.savepath '\sig_neurons\'], st
 mod_params.mod_threshold = 0;
 mod_params.threshold_single_side =1;
 all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),2,1)';
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'sound_dff',plot_info,mod_indexm);
+[traces_mean,dataset_ids] =wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'sound_dff',plot_info,mod_indexm);
+table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat'});
+table_fig3_evoked = [table_];
+save(fullfile(mod_params.savepath,'\evoked_stats.mat'),'evoked_stats');
+save(fullfile([mod_params.savepath ], strcat('table_fig3_evoked.mat')), 'table_fig3_evoked');
+writetable(table_fig3_evoked, fullfile([mod_params.savepath ], strcat('table_fig3_evoked.csv')));
 
 load('V:\Connie\results\passive\data_info\pooled_cell_types.mat');
 wrapper_avg_pooled_type_traces(context_data.dff,pooled_cell_types,[],[1:24],savepath,'sound_dff_functional_types_-2to0_',plot_info,[1:10]);
@@ -198,9 +203,9 @@ save(fullfile(save_dir, 'mod_index_stats.mat'), 'mod_index_stats');
 
 S = unwrap_cells_in_struct(mod_index_stats_datasets);
 % S2 = unwrap_cells_in_struct(mod_index_stats);
-table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat','ci'});
+table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat'});
 % table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
-table_2 = struct2table_recursive(S,'datasets',{'bootstat','ci'});
+table_2 = struct2table_recursive(S,'datasets',{'bootstat'});
 table_fig3 = [table_1; table_2];
 save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
 writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));

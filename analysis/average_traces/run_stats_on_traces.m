@@ -55,9 +55,10 @@ function [p, tbl, stats,mean_stats] = run_anova(traces_mean, celltypes,frames)
             fieldname2 = ['context_' num2str(cx)];
             mean_stats.(fieldname).(fieldname2) = get_basic_stats(these_vals);
         end
-        [p_val, ~, eff_size] = permutationTest_updatedcb(mean(traces_mean{ct,1}(:,frames),2), mean(traces_mean{ct,2}(:,frames),2), 10000, 'paired', 1);
+        [p_val, diff, eff_size] = permutationTest_updatedcb(mean(traces_mean{ct,1}(:,frames),2), mean(traces_mean{ct,2}(:,frames),2), 10000, 'paired', 1);
         mean_stats.(fieldname).p = p_val;
         mean_stats.(fieldname).effect_size = eff_size;
+        mean_stats.(fieldname).observeddiff = diff;
         mean_stats.(fieldname).test = 'paired permutation across datasets';
     end
 
@@ -89,9 +90,10 @@ function [tbl,mean_stats] = prepare_lme_data(traces_mean, dataset_ids, celltypes
             fieldname2 = ['context_' num2str(cx)];
             mean_stats.(fieldname).(fieldname2) = get_basic_stats(these_vals);
         end
-        [p_val, ~, eff_size] = permutationTest_updatedcb(mean(traces_mean{ct,1}(:,frames),2), mean(traces_mean{ct,2}(:,frames),2), 10000, 'paired', 1);
+        [p_val, diff, eff_size] = permutationTest_updatedcb(mean(traces_mean{ct,1}(:,frames),2), mean(traces_mean{ct,2}(:,frames),2), 10000, 'paired', 1);
         mean_stats.(fieldname).p = p_val;
         mean_stats.(fieldname).effect_size = eff_size;
+        mean_stats.(fieldname).observeddiff = diff;
         mean_stats.(fieldname).test = 'paired permutation across datasets';
 
     end

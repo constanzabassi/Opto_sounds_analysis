@@ -1,4 +1,4 @@
-lfunction [final_data_means,final_mouse_ids_used] = plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info,varargin)
+function [final_data_means,final_mouse_ids_used] = plot_avg_traces_baseline_subtracted(deconv_response, colors, lineStyles_contexts, celltypes_ids, frames, stim_frame, save_dir, average_over_neurons,type,plot_info,varargin)
 
 if nargin < 9
     average_over_neurons = false;
@@ -37,6 +37,8 @@ for fig_idx = 1:length(data_modes)*2
             all_traces = [];  % All neuron traces pooled
             mouse_means = []; % Mean trace per dataset
             mouse_ids_used = [];
+            all_traces_stim = [];
+            mouse_means_stim = [];
             for mouse = 1:size(deconv_response,2)
                 dat_struct = deconv_response{context,mouse,celtype};
                 if isempty(dat_struct) || size(dat_struct.stim,2) == 1
@@ -53,12 +55,14 @@ for fig_idx = 1:length(data_modes)*2
                     end
                     if length(size(dat_struct.stim))>2
                         dat = squeeze(mean(dat_struct.stim,'omitnan'));
+                        dat_stim = dat;
 %                         if contains(type,'deconv')
 %                             frame_window = 1:size(dat_struct.stim,3);
 %                             dat = squeeze(squeeze(sum(dat_struct.stim(:,:,frame_window),1))/(length(frame_window)/30));
 %                         end
                     else
                         dat = dat_struct.stim;
+                        dat_stim = dat;
                     end
                 else
                     if ~isfield(dat_struct, 'ctrl') || isempty(dat_struct.ctrl)
@@ -77,6 +81,7 @@ for fig_idx = 1:length(data_modes)*2
                 end
 
                 dat = dat(:, frames);
+                dat_stim = dat_stim(:,frames);
 
                 if strcmp(data_modes{ceil(fig_idx/2)}, 'bs')
                     baseline = mean(dat(:, 31:60), 2,'omitnan');
@@ -88,15 +93,30 @@ for fig_idx = 1:length(data_modes)*2
 
                 if average_over_neurons
                     all_traces = [all_traces; dat];  % Pool all neurons
+                    all_traces_stim = [all_traces_stim; dat_stim];
+                    
                 else
+                
                     mean_trace = mean(dat, 1,'omitnan');  % Average per dataset
                     mouse_means = [mouse_means; mean_trace];
+
+                    mean_trace_stim = mean(dat_stim, 1,'omitnan');  % Average per dataset
+                    mouse_means_stim = [mouse_means_stim; mean_trace_stim];
                 end
             end
-            if average_over_neurons                
-                final_data_means{celtype,context} = all_traces;
+            if average_over_neurons
+                if contains(plot_info.type,'sound') && fig_idx == 2
+                    final_data_means{celtype,context} = all_traces;
+                elseif ~contains(plot_info.type,'sound') && fig_idx == 1
+                    final_data_means{celtype,context} = all_traces_stim;
+                end
+                
             else
-                final_data_means{celtype,context} = mouse_means;
+                if contains(plot_info.type,'sound') && fig_idx == 2
+                    final_data_means{celtype,context} = mouse_means;
+                elseif ~contains(plot_info.type,'sound') && fig_idx == 1
+                    final_data_means{celtype,context} = mouse_means_stim;
+                end
             end
 
             final_mouse_ids_used{celtype,context} = mouse_ids_used;

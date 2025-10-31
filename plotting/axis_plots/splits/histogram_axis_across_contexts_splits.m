@@ -78,7 +78,7 @@ for i = 1:num_labels
 end
 
 % Perform a permutation test to compare differences against zero
-[p_val, ~, ~] = permutationTest(all_trial_means_contexts{1}, all_trial_means_contexts{2},10000);
+[p_val, diff2, effectsize] = permutationTest(all_trial_means_contexts{1}, all_trial_means_contexts{2},10000);
 
 set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
 utils.set_current_fig;
@@ -87,6 +87,8 @@ utils.set_current_fig;
 hist_stats.tests = [1,2];
 hist_stats.p_test = 'unpaired permutation across contexts (trials)';
 hist_stats.p_val = p_val;
+hist_stats.diff = diff2; 
+hist_stats.effectsize = effectsize; 
 hist_stats.n_trials = [length(all_trial_means_contexts{1}),length(all_trial_means_contexts{2})];
 offset = 0.02;
 %add significant stars

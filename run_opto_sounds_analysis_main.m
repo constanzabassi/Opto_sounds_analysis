@@ -160,12 +160,14 @@ plot_info.behavioral_contexts = {'Active','Passive'}; %decide which contexts to 
 overlap_labels = {'Active', 'Passive','Both'}; %{'Active', 'Passive','Both'}; % {'Active', 'Passive','Both'}; %{'Active', 'Passive','Spont','Both'}; %
 plot_info.y_lims = [-.2, .25];
 params.plot_info = plot_info;
+params.string = 'opto';
 save_dir = 'W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate';
 
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  [], all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
-
+mod_index_stats = plot_context_comparisons([1,2],overlap_labels, mod_indexm, [], all_celltypes, params,save_dir);
+save(fullfile(save_dir, 'mod_index_stats.mat'), 'mod_index_stats');
 
 S = unwrap_cells_in_struct(mod_index_stats_datasets);
 % S2 = unwrap_cells_in_struct(mod_index_stats);
@@ -210,6 +212,15 @@ params.plot_info = plot_info;
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
+
+S = unwrap_cells_in_struct(mod_index_stats_datasets);
+% S2 = unwrap_cells_in_struct(mod_index_stats);
+table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat'});
+% table_2 = struct2table_recursive(mod_index_stats_datasets,'datasets',{'bootstat','ci'});
+table_2 = struct2table_recursive(S,'datasets',{'bootstat'});
+table_fig3 = [table_1; table_2];
+save(fullfile(save_dir, strcat('table_fig3.mat')), 'table_fig3');
+writetable(table_fig3, fullfile(save_dir, strcat('table_fig3.csv')));
 
 %% look at pre stimulus period?
 % find the mean of the significant cells (in sig_mod_boot) during the

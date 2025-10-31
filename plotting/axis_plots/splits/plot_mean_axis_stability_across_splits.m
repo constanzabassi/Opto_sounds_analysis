@@ -10,7 +10,7 @@ labels = {'Engagement','Sound','Photostim'};
 
 for i = 1:numel(contexts)
     [axis_stability, mean_stability] = compute_axis_stability(weights, celltype, contexts{i});
-    
+    stats.(contexts{i}) = get_basic_stats(mean_stability);
     % Make violins outline-only with semi-transparent edge
     v = Violin({mean_stability}, i, ...
         'ViolinColor', {[1 1 1]}, ...          % white fill (transparent background look)
@@ -41,4 +41,5 @@ set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 if ~isempty(save_dir)
     mkdir([save_dir])
     exportgraphics(figure(100),fullfile(save_dir,strcat('mean_axis_stability_celltype',num2str(celltype),'.pdf')), 'ContentType', 'vector');
+    save(fullfile(save_dir,strcat('stats_mean_axis_stability_celltype',num2str(celltype),'.mat')),'stats');
 end

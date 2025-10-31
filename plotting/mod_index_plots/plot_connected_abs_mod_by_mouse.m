@@ -185,7 +185,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                     end
                 
                 if ~isempty(data1)
-                [p_val_mod(t,celltype), ~, effectsize(t,celltype)] = permutationTest_updatedcb(...
+                [p_val_mod(t,celltype), diff(t,celltype), effectsize(t,celltype)] = permutationTest_updatedcb(...
                     data1, data2, 10000, 'paired', 1);
                 else
                     p_val_mod(t,celltype) = 1;
@@ -264,19 +264,19 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
 
             if ~isempty(data1)
 %                 [KW.p_val{t},KW.tbl{t}, KW.stats_cell{t}] = kruskalwallis(T(:,:),[1:nStats],'off');
-                [p_val_mod_cells(t), ~, effectsize_cells(t)] = permutationTest_updatedcb(...
+                [p_val_mod_cells(t), diff_cells(t,celltype), effectsize_cells(t)] = permutationTest_updatedcb(...
                     data1, data2, 10000, 'paired', 1); %paired since Im comparing values from each dataset to each other
             else
                 p_val_mod_cells(t) = 1;
             end
-
+                
 %             get y values
             if max(mean_cell_all) > 0.1
                 y_val = max(mean_cell_all) + 0.03;
             else
                 y_val = max(mean_cell_all);
             end
-
+% y_val = 0.15;
             if p_val_mod_cells(t) < 0.05 && KW.p_val < 0.05
                 xline_vars = possible_tests(t,:);
                 ct = ct + y_val*0.3;
@@ -302,6 +302,8 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         yli = ylim;
         if yli(2) < ylims(2)
             ylim(ylims);
+        elseif yli(2) > ylims(2) 
+            ylim([ylims(1),yli(2)])
         end
     else
         yli = ylim;
@@ -324,6 +326,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         mod_stats.tests = possible_tests;
         mod_stats.p_test = 'paired permutation across mice';
         mod_stats.p_val_mod = p_val_mod;
+        mod_stats.difference = diff;
         mod_stats.effectsize = effectsize;
         mod_stats.n_mice = n_mice;
     end
@@ -332,6 +335,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         mod_stats.tests = possible_tests;
         mod_stats.p_test = 'paired permutation across mice';
         mod_stats.p_val_mod = p_val_mod_cells;
+        mod_stats.difference = diff_cells;
         mod_stats.effectsize = effectsize_cells;
         mod_stats.n_mice = n_mice;
         mod_stats.KW = KW;
@@ -355,6 +359,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             save_string = strrep(save_string, '/', '');
             save_string = strrep(save_string, '(', '');
             save_string = strrep(save_string, ')', '');
+            save_string = strrep(save_string, '|', '');
             if iscell(save_string)
                 save_string = strjoin(save_string, '_'); %convert cell to string
             end

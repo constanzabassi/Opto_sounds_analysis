@@ -190,12 +190,12 @@ S_mod_functional = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3
 S_mod_functional_all = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools\mod_index_cdf_acrosscelltypes_all.mat').all_stats);
 S_mod_functional_sig = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools\mod_index_cdf_acrosscelltypes_sig.mat').all_stats);
 
-table_1 = struct2table_recursive(S_mod_celltypes,'celltypes',{'bootstat','ci'});
-table_2 = struct2table_recursive(S_mod_functional,'functional',{'bootstat','ci'});
-table_3 = struct2table_recursive(S_mod_celltypes_all,'celltypes_all',{'bootstat','ci','values'});
-table_4 = struct2table_recursive(S_mod_celltypes_sig,'celltypes_sig',{'bootstat','ci','values'});
-table_5 = struct2table_recursive(S_mod_functional_all,'functional_all',{'bootstat','ci','values'});
-table_6 = struct2table_recursive(S_mod_functional_sig,'functional_sig',{'bootstat','ci','values'});
+table_1 = struct2table_recursive(S_mod_celltypes,'celltypes',{'bootstat'});
+table_2 = struct2table_recursive(S_mod_functional,'functional',{'bootstat'});
+table_3 = struct2table_recursive(S_mod_celltypes_all,'celltypes_all',{'bootstat','values'});
+table_4 = struct2table_recursive(S_mod_celltypes_sig,'celltypes_sig',{'bootstat','values'});
+table_5 = struct2table_recursive(S_mod_functional_all,'functional_all',{'bootstat','values'});
+table_6 = struct2table_recursive(S_mod_functional_sig,'functional_sig',{'bootstat','values'});
 
 table_fig4_engagement = [table_1; table_2;table_3; table_4;table_5; table_6];
 save(fullfile(save_dir, strcat('table_fig4_engagement.mat')), 'table_fig4_engagement');
