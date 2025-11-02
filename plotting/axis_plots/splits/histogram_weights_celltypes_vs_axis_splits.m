@@ -261,6 +261,19 @@ errorbar_weight_datasets_ct_stats.test = 'paired permutation across datasets';
 errorbar_weight_datasets_ct_stats.combos = celltype_combos;
 errorbar_weight_datasets_ct_stats.significant = find(p_values < 0.05 / (num_combos)); % Bonferroni correction
 
+group_labels = [];
+values_all = []; values_all2 = [];
+for f = 1:numel(possible_celltypes)
+    vals = abs(all_weight_means_datasets(f,:));%abs(all_weights{f});
+    vals2 = all_weight_means_datasets_noabs(f,:);%all_weights{f};
+    group_labels = [group_labels, f * ones(size(vals))];
+    values_all = [values_all, vals];
+    values_all2 = [values_all2, vals2];
+end
+[KW_Test.p_val,~,KW_Test.stats] = kruskalwallis(values_all, group_labels, 'off');
+errorbar_weight_datasets_ct_stats.KW_p_val = KW_Test.p_val;
+errorbar_weight_datasets_ct_stats.KW_stats = KW_Test.stats;
+
 %add significant stars
 if isfield(errorbar_weight_datasets_ct_stats, 'p_values') && ~isempty(errorbar_weight_datasets_ct_stats.p_values)
     ct_combos = nchoosek(1:3, 2); % assuming 3 cell types
@@ -340,6 +353,10 @@ errorbar_weight_datasets_ct_stats_noabs.p_values = p_values;
 errorbar_weight_datasets_ct_stats_noabs.test = 'paired permutation across datasets' ;
 errorbar_weight_datasets_ct_stats_noabs.combos = celltype_combos;
 errorbar_weight_datasets_ct_stats_noabs.significant = find(p_values < 0.05 / (num_combos)); % Bonferroni correction
+
+[KW_Test.p_val,~,KW_Test.stats] = kruskalwallis(values_all2, group_labels, 'off');
+errorbar_weight_datasets_ct_stats_noabs.KW_p_val = KW_Test.p_val;
+errorbar_weight_datasets_ct_stats_noabs.KW_stats = KW_Test.stats;
 
 %add significant stars
 if isfield(errorbar_weight_datasets_ct_stats_noabs, 'p_values') && ~isempty(errorbar_weight_datasets_ct_stats_noabs.p_values)

@@ -71,6 +71,12 @@ wrapper_avg_cell_type_traces_engagement(context_data.dff,all_celltypes,mod_index
 mod_index_stats_datasets = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm',  sig_mod_boot_thr, all_celltypes, params, mod_params.savepath, celltypes_ids,plot_info.y_lims);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
 
+%plot all neurons including not engaged ones
+plot_info.y_lim_ratio = 2;
+params.plot_info = plot_info;
+mod_index_stats_datasets_all = generate_engagement_index_plots_datasets(params.info.chosen_mice, mod_indexm', [], all_celltypes, params, [mod_params.savepath '/all'] , celltypes_ids,plot_info.y_lims);
+save(fullfile(save_dir, 'mod_index_stats_dataset_all.mat'), 'mod_index_stats_datasets_all');
+
 %plot percentages
 percent_cells = calculate_sig_celltype_percentages(sig_mod_boot_thr, all_celltypes, []);
 bar_plot_percent(percent_cells,[], savepath,plot_info.celltype_names,plot_info.colors_celltypes,{'All Modulated'});
@@ -183,6 +189,7 @@ end
 
 
 S_mod_celltypes = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_stats_datasets.mat').mod_index_stats_datasets);
+S_mod_celltypes_all_datasets = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\all\mod_index_contexts_distribution_stats.mat').stats);
 S_mod_celltypes_all = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_cdf_acrosscelltypes_all.mat').all_stats);
 S_mod_celltypes_sig = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\mod_index_cdf_acrosscelltypes_sig.mat').all_stats);
 
@@ -191,13 +198,14 @@ S_mod_functional_all = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\
 S_mod_functional_sig = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\functional_pools\mod_index_cdf_acrosscelltypes_sig.mat').all_stats);
 
 table_1 = struct2table_recursive(S_mod_celltypes,'celltypes',{'bootstat'});
+table_15 = struct2table_recursive(S_mod_celltypes_all_datasets,'celltypes_all',{'bootstat'});
 table_2 = struct2table_recursive(S_mod_functional,'functional',{'bootstat'});
 table_3 = struct2table_recursive(S_mod_celltypes_all,'celltypes_all',{'bootstat','values'});
 table_4 = struct2table_recursive(S_mod_celltypes_sig,'celltypes_sig',{'bootstat','values'});
 table_5 = struct2table_recursive(S_mod_functional_all,'functional_all',{'bootstat','values'});
 table_6 = struct2table_recursive(S_mod_functional_sig,'functional_sig',{'bootstat','values'});
 
-table_fig4_engagement = [table_1; table_2;table_3; table_4;table_5; table_6];
+table_fig4_engagement = [table_1;table_15; table_2;table_3; table_4;table_5; table_6];
 save(fullfile(save_dir, strcat('table_fig4_engagement.mat')), 'table_fig4_engagement');
 writetable(table_fig4_engagement, fullfile(save_dir, strcat('table_fig4_engagement.csv')));
 

@@ -24,7 +24,11 @@ function all_stats = generate_engagement_index_plots_datasets(chosen_dataset, mo
     if ~isempty(celltypes_ids)
         [all_stats.box_stats_allcells] = mod_index_violin_across_celltypes(save_dir,context_mod_all,1,params.plot_info.colors_celltypes,1,celltypes_ids,chosen_dataset);
     end
+    
     y_lim_ratio = 1;
+    if isfield(params.plot_info,'y_lim_ratio')
+        y_lim_ratio = params.plot_info.y_lim_ratio;
+    end
 %     % Scatter Plot of abs(mod index)
 %     scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
 %          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);

@@ -136,7 +136,7 @@ num_bins_weights = 20;
 %% save stats into single table
 load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\stats_lm_contexts1  2Stim ProjectionEngagement.mat');
 lm_stats2 = load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\stats_lm_contexts1  2Sound ProjectionEngagement.mat').lm_stats;
-load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\performance_vs_engagement_stats.mat');
+load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\performance_plots\performance_vs_engagement_stats.mat');
 Sweightsabs = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\errorbar_weights_celltypes_vs_axis_Context_stats_n24_edges_-0.1         0.1.mat').errorbar_weight_datasets_ct_stats);  
 Sweight_nosabs = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\errorbar_noabs_weights_celltypes_vs_axis_Context_stats_n24_edges_-0.1         0.1').errorbar_weight_datasets_ct_stats_noabs);  
 Scontext = unwrap_cells_in_struct(load('W:\Connie\results\Bassi2025\fig4\updated_4cv_combined_eng\hist_splits_axis_contextstats_n24.mat').hist_stats);
