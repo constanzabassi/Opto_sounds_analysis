@@ -6,10 +6,14 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
         all_trial_info = load('V:\Connie\results\opto_sound_2025\context\sound_info\active_all_trial_info_sounds.mat').all_trial_info_sounds; %all_trial_info
 
         rng(5);
+        bframes2 = [];
         % Define the frames for after and before stimulus
         if nargin > 5
             aframes = varargin{1,1}{2};  % After stimulus
             bframes = varargin{1,1}{1};   % Before stimulus
+            if length(varargin{1,1})> 2
+                bframes2 = varargin{1,1}{3}; %second frames to test
+            end
         else
             aframes = 63:93;  % After stimulus
             bframes = 50:59;   % Before stimulus
@@ -122,9 +126,15 @@ function [proj,proj_ctrl,proj_norm,proj_ctrl_norm, weights,trial_corr_context,pe
                 ctrl_matrix = [dff_st{1, current_dataset}.ctrl(:,mod_cells,:); dff_st{2, current_dataset}.ctrl(:,mod_cells,:)]; % sound only (active and passive)
     
                 %CONCATENATE TRIALS ACROSS CONTROL AND STIM CONDITIONS
-                active_passive_sound_mean = [
-                nanmean([ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes)], [1, 3]); % active sound total_trials{current_dataset, 1, 2}
-                nanmean([ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes)], [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                if ~isempty(bframes2)
+                    active_passive_sound_mean = [
+                    nanmean([ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes2);stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes2)], [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                    nanmean([ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes2);stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes2)], [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                else
+                    active_passive_sound_mean = [
+                    nanmean([ctrl_matrix(ctrl_splits{current_dataset,1}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,1}(split).trainA, :, bframes)], [1, 3]); % active sound total_trials{current_dataset, 1, 2}
+                    nanmean([ctrl_matrix(ctrl_splits{current_dataset,2}(split).trainA, :, bframes);stim_matrix(stim_splits{current_dataset,2}(split).trainA, :, bframes)], [1, 3])]; % passive sound total_trials{current_dataset, 2, 2}
+                end
                 context_axis = active_passive_sound_mean(1,:) - active_passive_sound_mean(2,:); % active - passive
                 norm_context_diff = context_axis ./ sqrt(sum(context_axis.^2)); % Normalize context axis
                 norm_context_diff_stim = norm_context_diff;

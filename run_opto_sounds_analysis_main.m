@@ -119,10 +119,17 @@ mod_params.threshold_single_side =1;
 all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),3,1)';
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'opto_dff',plot_info,mod_indexm);
 
+
+[traces_mean2,dataset_ids2] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
+
 evoked_stats = run_stats_on_traces(traces_mean, [], 63:92,{'PYR', 'SOM', 'PV'},[]);
+evoked_stats_diff = run_stats_on_traces(traces_mean2, [], 63:92,{'PYR', 'SOM', 'PV'},[]);
 table_ = struct2table_recursive(unwrap_cells_in_struct(evoked_stats),'',{'bootstat','ci'});
-table_fig3_evoked = [table_];
+table_2 = struct2table_recursive(unwrap_cells_in_struct(evoked_stats_diff),'',{'bootstat','ci'});
+
+table_fig3_evoked = [table_;table_2];
 save(fullfile(mod_params.savepath,'\sig_neurons\evoked_stats.mat'),'evoked_stats');
+save(fullfile(mod_params.savepath,'\sig_neurons\evoked_stats_diff.mat'),'evoked_stats_diff');
 save(fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.mat')), 'table_fig3_evoked');
 writetable(table_fig3_evoked, fullfile([mod_params.savepath '\sig_neurons\'], strcat('table_fig3_evoked.csv')));
 
@@ -212,7 +219,7 @@ params.plot_info = plot_info;
 %generates heatmaps, cdf, box plots, scatter of abs(mod _index)
 mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params, save_dir);
 save(fullfile(save_dir, 'mod_index_stats_datasets.mat'), 'mod_index_stats_datasets');
-
+% anova_stats = run_stats_on_mod_index(mod_index_stats_datasets.stats, [], {'Pyr','SOM','PV'},[],'mouse_means')
 S = unwrap_cells_in_struct(mod_index_stats_datasets);
 % S2 = unwrap_cells_in_struct(mod_index_stats);
 table_1 = struct2table_recursive(mod_index_stats,'single_cells',{'bootstat'});
