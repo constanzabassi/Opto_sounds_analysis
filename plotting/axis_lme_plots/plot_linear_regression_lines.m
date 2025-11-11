@@ -119,7 +119,9 @@ else
 end
 %set figure
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 % Save results
 if ~isempty(save_dir)

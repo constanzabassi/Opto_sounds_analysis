@@ -103,6 +103,7 @@ xlim([binss(1) binss(end)]);
 grid on;
 % legend(possible_celltypes, 'Box', 'off', 'Location', 'best');
 set(gca, 'FontSize', 7,'box','off','Units','Inches','Position',positions(1,:));
+utils.set_current_fig;
 
 %% --- Kruskal-Wallis across all types ---
 group_labels = [];

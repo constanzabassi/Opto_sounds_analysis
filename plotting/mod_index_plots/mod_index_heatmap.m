@@ -56,6 +56,9 @@ set(heatmap_plot,'AlphaData',~isnan(mod_to_plot(id,:))); %,~isnan(stim_mod(chose
 set(gca,'color',[.7 .7 .7],'fontsize',7);
 % set(gcf,'position',[100,100,200,200])
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 movegui(gcf, 'center')
 
 if ~isempty(save_dir)

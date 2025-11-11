@@ -1,7 +1,7 @@
 function [mean_all ,all_stats] = bar_plot_percent(percent1,percent2, save_dir,celltype_names,colors_celltypes,xlabels)
 % expects array size dataset x celltypes
 % plots mean+sem across datasets
-all_stats = [];
+all_stats = {};
 string = 'Fraction Neurons';
 mean_percent = [];
 possible_tests = []; p_stim = [];
@@ -56,12 +56,17 @@ for ce = 1:numcells
         cct = 0;
             for t = 1:size(possible_tests,1)
                 [p_stim(t,ce), observeddifference, effectsize_context] = permutationTest_updatedcb(mean_percent(possible_tests(t,1),:,ce), mean_percent(possible_tests(t,2),:,ce), 10000,'paired',1);
-                if p_stim(t,ce) < 0.05/numcells && KW_Test.context_p_val < 0.05/numcells
+                name_field = strcat('test_',num2str(t),'_celltype_',num2str(ce));
+                all_stats.(name_field).pval = p_stim(t,ce);
+                all_stats.(name_field).observeddifference = observeddifference;
+                all_stats.(name_field).effectsize_context = effectsize_context;
+                if p_stim(t,ce) < 0.05/numcells && KW_Test.context_p_val < 0.05
                     xline_vars(1) = possible_tests(t,1); 
                     xline_vars(2) = possible_tests(t,2); 
                     xval = 0;  
                     utils.plot_pval_star(xval, (yl(2)+yl(2)*.1)+cct, p_stim(t,ce), xline_vars,0.01)
                     cct = cct+yl(2)*.1;%0.05;
+                    
                 end
             end
     
@@ -77,9 +82,12 @@ for ce = 1:numcells
     pos = positions(ce, :);
     pos(2) = pos(2) - 0.25;       % move down by 0.25 inches
     set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', pos);
+    ax = gca;
+    ax.XLabel.FontSize = ax.FontSize;
+    ax.YLabel.FontSize = ax.FontSize;
 end
 
-all_stats.pval = p_stim;
+
 all_stats.ptest = 'paired permutation';
 all_stats.possible_tests =possible_tests;
 % set(gcf,'units','points','position',[10,100,(500/3*length(behavioral_contexts)),200])
@@ -91,5 +99,5 @@ if ~isempty(save_dir)
 %     saveas(gcf,strcat(['bar_' string '_contexts.svg']));
     exportgraphics(gcf,strcat('bar_percents', strjoin(cellstr(celltype_names), ''),'_', strjoin(cellstr(xlabels), ''), '.pdf'), 'ContentType', 'vector');
     saveas(gcf,strcat('bar_percents', strjoin(cellstr(celltype_names), ''),'_', strjoin(cellstr(xlabels), ''),'.fig'));
-%     save(['all_stats_' string],'all_stats')
+    save(strcat('bar_percents', strjoin(cellstr(celltype_names), ''),'_all_stats'),'all_stats');
 end

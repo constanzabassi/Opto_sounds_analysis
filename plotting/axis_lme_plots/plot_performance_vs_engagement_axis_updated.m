@@ -85,6 +85,9 @@ ylabel('Fraction Correct');
 % % text(mean(xfit), max(yfit), sprintf('R = %.2f, p = %.3g', mdl.Correlation, mdl.Coefficients.pValue(2)), ...
 % %     'FontSize', 7);
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 % Bin data based on engagement quantiles
 edges = linspace(edge_input(1),edge_input(2), window_bins(2)+1);%prctile(engagement_active, linspace(0, 100, 6));%linspace(0,2, 6); %prctile(engagement_active, linspace(0, 100, 6));  % 5 bins
@@ -134,12 +137,18 @@ ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
 xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 box off
 
 figure(804);clf; colormap gray;
 imagesc(n_per_sess); 
 c = colorbar; 
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :)); 
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 % utils.set_current_fig; 
 c.Label.String = {'Number of Avg. Windows'}; %'Prestimulus "Engagement"'; 
 c.Label.Rotation = 270; % Rotate the ylabel by 270 degrees'Rotation',270; 
@@ -179,6 +188,9 @@ xlabel('Fraction Correct');
 ylabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 box off
 
 %-------non overlaping window----------------
@@ -223,6 +235,9 @@ ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
 xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 box off
 
 all_engagement = [session_engagement_nonoverlap{1,:}];
@@ -267,6 +282,9 @@ xlabel('Fraction Correct');
 ylabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 xlim([min(all_success)-0.05,1.05])
 box off
 
@@ -313,6 +331,9 @@ ylabel('Fraction Correct');
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 box off
 %% plot based on engagement bins (no overlap!)
@@ -413,6 +434,9 @@ ylabel('Fraction Correct');
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 box off
 
@@ -504,6 +528,9 @@ ylabel('Fraction Correct');
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 box off
 
@@ -531,6 +558,9 @@ ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
 xlim([xli(1)- xli(2)*.3,xli(2) + xli(2)*.3]); %adjust axis
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 box off
 
 

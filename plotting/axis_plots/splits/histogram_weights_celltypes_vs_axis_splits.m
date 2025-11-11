@@ -113,7 +113,14 @@ if isfield(hist_weight_ct_stats, 'p_values') && ~isempty(hist_weight_ct_stats.p_
 end
 
 %adjust plot and position
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [8.5 11]);
+set(gcf, 'PaperPosition', [0 0 8.5 11]);
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.FontSize = 7;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 utils.set_current_fig;
 %% create bar plot summarizing results
 % Bar plot of mean ± SEM per cell type
@@ -152,7 +159,9 @@ xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
 % title('Mean Weight ± SEM');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 %do statistical analysis
 for c = 1:num_combos
     ct1 = celltype_combos(c, 1);
@@ -232,7 +241,9 @@ xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
 % title('Mean Weight ± SEM');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 %do statistical analysis
 for c = 1:num_combos
     ct1 = celltype_combos(c, 1);
@@ -281,7 +292,7 @@ if isfield(errorbar_weight_datasets_ct_stats, 'p_values') && ~isempty(errorbar_w
     ct_count = 0;
     for c = 1:size(ct_combos, 1)
         p = errorbar_weight_datasets_ct_stats.p_values(c);
-        if p < 0.05 / 3  % Bonferroni correction
+        if p < 0.05 / 3  && KW_Test.p_val < 0.05% Bonferroni correction
             
             y = ylim;
             star_y = y(2) + (ct * offset);
@@ -328,14 +339,17 @@ xlim([xli(1) - (xli(1)*.1),xli(2) + (xli(2)*.05)]); %adjust axis
 
 % title('Mean Weight ± SEM');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
 
 %do statistical analysis
 for c = 1:num_combos
     ct1 = celltype_combos(c, 1);
     ct2 = celltype_combos(c, 2);
 
-    x = all_weight_means_datasets(ct1,:);
-    y = all_weight_means_datasets(ct2,:);
+    x = all_weight_means_datasets_noabs(ct1,:);
+    y = all_weight_means_datasets_noabs(ct2,:);
 %     valid = ~isnan(x) & ~isnan(y);
 
     errorbar_weight_datasets_ct_stats_noabs.stats{ct1} = utils.get_basic_stats(x);
@@ -365,7 +379,7 @@ if isfield(errorbar_weight_datasets_ct_stats_noabs, 'p_values') && ~isempty(erro
     ct_count = 0;
     for c = 1:size(ct_combos, 1)
         p = errorbar_weight_datasets_ct_stats_noabs.p_values(c);
-        if p < 0.05 / 3  % Bonferroni correction
+        if p < 0.05 / 3 && KW_Test.p_val < 0.05 % Bonferroni correction
             
             y = ylim;
             star_y = y(2) + (ct * offset);

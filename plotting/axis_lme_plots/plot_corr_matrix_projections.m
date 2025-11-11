@@ -25,7 +25,7 @@ xticks(1:3); xticklabels({'Engagement','Sound','Stim'});
 yticks(1:3); yticklabels({'Engagement','Sound','Stim'});
 
 positions = utils.calculateFigurePositions(1, 5, .5, []);
-set(gca, 'FontSize', 8, 'Units', 'inches', 'Position', positions(1, :));
+set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 caxis([-1 1])
 utils.set_current_fig;
 

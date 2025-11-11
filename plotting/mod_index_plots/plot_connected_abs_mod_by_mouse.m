@@ -31,7 +31,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     if nargin > 5
         abs_logic = varargin{1,2};
     end
-    
+    mean_cell_all2 = []
     for celltype = 1:n_celltypes
         mean_cell_all = [];
         
@@ -204,6 +204,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
 
         end
+        mean_cell_all2 = [mean_cell_all2, mean_cell_all];
     end
     
     % Format plot
@@ -271,10 +272,10 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
                 
 %             get y values
-            if max(mean_cell_all) > 0.1
-                y_val = max(mean_cell_all) + 0.03;
+            if max(mean_cell_all2) > 0.1
+                y_val = max(mean_cell_all2) + 0.03;
             else
-                y_val = max(mean_cell_all);
+                y_val = max(mean_cell_all2);
             end
 % y_val = 0.15;
             if p_val_mod_cells(t) < 0.05 && KW.p_val < 0.05
@@ -344,6 +345,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         positions(:,4) = positions(:,4)*1;
         positions(:,2) = positions(:,2) - 1;
         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+        ax = gca;
+        ax.XLabel.FontSize = ax.FontSize;
+        ax.YLabel.FontSize = ax.FontSize;
         xticklabels(repmat(plot_info.celltype_names, 1, n_celltypes))
         
     end

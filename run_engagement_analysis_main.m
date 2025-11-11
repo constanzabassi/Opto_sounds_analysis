@@ -130,9 +130,8 @@ mod_pooled_index_stats_datasets = generate_engagement_index_plots_datasets(param
 save(fullfile(mod_params.savepath, '/functional_pools/mod_pooled_index_stats_datasets.mat'),'mod_pooled_index_stats_datasets');
 
 
-
 [pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both','unmodulated','sound_neg'},[1:24],plot_info, 1,sig_cells{2});
-[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sig_cells{1}, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1,sig_cells{2});
+[pooled_cell_types,plot_info.functional_names,plot_info.functional_colors] = organize_functional_groups(all_celltypes, sound.sig_cells, opto.sig_cells, opto.mod(1:24,:), {'sound','opto','both'},[1:24],plot_info, 1);
 
 savepath = ['W:\Connie\results\Bassi2025\fig3\' mod_params.mod_type '\functional_celltype_traces\separate_sounds'];
 mod_params.chosen_mice = [1:24]; %1 less for opto control
@@ -155,7 +154,7 @@ for i = 1:length(param_sets)
         [current_sig_cells] = get_thresholded_sig_cells_simple( mod_params_plot, mod_indexm', sig_mod_boot'); %using mod_indexm2 because using prepost instead of ctrl for opto
         percent_cells_signed{i} = calculate_sig_celltype_percentages(current_sig_cells(1:24), pooled_cell_types, []);
 end
-bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, [mod_params.savepath '/functional_pools/'],plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
+[~,percent_bar_stats] = bar_plot_percent(percent_cells_signed{1},percent_cells_signed{2}, [mod_params.savepath '/functional_pools/'],plot_info.functional_names,plot_info.functional_colors,{'Positive','Negative'});
 
 plot_info = plotting_config();
 proportions_celltypes = plot_celltype_pies(all_celltypes, pooled_cell_types,'vertical',[mod_params.savepath '/functional_pools/'],plot_info.colors_celltypes);
