@@ -216,10 +216,17 @@ for fig_idx = 1:length(data_modes)*2
     if ~isempty(save_dir)
         fig_suffix = {'raw_stim','raw_ctrl','bs_stim','bs_ctrl'};
         mkdir(fullfile(save_dir, 'avg_traces'));
-        saveas(fig_idx, fullfile(save_dir, 'avg_traces', ...
-            strcat('avg_traces_', fig_suffix{fig_idx},'_', type,'.fig')));
-        exportgraphics(gcf, fullfile(save_dir, 'avg_traces', ...
-            strcat('avg_traces_', fig_suffix{fig_idx},'_', type,'.pdf')), 'ContentType', 'vector');
+        if average_over_neurons
+            saveas(fig_idx, fullfile(save_dir, 'avg_traces', ...
+                strcat('avg_over_neurons_traces_', fig_suffix{fig_idx},'_', type,'.fig')));
+            exportgraphics(gcf, fullfile(save_dir, 'avg_traces', ...
+                strcat('avg_over_neurons_traces_', fig_suffix{fig_idx},'_', type,'.pdf')), 'ContentType', 'vector');
+        else
+            saveas(fig_idx, fullfile(save_dir, 'avg_traces', ...
+                strcat('avg_traces_', fig_suffix{fig_idx},'_', type,'.fig')));
+            exportgraphics(gcf, fullfile(save_dir, 'avg_traces', ...
+                strcat('avg_traces_', fig_suffix{fig_idx},'_', type,'.pdf')), 'ContentType', 'vector');
+        end
     end
 end
 

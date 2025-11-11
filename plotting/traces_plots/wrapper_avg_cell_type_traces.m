@@ -40,5 +40,9 @@ for i = 1:length(param_sets)
         plot_info.trace_modes = {'raw'}; %{'raw', 'bs'}
         [traces_mean{i},dataset_ids{i}] = plot_avg_traces_baseline_subtracted(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_3contexts,{'-','-'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
 %         plot_avg_traces_baseline_subtracted_nosem(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_4contexts,{'-','--'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
+        
+%         %avg over nuerons
+%         avg_across_neurons = 1;
+%         [traces_mean{i},dataset_ids{i}] = plot_avg_traces_baseline_subtracted(neural_response(contexts_to_plot,:,:),plot_info.colors_celltypes_3contexts,{'-','-'},plot_info.celltype_names,1:122,[60,63],savepath,avg_across_neurons,[data_type '_' mod_params.savestring ],plot_info);
 
 end
