@@ -105,6 +105,10 @@ for fig_idx = 1:length(data_modes)
         xticks([31 61 91]);
         xticklabels([-1 0 1]);
 
+        if  isfield(plot_info,'trace_ylims') && ~isempty(plot_info.trace_ylims)
+            ylim([plot_info.trace_ylims]);
+        end
+
         yli = ylim;
         if diff(yli) < 0.04
             yli = [yli(1)-0.01, yli(2)+0.01];
@@ -122,7 +126,11 @@ for fig_idx = 1:length(data_modes)
         ax = gca;
         ax.YAxis.Exponent = 0;
         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(celtype,:));
+
+        
     end
+
+    
 
     if ~isempty(save_dir)
         fig_suffix = {'raw_diff', 'bs_diff'};

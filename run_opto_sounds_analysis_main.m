@@ -86,7 +86,7 @@ context_to_plot = [1];
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:24];
-mod_params.min_cells = 2;
+mod_params.min_cells = 1; %one more than this
 
 
 %using previously calculated mod index from prepost (looking at spont to
@@ -121,7 +121,7 @@ mod_params.threshold_single_side =1;
 all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),3,1)';
 wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath '/all_cells/'],'opto_dff',plot_info,mod_indexm);
 
-
+% plot_info.trace_ylims = [-.01, .03];
 [traces_mean2,dataset_ids2] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
 
 evoked_stats = run_stats_on_traces(traces_mean, [], 63:92,{'PYR', 'SOM', 'PV'},[]);

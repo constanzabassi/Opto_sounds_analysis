@@ -9,6 +9,7 @@ function [traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data,a
 % param_sets = { 
 %         struct('mod_threshold', 0, 'threshold_single_side', 0, 'savestring', [ 'all_modulated'])
 %     };
+    min_cells = mod_params.min_cells;
 
 for i = 1:length(param_sets)
         mod_params = param_sets{i};
@@ -30,7 +31,7 @@ for i = 1:length(param_sets)
         
         %get context,mouse,celltype responses (across all trials (not
         %separated by left or rigth)- so overall avg)
-        [neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells,all_celltypes,mod_params.min_cells, mod_params.chosen_mice); %context_data.deconv_interp
+        [neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells,all_celltypes,min_cells, mod_params.chosen_mice); %context_data.deconv_interp
 
         %plot avg traces (plotting active and passive)
             avg_across_neurons = 0; %SEM across all neurons vs across datasets

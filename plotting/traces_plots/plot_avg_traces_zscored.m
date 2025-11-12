@@ -99,6 +99,10 @@ for stim_idx = 1:length(stim_ctrl_idx)
             xticks([1 60]);
             xticklabels([-2 0]);
 
+            if  isfield(plot_info,'trace_ylims') && ~isempty(plot_info.trace_ylims)
+                ylim([plot_info.trace_ylims]);
+            end
+
         yli = ylim;
 %         for f = 1:size(stim_frame,1)
 %             rectangle('Position', [stim_frame(f,1), yli(1), ...
