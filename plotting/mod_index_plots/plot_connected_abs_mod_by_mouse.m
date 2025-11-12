@@ -312,9 +312,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     end
     
     % Set figure properties
-    set(gca,'FontSize',7);
+
     set(gcf,'Color','w')
-    set(gca,'FontName','Arial')
+
 %     set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'})
     box off
     xtickangle(45)

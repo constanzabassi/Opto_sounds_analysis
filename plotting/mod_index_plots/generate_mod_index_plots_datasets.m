@@ -32,18 +32,19 @@ function all_stats = generate_mod_index_plots_datasets(chosen_dataset, mod_index
     [all_stats.box_stats_datasets] = mod_index_violin_across_celltypes_datasets(save_dir, mod_index_by_dataset, params.plot_info, (params.plot_info.y_lims));
 
     y_lim_ratio = 1;
-    % Scatter Plot of abs(mod index)
-    scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
-         params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
+%     % Scatter Plot of abs(mod index)
+%     scatter_abs_mean_mod_by_dataset(save_dir, mod_index_by_dataset,...
+%          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
 
      % create plots dividing by dataset and by mouse
-     %by mouse
-     scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_dataset, [params.info.mouseid{chosen_dataset}],...
-         params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
-
-     %by dataset
-     scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
-         params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
+     %plots commented out are bigger than for manuscript
+%      %by mouse
+%      scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_dataset, [params.info.mouseid{chosen_dataset}],...
+%          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
+% 
+%      %by dataset
+%      scatter_abs_mean_mod_by_mouse(save_dir, mod_index_by_dataset, chosen_dataset,...
+%          params.plot_info, 2, [0,params.plot_info.y_lims(2)/y_lim_ratio]);
 
      %by mouse
       all_stats.abs_mod_stats_celltypes_mice = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_dataset, [params.info.mouseid{chosen_dataset}],...

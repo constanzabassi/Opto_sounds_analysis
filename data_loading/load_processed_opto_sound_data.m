@@ -1,4 +1,4 @@
-function [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials,stim_trials] = load_processed_opto_sound_data(params,mode)
+function [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials,stim_trials,context_data_sound] = load_processed_opto_sound_data(params,mode)
 %LOAD_OPTO_SOUND_DATA Load optogenetics + sound experiment data.
 %
 %   data = load_opto_sound_data(params)
@@ -47,6 +47,7 @@ function [sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials,stim_tr
     sorted_cells   = load(fullfile(shared_dir, 'sorted_cells.mat')).sorted_cells;
     all_celltypes  = load(fullfile(shared_dir, 'all_celltypes.mat')).all_celltypes;
     context_data   = load(fullfile(shared_dir, 'context_data.mat')).context_data;
+    context_data_sound = load(fullfile(base_dir,'sounds','data_info','context_data.mat')).context_data; %ctrl and sound only trials are concatenated together
     ctrl_trials    = load(fullfile(shared_dir, 'ctrl_trials_context.mat')).ctrl_trials_context;
     stim_trials    = load(fullfile(shared_dir, 'stim_trials_context.mat')).stim_trials_context;
 

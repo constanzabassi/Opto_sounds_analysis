@@ -5,15 +5,18 @@ plot_info = plotting_config(); %plotting params
 params.plot_info = plot_info;
 load('V:\Connie\results\opto_sound_2025\context\data_info\all_celltypes.mat');
 
+% context_data has ctrl as ctrl only, context_data_sounds concatenated ctrl with sound only trials!
+[sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context, context_data_sounds] = load_processed_opto_sound_data(params,{'separate','separate'});
+% keep sound opto sorted_cells all_celltypes context_data ctrl_trials_context stim_trials_context  context_data_sounds
 %% Sound Index Plots
 mod_params = params.mod_sounds;
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:25];
 mod_params.min_cells = 1;
 % 1) load data
-load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
-load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat');
-load('V:\Connie\results\opto_sound_2025\context\sounds\data_info\context_data.mat');
+%load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
+% load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot_thr.mat');
+% load('V:\Connie\results\opto_sound_2025\context\sounds\data_info\context_data.mat');
 %%%% sig cells %%%%%%%%%%%
 plot_info.y_lims = [-.4, .4];
 % Set labels for plots.
@@ -27,16 +30,16 @@ params.string = 'Sounds';
 
 %%%% sig cells %%%%%%%%%%%
 savepath = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\sig_neurons';
-[combined_sig_cells, ~] = union_sig_cells(sig_mod_boot_thr(:,1)', sig_mod_boot_thr(:,2)', mod_indexm);
+[combined_sig_cells, ~] = union_sig_cells(sound.sig_mod_boot_thr(:,1)', sound.sig_mod_boot_thr(:,2)', sound.mod);
 %single neurons
 plot_info.y_lims = [-.4, .4];params.plot_info = plot_info;
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, sound.mod, sound.sig_mod_boot_thr, all_celltypes, params, savepath);
 %datasets
 plot_info.y_lims = [-.2, .3];params.plot_info = plot_info;
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, combined_sig_cells, all_celltypes, params, save_dir);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, sound.mod, combined_sig_cells, all_celltypes, params, savepath);
 %avg traces
 savepath_traces = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\';
-[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath_traces,'sound_dff',plot_info);
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data_sounds.dff,all_celltypes,sound.mod,sound.sig_mod_boot_thr,mod_params,savepath_traces,'sound_dff',plot_info);
 %%% STATS TABLES
 % table_fig3 = make_stats_tables_mod_index(mod_index_stats, mod_index_stats_datasets, save_dir);
 
@@ -46,33 +49,33 @@ save_dir = 'W:\Connie\results\Bassi2025\fig3\sounds\mod\prepost_sound\separate\'
 
 %single neurons
 plot_info.y_lims = [-.4, .4];params.plot_info = plot_info;
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, [], all_celltypes, params, save_dir);
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, sound.mod, [], all_celltypes, params, save_dir);
 plot_info.y_lims = [-.2, .20];params.plot_info = plot_info;
 %datasets
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm, [], all_celltypes, params, save_dir);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, sound.mod, [], all_celltypes, params, save_dir);
 %avg traces
 savepath_traces = 'W:\Connie\results\Bassi2025\fig3\sounds\celltype_traces\all_cells\';
-mod_params.mod_threshold = 0;
+mod_params.mod_threshold = 0.001;
 mod_params.threshold_single_side =1;
-[num_cells, ~] = organize_pooled_celltypes(context_data.dff, all_celltypes);
+[num_cells, ~] = organize_pooled_celltypes(context_data_sounds.dff, all_celltypes);
 all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),2,1)';
-[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot_thr,mod_params,savepath_traces,'sound_dff',plot_info);
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data_sounds.dff,all_celltypes,sound.mod,all_cells,mod_params,savepath_traces,'sound_dff',plot_info);
 %%% STATS TABLES
 % table_fig3 = make_stats_tables_mod_index(mod_index_stats, mod_index_stats_datasets, save_dir);
 %% Photostim Index plots
-[sound,opto,sorted_cells,all_celltypes,context_data,ctrl_trials_context,stim_trials_context] = load_processed_opto_sound_data(params,{'separate','separate'});
 
 mod_params = params.mod;
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:24];
 params.string = 'opto';
-mod_params.min_cells = 1;
+mod_params.min_cells = 1; %2 matches mod index summary scatter plot
 
 
 % 1) load data
-load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat')% sig neurons based on pre post spont
-load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot.mat')
-load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat')
+% load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot_thr.mat')% sig neurons based on pre post spont
+% sig_mod_boot = opto.sig_mod_boot;% load('V:\Connie\results\opto_sound_2025\context\mod\prepost\separate\sig_mod_boot.mat')
+% load('V:\Connie\results\opto_sound_2025\context\mod\ctrl\separate\mod_indexm.mat')
+
 % Set y-axis limits for the plots.
 plot_info.y_lims = [-.4, .4];
 params.info.chosen_mice = mod_params.chosen_mice;
@@ -86,18 +89,19 @@ params.plot_info = plot_info;
 %%%% sig cells %%%%%%%%%%%
 savepath = 'W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate\sig_neurons';
 %single neurons
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, sig_mod_boot_thr(:,3), all_celltypes, params,savepath); %single neurons
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, opto.mod, opto.sig_mod_boot_thr(:,3), all_celltypes, params,savepath); %single neurons
 %datasets
 plot_info.y_lims = [-.2, .4]; params.plot_info = plot_info;
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  sig_mod_boot_thr(:,3)', all_celltypes, params,savepath);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, opto.mod,  opto.sig_mod_boot_thr(:,3)', all_celltypes, params,savepath);
 savepath_traces = 'W:\Connie\results\Bassi2025\fig3\celltype_traces\';
 %stim+sound avg
-[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath_traces,'opto_dff',plot_info,mod_indexm); 
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,opto.mod,opto.sig_mod_boot,mod_params,savepath_traces,'opto_dff',plot_info,opto.mod_prepost); 
 %stim+sound - sound avg (difference)
-[traces_mean_diff,dataset_ids_diff] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,mod_indexm,sig_mod_boot,mod_params,savepath_traces,'opto_dff',plot_info,mod_indexm);
-
+[traces_mean_diff,dataset_ids_diff] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,opto.mod,opto.sig_mod_boot,mod_params,savepath_traces,'opto_dff',plot_info,opto.mod_prepost);
+table_fig3_evoked = make_stats_tables_evoked(traces_mean, traces_mean_diff, 'avg_traces', {'PYR', 'SOM', 'PV'},63:92, savepath_traces); %save stats table
 %%% STATS TABLES
 % table_fig3 = make_stats_tables_mod_index(mod_index_stats, mod_index_stats_datasets, save_dir);
+
 
 %%%% all cells %%%%%%%%%%%
 plot_info.y_lims = [-.4, .4];params.plot_info = plot_info;
@@ -105,23 +109,24 @@ plot_info.y_lims = [-.4, .4];params.plot_info = plot_info;
 savepath = 'W:\Connie\results\Bassi2025\fig3\mod\ctrl\separate';%
 
 %single neurons
-mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, mod_indexm, [], all_celltypes, params,savepath);%single neurons
+mod_index_stats = plot_context_comparisons(contexts_to_compare,overlap_labels, opto.mod, [], all_celltypes, params,savepath);%single neurons
 plot_info.y_lims = [-.2, .2];params.plot_info = plot_info;
 %datasets
-mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, mod_indexm,  [], all_celltypes, params,savepath);
+mod_index_stats_datasets = generate_mod_index_plots_datasets(params.info.chosen_mice, opto.mod,  [], all_celltypes, params,savepath);
 %stim+sound avg
-mod_params.mod_threshold = 0;
+mod_params.mod_threshold = 0.001;
 mod_params.threshold_single_side =1;
 [num_cells, ~] = organize_pooled_celltypes(context_data.dff, all_celltypes);
 all_cells =  repmat(arrayfun(@(n) 1:n, num_cells, 'UniformOutput', false),3,1)';
-wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,[savepath_traces '/all_cells/'],'opto_dff',plot_info,mod_indexm);
+savepath_traces = 'W:\Connie\results\Bassi2025\fig3\celltype_traces\all_cells\';
+[traces_mean,dataset_ids] = wrapper_avg_cell_type_traces(context_data.dff,all_celltypes,opto.mod,all_cells,mod_params,savepath_traces,'opto_dff',plot_info,opto.mod_prepost);
 %stim+sound - sound avg (difference)
 % plot_info.trace_ylims = [-.01, .03];
-[traces_mean_diff,dataset_ids_diff] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,mod_indexm,all_cells,mod_params,savepath,'opto_dff',plot_info,mod_indexm);
-
+[traces_mean_diff,dataset_ids_diff] = wrapper_avg_cell_type_traces_stim_minus_ctrl(context_data.dff,all_celltypes,opto.mod,all_cells,mod_params,savepath_traces,'opto_dff',plot_info,opto.mod_prepost);
+table_fig3_evoked = make_stats_tables_evoked(traces_mean, traces_mean_diff, 'avg_traces', {'PYR', 'SOM', 'PV'},63:92, savepath_traces); %save stats table
 %%% STATS TABLES
 % table_fig3 = make_stats_tables_mod_index(mod_index_stats, mod_index_stats_datasets, save_dir);
-
+%%% to close anovas close hidden all
 %% Engagement Index Plots
 % 1) load data
 load('W:\Connie\results\Bassi2025\fig3\mod\pre_engagement\simple\sig_mod_boot_thr.mat');

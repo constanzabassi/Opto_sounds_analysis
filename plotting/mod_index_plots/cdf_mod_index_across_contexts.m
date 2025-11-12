@@ -82,7 +82,8 @@ for plot_idx = 1:num_plots
         ylabel('Cumulative Fraction'); 
     end
     xlabel('Modulation Index');
-    set(gca, 'FontSize', 10, 'Units', 'inches', 'Position', positions(plot_idx, :));
+    set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(plot_idx, :));
+    utils.set_current_fig;
     grid on;
     
     % Legend

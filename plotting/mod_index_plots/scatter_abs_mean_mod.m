@@ -125,7 +125,7 @@ ylim([0,yli(2)])
 if nargin > 6
         ylim(varargin{1,1});
 end
-set(gca,'FontSize',7);
+
 set(gcf,'Color','w')
 set(gca,'FontName','Arial')
 %set(gca,'Color','k'b)
@@ -134,6 +134,7 @@ xtickangle(45)
 % set(gcf,'units','points','position',[10,100,500,200])
 % set(gcf,'units','points','position',[10,100,(350/length(celltypes_ids)*length(plot_info.behavioral_contexts)),160])
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
+utils.set_current_fig;
 % for ce = 1:length(celltypes_ids)
 %     [KW.p_val(ce),KW.tbl{ce}, KW.stats_cell{ce}] = kruskalwallis([stim_mod(celltypes_ids{1,ce},:)],[1:length(plot_info.behavioral_contexts)],'off');
 % end
