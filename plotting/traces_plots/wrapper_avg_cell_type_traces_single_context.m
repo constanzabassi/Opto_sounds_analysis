@@ -23,7 +23,7 @@ for i = 1:length(param_sets)
         [sig_cells] = get_thresholded_sig_cells_simple( mod_params, mod_indexm, sig_cells);
         %get context,mouse,celltype responses (across all trials (not
         %separated by left or rigth)- so overall avg)
-        [neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells',all_celltypes,mod_params.chosen_mice); %context_data.deconv_interp
+        [neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells',all_celltypes,mod_params.min_cells,mod_params.chosen_mice); %context_data.deconv_interp
         
         contexts_to_plot = [context_num]; %
         if length(size(neural_response))>2

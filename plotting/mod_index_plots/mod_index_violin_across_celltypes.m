@@ -71,6 +71,9 @@ for cel_type = 1:length(celltypes_ids)
     end
 
     set(gca,'fontsize',7,'Units','Inches','Position',positions(cel_type,:));
+    ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
     stats.p_all{cel_type} = p_stim;
 %     utils.set_current_fig;
 end
@@ -154,6 +157,9 @@ for cel_type = 1:length(celltypes_ids)
     end
     xlim([0 length(behavioral_contexts)+1])
     set(gca,'fontsize',7,'box','off','Units','Inches','Position',positions(cel_type,:));
+    ax = gca;
+ax.XLabel.FontSize = ax.FontSize;
+ax.YLabel.FontSize = ax.FontSize;
     stats.p_all{cel_type} = p_stim;
 %     utils.set_current_fig;
 end

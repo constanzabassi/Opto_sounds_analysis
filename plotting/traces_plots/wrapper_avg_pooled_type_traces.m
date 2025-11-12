@@ -5,7 +5,8 @@ function wrapper_avg_pooled_type_traces(context_data,all_celltypes,sig_cells,cho
 
 %get context,mouse,celltype responses (across all trials (not
 %separated by left or rigth)- so overall avg)
-[neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells,all_celltypes,chosen_mice); %context_data.deconv_interp
+min_cells = 2;
+[neural_response,~] = unpack_context_mouse_celltypes(context_data,sig_cells,all_celltypes,min_cells,chosen_mice); %context_data.deconv_interp
 
 %plot avg traces (plotting active and passive)
 avg_across_neurons = 0; %SEM across all neurons vs across datasets

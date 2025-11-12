@@ -148,18 +148,19 @@ for fig_idx = 1:length(data_modes)*2
         if diff(yli) < 0.04
             yli = [yli(1)-0.01,yli(2)+0.01];
         end
-        if contains(plot_info.type,'sound')
-            onset_color = [0.5 0.5 0.5];
-        else
-            onset_color =[1 0.8 0.3];
-        end
+        if nargin <= 10
+            if contains(plot_info.type,'sound')
+                onset_color = [0.5 0.5 0.5];
+            else
+                onset_color =[1 0.8 0.3];
+            end
             for f = 1:size(stim_frame,1)
                 x = [stim_frame(f,1), stim_frame(f,2), stim_frame(f,2), stim_frame(f,1)];
                 y = [yli(1), yli(1), yli(2), yli(2)];
                 patch(x, y, onset_color, 'EdgeColor', 'none', 'FaceAlpha', 1); %[.5 .5 .5]
 
             end
-        if nargin > 10
+        else 
             xlimss = [1 61];
             xlim(xlimss );
             xticks([1 61]);
