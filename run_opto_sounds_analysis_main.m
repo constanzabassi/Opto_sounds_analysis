@@ -86,6 +86,8 @@ context_to_plot = [1];
 %% Compare modulation indices across contexts and cell types
 mod_params.mod_threshold = .1;% 0 is no threshold applied
 mod_params.chosen_mice = [1:24];
+mod_params.min_cells = 2;
+
 
 %using previously calculated mod index from prepost (looking at spont to
 %find the thresholded cells!)

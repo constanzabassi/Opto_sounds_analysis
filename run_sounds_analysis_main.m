@@ -78,6 +78,7 @@ mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mo
 %% Compare modulation indices across contexts and cell types
 mod_params = params.mod_sounds; %use 'prespose'/'separate'?
 mod_params.savepath = fullfile(params.info.savepath_sounds, 'mod', mod_params.mod_type, mod_params.mode);
+mod_params.min_cells = 2;
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\mod_indexm.mat');
 load('V:\Connie\results\opto_sound_2025\context\sounds\mod\prepost_sound\separate\sig_mod_boot.mat');
 

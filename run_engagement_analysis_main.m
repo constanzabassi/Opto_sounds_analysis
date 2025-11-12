@@ -52,6 +52,8 @@ overlap_labels = {'Act - Pass'}; %{'Active', 'Passive','Both'}; % {'Active', 'Pa
     organize_sig_mod_index_contexts_celltypes([1:24], mod_indexm', sig_mod_boot_thr, pooled_cell_types,plot_info.celltype_names);
 
 %% make plots!
+mod_params.min_cells = 2;
+
 plot_info.y_lims = [-.3, .3];
 params.plot_info = plot_info;
 params.info.chosen_mice = [1:24];
