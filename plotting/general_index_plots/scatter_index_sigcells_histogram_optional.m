@@ -160,8 +160,9 @@ if nargin > 9
     
 %     set(gcf, 'Position', [100, 100, 200, 200]);  % [left bottom width height]
     set(mainAx, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
-    set(groot, 'defaultAxesFontName', 'Arial');
-    
+    mainAx.XLabel.FontSize = 7;
+    mainAx.YLabel.FontSize = 7;
+        
 
 
     % Save figure

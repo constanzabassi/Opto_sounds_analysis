@@ -346,8 +346,8 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
         positions(:,2) = positions(:,2) - 1;
         set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
         ax = gca;
-        ax.XLabel.FontSize = ax.FontSize;
-        ax.YLabel.FontSize = ax.FontSize;
+        ax.XLabel.FontSize = 7;
+        ax.YLabel.FontSize = 7;
         xticklabels(repmat(plot_info.celltype_names, 1, n_celltypes))
         
     end
