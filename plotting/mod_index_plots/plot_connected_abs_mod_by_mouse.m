@@ -23,6 +23,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
     n_celltypes =  size( mod_index_by_dataset,3);
     count = 0;
     x_lines = 0:num_contexts*n_celltypes+1;
+    p_val_mod = [];diff =[];effectsize=[];
     
     if nargin > 4
         ylims = varargin{1,1};
@@ -60,7 +61,7 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
             
             % Plot connected line for this mouse
-            if num_contexts > 1
+            if num_contexts > 1 && ~isfield(plot_info,'zero_star') || num_contexts > 1 && isfield(plot_info,'zero_star') && plot_info.zero_star == 0
                 for c = 1:(num_contexts - 1)
                     plot([x_pos(c) + 0.2, x_pos(c+1) - 0.2], ...
                          [mouse_means(c), mouse_means(c+1)], ...
@@ -98,43 +99,47 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
                 mod_stats.stats(celltype,context).valid_datasets = find(~isnan(curr_means));
                  % Calculate 95% CI using bootstrapping
                 mod_stats.stats(celltype,context).basic_stats =  get_basic_stats(valid_data);
+                
+                % Plot error bar (SEM)
+                errorbar(x_pos(context), mean_cel, err, 'o', ...
+                'Color', plot_info.colors_celltypes(celltype,:), ...
+                'LineWidth', 1, 'MarkerSize', 2,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
+            
+                mean_cell_all = [mean_cell_all, mean_cel];
+
+                % One-sample permutation test vs zero
+                n_perm = 10000;
+                observed_mean = mean(valid_data);
+                null_distribution = zeros(1, n_perm);
+                for p = 1:n_perm
+                    signs = randi([0 1], size(valid_data)) * 2 - 1;  % random +1/-1
+                    null_distribution(p) = mean(valid_data .* signs);
+                end
+                p_val_vs_zero = mean(abs(null_distribution) >= abs(observed_mean));
+                if p_val_vs_zero == 0
+                    p_val_vs_zero = 1/n_perm;
+                end
+                mod_stats.stats(celltype,context).p_val_vs_zero = p_val_vs_zero;
+    
+                if isfield(plot_info,'zero_star') && plot_info.zero_star == 1%only plot if requested
+                    yline(0,'color',[0.5,0.5,0.5],'LineStyle','--')
+                    if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
+    %                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
+    %                         'Color', plot_info.colors_celltypes(celltype,:), ...
+    %                         'FontSize', 7, 'HorizontalAlignment', 'center');
+                                utils.plot_pval_star(x_pos(context),mean_cel + err + 0.02,p_val_vs_zero,[0,0],0,[0,0,0]);%plot_info.colors_celltypes(celltype,:)
+                    end
+                end
+            else
+                valid_means = [];
+                mod_stats.stats(celltype,1).valid_means = valid_means
             end
 
 %             % Plot error bar (CI)
 %             errorbar(x_pos(context), mean_cel, err_low, err_up, 'o', ...
 %                 'Color', plot_info.colors_celltypes(celltype,:), ...
 %                 'LineWidth', 1.3, 'MarkerSize', 3,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
-            
-            % Plot error bar (SEM)
-            errorbar(x_pos(context), mean_cel, err, 'o', ...
-                'Color', plot_info.colors_celltypes(celltype,:), ...
-                'LineWidth', 1, 'MarkerSize', 2,'MarkerFaceColor', plot_info.colors_celltypes(celltype,:))
-            
-            mean_cell_all = [mean_cell_all, mean_cel];
-
-            % One-sample permutation test vs zero
-            n_perm = 10000;
-            observed_mean = mean(valid_data);
-            null_distribution = zeros(1, n_perm);
-            for p = 1:n_perm
-                signs = randi([0 1], size(valid_data)) * 2 - 1;  % random +1/-1
-                null_distribution(p) = mean(valid_data .* signs);
-            end
-            p_val_vs_zero = mean(abs(null_distribution) >= abs(observed_mean));
-            if p_val_vs_zero == 0
-                p_val_vs_zero = 1/n_perm;
-            end
-            mod_stats.stats(celltype,context).p_val_vs_zero = p_val_vs_zero;
-
-            if isfield(plot_info,'zero_star') && plot_info.zero_star == 1%only plot if requested
-                yline(0,'color',[0.5,0.5,0.5],'LineStyle','--')
-                if p_val_vs_zero < 0.05/(n_celltypes*num_contexts) %correct for multiple comparisons
-%                     text(x_pos(context), mean_cel + err + 0.02, '*', ...
-%                         'Color', plot_info.colors_celltypes(celltype,:), ...
-%                         'FontSize', 7, 'HorizontalAlignment', 'center');
-                            utils.plot_pval_star(x_pos(context),mean_cel + err + 0.02,p_val_vs_zero,[0,0],0,[0,0,0]);%plot_info.colors_celltypes(celltype,:)
-                end
-            end
+           
         end
 
         % Statistical testing for this cell type
@@ -369,6 +374,9 @@ function mod_stats = plot_connected_abs_mod_by_mouse(save_dir, mod_index_by_data
             end
             if any(contains(save_string,'Δ')) || any(contains(save_string,'elta'))
                 save_string = [save_string 'deltastim']
+            end
+            if isfield(plot_info,'zero_star') && plot_info.zero_star == 1
+                save_string = [save_string 'vszero'];
             end
 %             save_string = strjoin(save_string);
             saveas(700,strcat(save_string,'_abs',num2str(abs_logic), '_mod_index_connected_lines_n',num2str(n_mice),'.svg'));

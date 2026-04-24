@@ -10,7 +10,7 @@ function [all_celltypes, dff_st, deconv_st, stim_info, ...
     [dff_st, deconv_st, deconv_st_interp , stim_info, alignment_frames_all] = initialize_outputs(mouse_date);
     
     % Process each dataset
-    parfor dataset_id = 1:length(mouse_date) % Use parallel processing if available
+    for dataset_id = 1:length(mouse_date) % Use parallel processing if available
         fprintf('Processing dataset %s...\n', mouse_date{dataset_id});
         % Load dataset
         [data,context_tr] = load_experimental_data(server{dataset_id}, mouse_date{dataset_id}, path_string, multiple_contexts);

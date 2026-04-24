@@ -43,7 +43,7 @@ for celltype = 1:n_celltypes
             all_cell_data = [];
             for dataset = mouseID
                 curr_data = (index_to_plot{dataset,context,celltype});
-                all_cell_data = [all_cell_data;curr_data];
+                all_cell_data = [all_cell_data,curr_data];
             end
             
             if nargin <7
@@ -54,7 +54,7 @@ for celltype = 1:n_celltypes
             % Plot cdf across all neurons
                 [cdf_data{context}, ~] = make_cdf(all_cell_data, binss);
             
-            a(context) = plot(binss, cdf_data{context}, 'LineWidth', 1.5, ...
+            a(context) = plot(binss, cdf_data{context}, 'LineWidth', 1.0, ...
                 'LineStyle', plot_info.lineStyles_contexts{context}, 'Color', plot_info.colors(celltype, :));
             mod_stats.stats(celltype,context).basic_stats =  get_basic_stats(all_cell_data);
             

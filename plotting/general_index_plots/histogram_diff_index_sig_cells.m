@@ -5,17 +5,17 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
     % the significance of the observed differences.
 
     figure(2325); clf; % Create and clear figure
-    
+    mean_all = [];
 
     if ~isempty(chosen_cells) % Check if chosen_cells is not empty
         fieldss = fields(all_celltypes{1,1}); % Extract field names from first cell type structure
         for cell_type = 1:length(fieldss) % Loop over all cell types
             difference = []; % Initialize difference array
             if horizontalmode == 1
-                positions = utils.calculateFigurePositions(1, 5, .5, []);
+                positions = utils.calculateFigurePositions(1, 6, .4, []);
                 subplot(1, length(fieldss),  cell_type) % Create subplot for each cell type
             else
-                positions = utils.calculateFigurePositions(5,1 , .5, []);
+                positions = utils.calculateFigurePositions(6,1 , .4, []);
                 subplot(length(fieldss), 1, cell_type) % Create subplot for each cell type
             end
             
@@ -29,14 +29,15 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
             
             hold on
             % Plot histogram of differences
-            histogram(difference, 'BinWidth', 0.05, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
-                'EdgeColor', plot_info.colors_celltypes(cell_type,:), 'FaceAlpha', 0.9, 'Normalization', 'count');
-            xline(0, '--k', 'LineWidth', 2);
+            histogram(difference, 'BinWidth', 0.1, 'normalization', 'probability', 'FaceColor', plot_info.colors_celltypes(cell_type,:), ...
+                'EdgeColor', plot_info.colors_celltypes(cell_type,:), 'FaceAlpha', 0.9);
+            xline(0, '--', 'LineWidth', 2,'Color',[0.2,0.2,0.2]);
             
             % Calculate and plot the mean difference as an inverted triangle
             mean_diff = mean(difference, 'omitnan');
+            mean_all = [ mean_all , mean_diff];
             y_limits = ylim;
-            xlim([-.5 .5]);
+            xlim([-.75 .75]);
             plot(mean_diff, y_limits(2), 'v', 'MarkerSize', 6, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', 'k');
             set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(cell_type, :));
             if cell_type == 2
@@ -127,5 +128,6 @@ function [p_val_mod] = histogram_diff_index_sig_cells(chosen_cells, all_celltype
         saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.png']);
 %         saveas(gcf, ['histogram_diff_index_sig_cells_' safe_string '.svg']);
         exportgraphics(gcf, ['histogram_diff_index_sig_cells_' safe_string '.pdf'], 'ContentType', 'vector'); % Save as PDF
+
     end
 end

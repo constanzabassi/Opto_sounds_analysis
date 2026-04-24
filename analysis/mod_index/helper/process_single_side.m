@@ -1,6 +1,6 @@
 function [cv_mod, stim_data_out, ctrl_data_out] = process_single_side(...
     stim_data, ctrl_data, stim_trials, ctrl_trials, current_conditions, ...
-    current_conditions_ctrl, response_range, mod_type, nRepeats, specified_lr, side)
+    current_conditions_ctrl, response_range, mod_type, nRepeats, specified_lr, side,data_type)
     
 %start with random seed for reproducibility!
 rng(123);
@@ -27,8 +27,8 @@ rng(123);
         
         % Compute averages across folds
         % using mod_type to decide what to take the average of
-        [avg_data1_fold1, avg_data2_fold1] = utils.compute_fold_averages(fold1_data1, fold1_data2, response_range, mod_type); %fold 1
-        [avg_data1_fold2, avg_data2_fold2] = utils.compute_fold_averages(fold2_data1, fold2_data2, response_range, mod_type); %fold 2
+        [avg_data1_fold1, avg_data2_fold1] = utils.compute_fold_averages(fold1_data1, fold1_data2, response_range, mod_type,data_type); %fold 1
+        [avg_data1_fold2, avg_data2_fold2] = utils.compute_fold_averages(fold2_data1, fold2_data2, response_range, mod_type,data_type); %fold 2
         
         % Compute modulation indices
         mod1 = compute_mod_index(avg_data1_fold1, avg_data2_fold1, mod_type);

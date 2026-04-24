@@ -8,6 +8,14 @@ y1=2;
 y2=after_frames+2;
 
 intervals = bad_frames;
+if bad_frames(1,1) < before_frames
+    intervals = bad_frames(2:end,:);
+    if stim(1) == 1
+        stim = stim(2:end);
+    elseif ctrl(1) == 1
+        ctrl = ctrl(2:end);
+    end
+end
 % intervals(:,1)= bad_frames(:,1)-1;
 % intervals(:,2)= bad_frames(:,2)+2;
 

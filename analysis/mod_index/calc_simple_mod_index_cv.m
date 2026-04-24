@@ -1,5 +1,5 @@
 function [cv_mod_index, bootstrapResults] = calc_simple_mod_index_cv(...
-    data1, data2, response_range, mod_type, nRepeats, nShuffles)
+    data1, data2, response_range, mod_type, nRepeats, nShuffles,data_type)
 % calc_simple_mod_index_cv computes a cross-validated modulation index for simple
 % comparisons between two datasets without left/right distinctions
 %
@@ -35,7 +35,7 @@ bootstrapResults = [];
     
 % Compute averages across folds
 % using mod_type to decide what to take the average of
-[avg_data1, avg_data2] = utils.compute_fold_averages(data1, data2, response_range, mod_type); %fold 1
+[avg_data1, avg_data2] = utils.compute_fold_averages(data1, data2, response_range, mod_type,data_type); %fold 1
 
 % Compute modulation indices
 mod1 = compute_mod_index(avg_data1, avg_data2, mod_type);
@@ -45,7 +45,7 @@ cv_mod_index =mod1;
 
 % Bootstrap if requested
 if nShuffles > 0
-    bootstrapResults.pVals = bootstrap_mod_index_cv(data1, data2, response_range, nShuffles, mod_type);
+    bootstrapResults.pVals = bootstrap_mod_index_cv(data1, data2, response_range, nShuffles, mod_type,data_type);
 end
 
 end

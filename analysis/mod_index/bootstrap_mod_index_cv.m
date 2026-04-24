@@ -1,4 +1,4 @@
-function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_range, nShuffles, mod_type)
+function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_range, nShuffles, mod_type,data_type)
 % bootstrap_mod_index_cv performs a bootstrap procedure to generate a null
 % distribution of the modulation index for each neuron and computes two-sided p-values.
 %
@@ -58,6 +58,46 @@ function pVals = bootstrap_mod_index_cv(data_subset1, data_subset2, response_ran
         % For 'ctrl' and 'influence', use the first response_range:
         group1 = mean(data_subset1(:, :, response_range{1}), 3);  % from stim_data_subset
         group2 = mean(data_subset2(:, :, response_range{1}), 3);  % from ctrl_data_subset
+    end
+    if strcmpi(data_type,'deconv')
+        fs = 30;
+
+        %%% Step 1: Compute Averages for Group1 and Group2 %%%
+        if (strcmp(mod_type,'prepost') || strcmp(mod_type,'prepost_num') || ...
+            strcmp(mod_type,'prepost_sound') || strcmp(mod_type,'prepost_abs')) && length(response_range) > 1
+        
+            % using subset1 (typically stim)
+            group1 = fs * sum(data_subset1(:,:,response_range{1}),3) / numel(response_range{1});
+            group2 = fs * sum(data_subset1(:,:,response_range{2}),3) / numel(response_range{2});
+        
+            if strcmp(mod_type,'prepost_sound') || strcmp(mod_type,'prepost_sound_num')
+                % use control data for both groups
+                group1 = fs * sum(data_subset2(:,:,response_range{1}),3) / numel(response_range{1});
+                group2 = fs * sum(data_subset2(:,:,response_range{2}),3) / numel(response_range{2});
+            end
+        
+        elseif strcmp(mod_type,'prepost_ctrl') || strcmp(mod_type,'prepost_ctrl_abs') || strcmp(mod_type,'signed_ctrl')
+        
+            data_subset1 = double(data_subset1);
+            data_subset2 = double(data_subset2);
+        
+            group1 = fs * sum(data_subset1(:,:,response_range{1}),3) / numel(response_range{1}) ...
+                   - fs * sum(data_subset1(:,:,response_range{2}),3) / numel(response_range{2});
+        
+            group2 = fs * sum(data_subset2(:,:,response_range{1}),3) / numel(response_range{1}) ...
+                   - fs * sum(data_subset2(:,:,response_range{2}),3) / numel(response_range{2});
+        
+        elseif strcmp(mod_type,'pre_engagement') || strcmp(mod_type,'pre_engagement_num')
+        
+            group1 = fs * sum(data_subset1(:,:,response_range{2}),3) / numel(response_range{2});
+            group2 = fs * sum(data_subset2(:,:,response_range{2}),3) / numel(response_range{2});
+        
+        else
+            % 'ctrl', 'influence', etc.
+            group1 = fs * sum(data_subset1(:,:,response_range{1}),3) / numel(response_range{1});
+            group2 = fs * sum(data_subset2(:,:,response_range{1}),3) / numel(response_range{1});
+        end
+
     end
 
     %%% Step 2: Compute the Observed Modulation Index %%%

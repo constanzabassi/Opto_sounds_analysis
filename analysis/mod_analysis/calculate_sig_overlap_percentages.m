@@ -1,4 +1,4 @@
-function percent_cells = calculate_sig_overlap_percentages(sig_mod_boot, mod_indexm, contexts)
+function [percent_cells,percent_stats] = calculate_sig_overlap_percentages(sig_mod_boot, mod_indexm, contexts)
 % CALCULATE_SIG_overlap_PERCENTAGES computes the percentages of significant neurons
 % across the specified contexts.
 %
@@ -48,6 +48,12 @@ function percent_cells = calculate_sig_overlap_percentages(sig_mod_boot, mod_ind
 
         % Return as a 1x3 vector.
         percent_cells = [percent_context1_only, percent_context2_only, percent_both];
+
+        %get stats
+        percent_stats.stats_context1 = utils.get_basic_stats(percent_context1_only);
+        percent_stats.stats_context2 = utils.get_basic_stats(percent_context2_only);
+%         percent_stats.stats_context3 = 
+        percent_stats.stats_contextall = utils.get_basic_stats(percent_both);
     elseif total_contexts_to_compare == 3
         % Define context indices.
         context1 = contexts(1);
@@ -81,6 +87,12 @@ function percent_cells = calculate_sig_overlap_percentages(sig_mod_boot, mod_ind
 
         % Return as a 1x4 vector.
         percent_cells = [percent_context1_only, percent_context2_only, percent_context3_only, percent_combined];
+
+        %get stats
+        percent_stats.stats_context1 = utils.get_basic_stats(percent_context1_only);
+        percent_stats.stats_context2 = utils.get_basic_stats(percent_context2_only);
+        percent_stats.stats_context3 = utils.get_basic_stats(percent_context3_only);
+        percent_stats.stats_contextall = utils.get_basic_stats(percent_combined);
     else
         error('Only 2 or 3 contexts are supported.');
     end

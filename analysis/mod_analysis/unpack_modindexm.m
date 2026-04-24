@@ -45,7 +45,7 @@ for dataset_index = chosen_mice
         for cel = 1:length(fieldss)
 
             % Ensure there are enough selected cells and trials
-            if ~isempty(chosen_cells) && length(chosen_cells{dataset_index,cel})>1 && length(mod_index{dataset_index,context}(chosen_cells{dataset_index,cel})) > 2 %at least 2 cells of this cell type!, at least 3 trials across all contexts for this mouse! % 
+            if ~isempty(chosen_cells) && length(chosen_cells{dataset_index,cel})>0 && length(mod_index{dataset_index,context}(chosen_cells{dataset_index,cel})) > 2 %at least 2 cells of this cell type!, at least 3 trials across all contexts for this mouse! % 
                 % Store modulation index for selected cells
                 unpacked_mod_index{dataset_index,context,cel} = mod_index{dataset_index,context}(chosen_cells{dataset_index,cel});
             else

@@ -21,7 +21,7 @@ mod_index_results = sound.results;
 avg_results = sound.avg;
 data_type = 'sounds';
 params.selectivity_sounds.selectivity_sig_mode = 'union'; %'union' or 'intersect'
-base = ['W:\Connie\results\Bassi2025\fig3\selectivity_pools\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
+base = ['W:\Connie\results\Bassi2025\fig3\selectivity_poolsv2\' data_type '\' selectivity_mode '\' params.selectivity_sounds.selectivity_sig_mode '\'];% 'V:\Connie\results\opto_sound_2025\context\sounds\selectivity\negative';
 mkdir(base);
 
 [selectivity_pool_results_by_dataset, selectivity_pool_results] = wrapper_selecitivity_pool_analysis(base, params, mod_indexm,[], sig_mod_boot, mod_index_results,selectivity_results, avg_results, sorted_cells, all_celltypes, selectivity_indexm, data_type,[.1,.4],'Avg. Sound (ΔF/F)');

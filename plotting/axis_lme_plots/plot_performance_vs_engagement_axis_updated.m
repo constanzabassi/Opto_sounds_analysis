@@ -12,10 +12,19 @@ performance_active =  correct_all_ctrl;
 %%
 % Parameters
 window_size = window_bins(1);
-if nargin < 6
-    plot_sessions = 0;
-else
-    plot_sessions = varargin{1,1};
+% Defaults
+plot_sessions = 0;
+label_str = 'Fraction Correct';
+
+% Handle optional inputs
+if ~isempty(varargin)
+    for i = 1:length(varargin)
+        if ischar(varargin{i}) || isstring(varargin{i})
+            label_str = varargin{i};   % assign label if string
+        elseif isnumeric(varargin{i})
+            plot_sessions = varargin{i}; % assign numeric option
+        end
+    end
 end
 % Unique animals/sessions
 animal_ids = unique(animal_id_all);
@@ -74,7 +83,7 @@ figure(401); clf;
 scatter(all_engagement, all_success, 8, 'filled', ...
     'MarkerFaceAlpha', 0.1, 'MarkerEdgeAlpha', 0.05);
 xlabel({'Engagement Projection';'(z-scored)'});
-ylabel('Fraction Correct');
+ylabel(label_str);
 % title(sprintf('Sliding window (n = %d trials per window)', window_size));
 % % Optional: Linear regression overlay
 % mdl = fitlm(all_engagement, all_success);
@@ -131,7 +140,7 @@ end
 % Group mean with error bars (black line)
 errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
 xlabel({'Engagement Projection';'(z-scored)'});
-ylabel('Fraction Correct');
+ylabel(label_str);
 ylims = ylim;
 ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
@@ -184,7 +193,7 @@ plot(xvals, yhat, 'b-', 'LineWidth', 1.5);
 text(0.43, max(all_engagement)*0.95, ...
     sprintf('P = %.3g\nR = %.2f', p, r), 'FontSize', 6);
 
-xlabel('Fraction Correct');
+xlabel(label_str);
 ylabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -229,7 +238,7 @@ end
 % Group mean with error bars (black line)
 errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
 xlabel({'Engagement Projection';'(z-scored)'});
-ylabel('Fraction Correct');
+ylabel(label_str);
 ylims = ylim;
 ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
@@ -278,14 +287,16 @@ end
 text(0.43, max(all_engagement)*0.95, ...
     sprintf('P = %.3g\nR = %.2f', p, r), 'FontSize', 6);
 
-xlabel('Fraction Correct');
+xlabel(label_str);
 ylabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
 ax = gca;
 ax.XLabel.FontSize = ax.FontSize;
 ax.YLabel.FontSize = ax.FontSize;
-xlim([min(all_success)-0.05,1.05])
+if min(all_success)-0.05 < 1.05
+    xlim([min(all_success)-0.05,1.05])
+end
 box off
 
 
@@ -327,7 +338,7 @@ bin_centers = movmean(edges, 2, 'Endpoints','discard');
 text(-1.8, 0.2, ...
     sprintf('P = %.3g\nR = %.2f', p2, r2), 'FontSize', 6);
 
-ylabel('Fraction Correct');
+ylabel(label_str);
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -349,6 +360,9 @@ session_engagement = {};
 % Define engagement bins (you can change number of bins)
 n_bins = 6;
 edges = linspace(-1, 2, n_bins + 1); % assumes engagement is normalized [0,1]
+if length(varargin)>1
+    edges = varargin{2};
+end
 bin_centers = movmean(edges, 2, 'Endpoints', 'discard');
 animal_success_by_bin_nooverlap = NaN(length(animal_ids), n_bins);
 animal_eng_by_bin_nooverlap = NaN(length(animal_ids), n_bins);
@@ -400,11 +414,12 @@ for b = 1:n_bins
 end
 performance_vs_engagement_stats.r = r2;
 performance_vs_engagement_stats.p = p2;
+performance_vs_engagement_stats.edges = edges;
 
 % Plot
 figure(408);clf; hold on;
 scatter(all_engagement, all_success,  20, ...
-    'MarkerFaceColor', [0.6 0.6 0.6], ... % [0.3 0.6 0.9]
+    'MarkerFaceColor', [0.5 0.5 0.5], ... % [0.3 0.6 0.9]
     'MarkerEdgeColor', 'none', ...
     'MarkerFaceAlpha', 0.1);
 
@@ -430,7 +445,7 @@ text(.5, 0.5, ...
     sprintf('P = %.3g\nR = %.2f', p2, r2), 'FontSize', 6);
 
 
-ylabel('Fraction Correct');
+ylabel(label_str);
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -439,6 +454,7 @@ ax.XLabel.FontSize = ax.FontSize;
 ax.YLabel.FontSize = ax.FontSize;
 
 box off
+
 
 %% overlaping engagemnt bins
 % Unique animals/sessions
@@ -524,7 +540,7 @@ bin_centers = movmean(edges, 2, 'Endpoints','discard');
 % text(.5, 0.45, ...
 %     sprintf('P = %.3g\nR = %.2f', p2, r2), 'FontSize', 6);
 
-ylabel('Fraction Correct');
+ylabel(label_str);
 xlabel({'Engagement Projection';'(z-scored)'});
 % title('Correlation: Engagement vs Performance (sliding window)');
 set(gca, 'FontSize', 7, 'Units', 'inches', 'Position', positions(1, :));
@@ -552,7 +568,7 @@ end
 % Group mean with error bars (black line)
 errorbar(bin_centers, mean_success_per_bin, sem_success_per_bin,  '-ok', 'MarkerFaceColor', 'k', 'LineWidth', 1,'MarkerSize',3,'CapSize',2);
 xlabel({'Engagement Projection';'(z-scored)'});
-ylabel('Fraction Correct');
+ylabel(label_str);
 ylims = ylim;
 ylim([ylims(1)-(ylims(1)*.03),ylims(2)+(ylims(2)*.03)])
 xli = xlim;
@@ -572,7 +588,9 @@ if ~isempty(save_dir)
     exportgraphics(figure(405),fullfile(new_savedir,strcat('scatter_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
     %408 is currently used in the paper
     exportgraphics(figure(407),fullfile(new_savedir,strcat('scatter_nonoverlap_performance_vs_engagement_axis_windownbin',num2str(window_bins),'edges',num2str(edges(1)),num2str(edges(end)),'.pdf')), 'ContentType', 'vector');
-    exportgraphics(figure(408),fullfile(new_savedir,strcat('scatter_nonoverlap_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
+    
+    exportgraphics(figure(408),fullfile(new_savedir,strcat('scatter_nonoverlap_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(performance_vs_engagement_stats.edges(1)),num2str(performance_vs_engagement_stats.edges(end)),'.pdf')), 'ContentType', 'vector');
+    
     exportgraphics(figure(409),fullfile(new_savedir,strcat('scatter_binned_engagement_vs_performance_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
     exportgraphics(figure(106),fullfile(new_savedir,strcat('errorbar_performance_vs_engagement_axis_windownbin',num2str(window),'edges',num2str(bins(1)),num2str(bins(end)),'.pdf')), 'ContentType', 'vector');
 
